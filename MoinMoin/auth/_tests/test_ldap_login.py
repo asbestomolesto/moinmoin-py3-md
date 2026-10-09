@@ -8,9 +8,9 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py.test
 
 
+import pytest
 from MoinMoin._tests.ldap_testbase import LDAPTstBase, LdapEnvironment, check_environ, SLAPD_EXECUTABLE
 from MoinMoin._tests.ldap_testdata import *
 from MoinMoin._tests import nuke_user, wikiconfig

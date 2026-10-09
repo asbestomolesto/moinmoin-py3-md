@@ -237,6 +237,8 @@ def make_breakable(text, maxlen):
 # Precompiled patterns for file name [un]quoting
 UNSAFE = re.compile(r'[^a-zA-Z0-9_]+')
 QUOTED = re.compile(r'\(([a-fA-F0-9]+)\)')
+UNSAFE_BYTES = re.compile(br'[^a-zA-Z0-9_]+')
+QUOTED_BYTES = re.compile(br'\(([a-fA-F0-9]+)\)')
 
 
 def quoteWikinameFS(wikiname, charset=config.charset):
@@ -255,18 +257,15 @@ def quoteWikinameFS(wikiname, charset=config.charset):
 
     quoted = []
     location = 0
-    for needle in UNSAFE.finditer(filename):
-        # append leading safe stuff
-        quoted.append(filename[location:needle.start()])
+    for needle in UNSAFE_BYTES.finditer(filename):
+        # append leading safe stuff (only ascii letters, digits and _)
+        quoted.append(filename[location:needle.start()].decode('ascii'))
         location = needle.end()
         # Quote and append unsafe stuff
-        quoted.append('(')
-        for character in needle.group():
-            quoted.append('%02x' % ord(character))
-        quoted.append(')')
+        quoted.append('(%s)' % needle.group().hex())
 
     # append rest of string
-    quoted.append(filename[location:])
+    quoted.append(filename[location:].decode('ascii'))
     return ''.join(quoted)
 
 
@@ -289,15 +288,13 @@ def unquoteWikiname(filename, charsets=[config.charset]):
     @rtype: Unicode String
     @return: WikiName
     """
-    ### Temporary fix start ###
-    # From some places we get called with Unicode strings
-    if isinstance(filename, type('')):
+    # we work on bytes, because the quoted parts are encoded bytes
+    if isinstance(filename, str):
         filename = filename.encode(config.charset)
-    ### Temporary fix end ###
 
     parts = []
     start = 0
-    for needle in QUOTED.finditer(filename):
+    for needle in QUOTED_BYTES.finditer(filename):
         # append leading unquoted stuff
         parts.append(filename[start:needle.start()])
         start = needle.end()
@@ -307,10 +304,7 @@ def unquoteWikiname(filename, charsets=[config.charset]):
         if (len(group) % 2 != 0):
             raise InvalidFileNameError(filename)
         try:
-            for i in range(0, len(group), 2):
-                byte = group[i:i+2]
-                character = chr(int(byte, 16))
-                parts.append(character)
+            parts.append(bytes.fromhex(group.decode('ascii')))
         except ValueError:
             # byte not in hex, e.g 'xy'
             raise InvalidFileNameError(filename)
@@ -320,7 +314,7 @@ def unquoteWikiname(filename, charsets=[config.charset]):
         wikiname = filename
     else:
         parts.append(filename[start:len(filename)])
-        wikiname = ''.join(parts)
+        wikiname = b''.join(parts)
 
     # FIXME: This looks wrong, because at this stage "()" can be both errors
     # like open "(" without close ")", or unquoted valid characters in the file name.

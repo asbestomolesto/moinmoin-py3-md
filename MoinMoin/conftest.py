@@ -132,5 +132,5 @@ class YieldTestItem(pytest.Function):
 @pytest.hookimpl(tryfirst=True)
 def pytest_pycollect_makeitem(collector, name, obj):
     if (inspect.isgeneratorfunction(obj) and collector.funcnamefilter(name)):
-        return YieldTestItem.from_parent(collector, name=name, callobj=obj)
+        return YieldTestItem.from_parent(collector, name=name)
     return None

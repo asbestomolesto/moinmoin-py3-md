@@ -8,7 +8,6 @@
 import sys, os, time
 import shutil, tempfile
 
-import py.test
 
 from MoinMoin.util import filesys
 

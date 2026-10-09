@@ -7,7 +7,7 @@ MoinMoin.datastruct.backends.composite_groups test
 @license: GPL, see COPYING for details
 """
 
-from py.test import raises
+from pytest import raises
 
 from MoinMoin.datastruct.backends._tests import GroupsBackendTest
 from MoinMoin.datastruct import ConfigGroups, CompositeGroups, GroupDoesNotExistError

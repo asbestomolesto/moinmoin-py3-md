@@ -9,7 +9,7 @@ MoinMoin - MoinMoin.backends.wiki_group tests
 @license: GNU GPL, see COPYING for details.
 """
 
-from py.test import raises
+from pytest import raises
 import re, shutil
 
 from MoinMoin.datastruct.backends._tests import GroupsBackendTest

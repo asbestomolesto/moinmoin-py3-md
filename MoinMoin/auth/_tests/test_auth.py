@@ -5,7 +5,6 @@
     @copyright: 2008 MoinMoin:ThomasWaldmann
     @license: GNU GPL, see COPYING for details.
 """
-import py.test
 
 from MoinMoin.web.request import TestRequest, evaluate_request
 from MoinMoin import wsgiapp

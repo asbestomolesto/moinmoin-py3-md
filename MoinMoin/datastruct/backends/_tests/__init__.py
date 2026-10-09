@@ -10,7 +10,7 @@
 
 """
 
-from py.test import raises
+from pytest import raises
 
 from MoinMoin import security
 from MoinMoin.datastruct import GroupDoesNotExistError
