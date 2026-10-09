@@ -48,6 +48,9 @@ class Match(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    # Python 2 kept the default (identity) hash when __eq__ was defined
+    __hash__ = object.__hash__
+
     def view(self):
         return ''
 
@@ -168,7 +171,7 @@ class FoundPage(object):
         """
         # Filter by type and sort by match.start using fast schwartzian transform.
         tmp = [(match.start, match) for match in self._matches if isinstance(match, type)]
-        tmp.sort()
+        tmp.sort(key=lambda item: (item[0], item[1].end))
 
         if not len(tmp):
             return []

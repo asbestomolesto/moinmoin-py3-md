@@ -1274,8 +1274,11 @@ class ParserPrefix:
     def __eq__(self, other):
         return isinstance(other, ParserPrefix) and other.prefix == self.prefix
 
+    def __hash__(self):
+        return hash(self.prefix)
+
     def __repr__(self):
-        return '<ParserPrefix(%s)>' % self.prefix.encode('utf-8')
+        return '<ParserPrefix(%s)>' % self.prefix
 
 def parse_quoted_separated_ext(args, separator=None, name_value_separator=None,
                                brackets=None, seplimit=0, multikey=False,

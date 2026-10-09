@@ -452,7 +452,7 @@ class TestXapianSearch(BaseSearchTest):
             self.searcher_class = XapianSearch
 
         except ImportError as error:
-            if not str(error).startswith('Xapian '):
+            if not (str(error).startswith('Xapian ') or getattr(error, 'name', None) == 'xapian'):
                 raise
             pytest.skip('xapian is not installed')
 

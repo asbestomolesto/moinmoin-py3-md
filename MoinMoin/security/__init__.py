@@ -372,6 +372,9 @@ class AccessControlList:
     def __ne__(self, other):
         return self.acl_lines != other.acl_lines
 
+    # Python 2 kept the default (identity) hash when __eq__ was defined
+    __hash__ = object.__hash__
+
 
 class ACLStringIterator:
     """ Iterator for acl string
