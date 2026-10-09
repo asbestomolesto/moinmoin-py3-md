@@ -33,7 +33,7 @@
 from_encoding = 'utf-8'
 to_encoding = 'utf-8'
 
-import os.path, sys, shutil, urllib
+import os.path, sys, shutil, urllib.request, urllib.parse, urllib.error
 
 sys.path.insert(0, '../../../..')
 from MoinMoin import wikiutil
@@ -48,7 +48,7 @@ def unquoteWikinameOld(filename, charsets=[from_encoding, ]):
     @rtype: string
     @return: decoded, original filename
     """
-    if isinstance(filename, type(u'')): # from some places we get called with unicode
+    if isinstance(filename, type('')): # from some places we get called with unicode
         filename = filename.encode(from_encoding)
     fn = ''
     i = 0
@@ -89,7 +89,7 @@ def qf_convert_string(str, enc_from, enc_to):
 
 
 def convert_file(fname_from, fname_to, enc_from, enc_to):
-    print "%s -> %s" % (fname_from, fname_to)
+    print("%s -> %s" % (fname_from, fname_to))
     file_from = open(fname_from)
     file_to = open(fname_to, "w")
     for line in file_from:
@@ -120,7 +120,7 @@ def convert_pagedir(dir_from, dir_to, enc_from, enc_to):
     os.mkdir(dir_to)
     for dname_from in listdir(dir_from):
         dname_to = qf_convert_string(dname_from, enc_from, enc_to)
-        print "%s -> %s" % (dname_from, dname_to)
+        print("%s -> %s" % (dname_from, dname_to))
         shutil.copytree(opj(dir_from, dname_from), opj(dir_to, dname_to), 1)
         try:
             convert_editlog(opj(dir_from, dname_from, 'last-edited'),
@@ -153,7 +153,7 @@ try:
     os.rename('data', origdir)
     os.mkdir('data')
 except OSError:
-    print "You need to be in the directory where your copy of the 'data' directory is located."
+    print("You need to be in the directory where your copy of the 'data' directory is located.")
     sys.exit(1)
 
 convert_textdir(opj(origdir, 'text'), opj('data', 'text'), from_encoding, to_encoding)

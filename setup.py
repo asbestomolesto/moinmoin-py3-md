@@ -64,7 +64,7 @@ def makeDataFiles(prefix, dir):
     os.path.walk(dir, visit, (prefix, strip, found))
     return found
 
-def visit((prefix, strip, found), dirname, names):
+def visit(xxx_todo_changeme1, dirname, names):
     """ Visit directory, create distutil tuple
 
     Add distutil tuple for each directory using this format:
@@ -72,6 +72,7 @@ def visit((prefix, strip, found), dirname, names):
 
     distutil will copy later file1, file2, ... info destination.
     """
+    (prefix, strip, found) = xxx_todo_changeme1
     files = []
     # Iterate over a copy of names, modify names
     for name in names[:]:
@@ -95,7 +96,8 @@ def make_filelist(dir, strip_prefix=''):
         stripping off the strip_prefix at the left side.
     """
     found = []
-    def _visit((found, strip), dirname, names):
+    def _visit(xxx_todo_changeme, dirname, names):
+        (found, strip) = xxx_todo_changeme
         files = []
         for name in names:
             path = os.path.join(dirname, name)
@@ -177,7 +179,7 @@ class build_scripts_create(build_scripts):
                         % script_vars)
             finally:
                 file.close()
-                os.chmod(outfile, 0755)
+                os.chmod(outfile, 0o755)
 
 
 class build_scripts_moin(build_scripts_create):
@@ -354,11 +356,11 @@ if hasattr(distutils.dist.DistributionMetadata, 'get_platforms'):
 if __name__ == '__main__':
     try:
         setup(**setup_args)
-    except distutils.errors.DistutilsPlatformError, ex:
-        print
-        print str(ex)
+    except distutils.errors.DistutilsPlatformError as ex:
+        print()
+        print(str(ex))
 
-        print """
+        print("""
 POSSIBLE CAUSE
 
 "distutils" often needs developer support installed to work
@@ -366,5 +368,5 @@ correctly, which is usually located in a separate package
 called "python%d.%d-dev(el)".
 
 Please contact the system administrator to have it installed.
-""" % sys.version_info[:2]
+""" % sys.version_info[:2])
         sys.exit(1)

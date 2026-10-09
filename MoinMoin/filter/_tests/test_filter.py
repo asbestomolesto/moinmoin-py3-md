@@ -22,7 +22,7 @@ class TestFilters:
     def testBinaryGeneric(self):
         from MoinMoin.filter.application_octet_stream import execute as _filter
         tests = [('', ''),
-                 ('this\x00is\x00a\x00test\x00', u'this test'), # throws away short stuff
+                 ('this\x00is\x00a\x00test\x00', 'this test'), # throws away short stuff
                 ]
         for data, expected in tests:
             fname = self.make_file(data)
@@ -31,7 +31,7 @@ class TestFilters:
     def testTextGeneric(self):
         from MoinMoin.filter.text import execute as _filter
         tests = [('', ''),
-                 ('asdf\r\nghjk', u'asdf\r\nghjk'),
+                 ('asdf\r\nghjk', 'asdf\r\nghjk'),
                  # add some tests with umlauts in diff. encodings
                 ]
         for data, expected in tests:
@@ -41,7 +41,7 @@ class TestFilters:
     def testTextHtml(self):
         from MoinMoin.filter.text_html import execute as _filter
         tests = [('', ''),
-                 ('<html><body>Hello<br>World!</body></html>', u'Hello World!'),
+                 ('<html><body>Hello<br>World!</body></html>', 'Hello World!'),
                 ]
         for data, expected in tests:
             fname = self.make_file(data)
@@ -50,7 +50,7 @@ class TestFilters:
     def testTextXml(self):
         from MoinMoin.filter.text_xml import execute as _filter
         tests = [('', ''),
-                 ('<xml><para>Hello</para><para>World!</para></xml>', u'Hello World!'),
+                 ('<xml><para>Hello</para><para>World!</para></xml>', 'Hello World!'),
                 ]
         for data, expected in tests:
             fname = self.make_file(data)

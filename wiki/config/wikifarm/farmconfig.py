@@ -138,9 +138,9 @@ class FarmConfig(multiconfig.DefaultConfig):
     navi_bar = [
         # If you want to show your page_front_page here:
         #u'%(page_front_page)s',
-        u'RecentChanges',
-        u'FindPage',
-        u'HelpContents',
+        'RecentChanges',
+        'FindPage',
+        'HelpContents',
     ]
 
     # The default theme anonymous or new users get
@@ -160,10 +160,10 @@ class FarmConfig(multiconfig.DefaultConfig):
     # e.g. CategoryFoo -> group 'all' ==  CategoryFoo, group 'key' == Foo
     # moin's code will add ^ / $ at beginning / end when needed
     # You must use Unicode strings here [Unicode]
-    page_category_regex = ur'(?P<all>Category(?P<key>\S+))'
-    page_dict_regex = ur'(?P<all>(?P<key>\S+)Dict)'
-    page_group_regex = ur'(?P<all>(?P<key>\S+)Group)'
-    page_template_regex = ur'(?P<all>(?P<key>\S+)Template)'
+    page_category_regex = r'(?P<all>Category(?P<key>\S+))'
+    page_dict_regex = r'(?P<all>(?P<key>\S+)Dict)'
+    page_group_regex = r'(?P<all>(?P<key>\S+)Group)'
+    page_template_regex = r'(?P<all>(?P<key>\S+)Template)'
 
     # Content options ---------------------------------------------------
 
@@ -173,7 +173,7 @@ class FarmConfig(multiconfig.DefaultConfig):
     # Show the interwiki name (and link it to page_front_page) in the Theme,
     # nice for farm setups or when your logo does not show the wiki's name.
     show_interwiki = 1
-    logo_string = u''
+    logo_string = ''
 
     # Enable graphical charts, requires gdchart.
     #chart_options = {'width': 600, 'height': 300}

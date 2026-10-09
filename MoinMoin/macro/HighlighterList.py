@@ -32,6 +32,7 @@ from MoinMoin.config import multiconfig
 from MoinMoin import wikiutil
 
 import pygments.lexers
+from functools import cmp_to_key
 
 available_columns = ['description', 'names', 'patterns', 'mimetypes']
 
@@ -51,7 +52,7 @@ def macro_HighlighterList(macro, columns='|'.join(available_columns),
     columns = columns and [available_columns.index(column)
                 for column
                 in columns.split('|')
-                if column in available_columns] or range(len(available_columns))
+                if column in available_columns] or list(range(len(available_columns)))
     sort_column = available_columns.index(sort_column) or 0
     do_filter = (filter_re not in (None, ""))
     filter_re = re.compile(filter_re or ".*")
@@ -82,10 +83,10 @@ def macro_HighlighterList(macro, columns='|'.join(available_columns),
 
     #sorting
     if sort:
-        lexer_data.sort(cmp=lambda x, y:
+        lexer_data.sort(key=cmp_to_key(lambda x, y:
           ((x != y)
           and cmp(x[sort_column].lower(), y[sort_column].lower())
-          or cmp(x[0].lower(), y[0].lower())))
+          or cmp(x[0].lower(), y[0].lower()))))
 
     #generating output
     ret = []

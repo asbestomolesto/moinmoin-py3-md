@@ -119,7 +119,7 @@ class TestWikiConversion:
             # macros
             ('[[BR]]', {}, '<<BR>>'),
             ('[[FullSearch(wtf)]]', {}, '<<FullSearch(wtf)>>'),
-            (u'[[ImageLink(töst.png)]]', {}, u'[[attachment:töst.png|{{attachment:töst.png}}]]'),
+            ('[[ImageLink(töst.png)]]', {}, '[[attachment:töst.png|{{attachment:töst.png}}]]'),
             ('[[ImageLink(test.png,OtherPage)]]', {}, '[[OtherPage|{{attachment:test.png}}]]'),
             ('[[ImageLink(test.png,OtherPage,width=123,height=456)]]', {}, '[[OtherPage|{{attachment:test.png||width=123, height=456}}]]'),
             ('[[ImageLink(test.png,OtherPage,width=123,height=456,alt=alttext)]]', {}, '[[OtherPage|{{attachment:test.png|alttext|width=123, height=456}}]]'),
@@ -168,7 +168,7 @@ class TestWikiConversion:
 
     def test_full_page(self):
         #py.test.skip("not wanted right now")
-        markup_160a = u"""\
+        markup_160a = """\
 = CamelCase =
 == Pages ==
  1. SomePage
@@ -294,7 +294,7 @@ class TestWikiConversion:
  5. [inline:SomePage/image.png some label] is showing binary content as text in 160a (wrong)
 
 """
-        expected_markup_160 = u"""\
+        expected_markup_160 = """\
 = CamelCase =
 == Pages ==
  1. SomePage
@@ -420,43 +420,43 @@ class TestWikiConversion:
  5. {{attachment:SomePage/image.png|some label}} is showing binary content as text in 160a (wrong)
 
 """
-        markup_160 = convert_wiki(self.request, u'TestPage', markup_160a, {})
+        markup_160 = convert_wiki(self.request, 'TestPage', markup_160a, {})
         #print markup_160a ; print "---" ; print markup_160
         markup_160 = markup_160.replace('\r\n', '\n')
         assert markup_160 == expected_markup_160
 
     def test_parser(self):
-        markup_160a = u"""\
+        markup_160a = """\
 {{{#!html
 ...
 }}}
 
 """
-        expected_markup_160 = u"""\
+        expected_markup_160 = """\
 {{{#!html
 ...
 }}}
 
 """
-        markup_160 = convert_wiki(self.request, u'TestPage', markup_160a, {})
+        markup_160 = convert_wiki(self.request, 'TestPage', markup_160a, {})
         #print markup_160a ; print "---" ; print markup_160
         markup_160 = markup_160.replace('\r\n', '\n')
         assert markup_160 == expected_markup_160
 
     def test_pre(self):
-        markup_160a = u"""\
+        markup_160a = """\
 {{{
 ...
 }}}
 
 """
-        expected_markup_160 = u"""\
+        expected_markup_160 = """\
 {{{
 ...
 }}}
 
 """
-        markup_160 = convert_wiki(self.request, u'TestPage', markup_160a, {})
+        markup_160 = convert_wiki(self.request, 'TestPage', markup_160a, {})
         #print markup_160a ; print "---" ; print markup_160
         markup_160 = markup_160.replace('\r\n', '\n')
         assert markup_160 == expected_markup_160

@@ -27,12 +27,12 @@ class TestACLStringIterator(object):
     def testEmpty(self):
         """ security: empty acl string raise StopIteration """
         iter = acliter(self.request.cfg.acl_rights_valid, '')
-        py.test.raises(StopIteration, iter.next)
+        py.test.raises(StopIteration, iter.__next__)
 
     def testWhiteSpace(self):
         """ security: white space acl string raise StopIteration """
         iter = acliter(self.request.cfg.acl_rights_valid, '       ')
-        py.test.raises(StopIteration, iter.next)
+        py.test.raises(StopIteration, iter.__next__)
 
     def testDefault(self):
         """ security: default meta acl """
@@ -44,79 +44,79 @@ class TestACLStringIterator(object):
     def testEmptyRights(self):
         """ security: empty rights """
         iter = acliter(self.request.cfg.acl_rights_valid, 'WikiName:')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['WikiName']
         assert rights == []
 
     def testSingleWikiNameSingleWrite(self):
         """ security: single wiki name, single right """
         iter = acliter(self.request.cfg.acl_rights_valid, 'WikiName:read')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['WikiName']
         assert rights == ['read']
 
     def testMultipleWikiNameAndRights(self):
         """ security: multiple wiki names and rights """
         iter = acliter(self.request.cfg.acl_rights_valid, 'UserOne,UserTwo:read,write')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['UserOne', 'UserTwo']
         assert rights == ['read', 'write']
 
     def testMultipleWikiNameAndRightsSpaces(self):
         """ security: multiple names with spaces """
         iter = acliter(self.request.cfg.acl_rights_valid, 'user one,user two:read')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['user one', 'user two']
         assert rights == ['read']
 
     def testMultipleEntries(self):
         """ security: multiple entries """
         iter = acliter(self.request.cfg.acl_rights_valid, 'UserOne:read,write UserTwo:read All:')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['UserOne']
         assert rights == ['read', 'write']
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['UserTwo']
         assert rights == ['read']
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['All']
         assert rights == []
 
     def testNameWithSpaces(self):
         """ security: single name with spaces """
         iter = acliter(self.request.cfg.acl_rights_valid, 'user one:read')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['user one']
         assert rights == ['read']
 
     def testMultipleEntriesWithSpaces(self):
         """ security: multiple entries with spaces """
         iter = acliter(self.request.cfg.acl_rights_valid, 'user one:read,write user two:read')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['user one']
         assert rights == ['read', 'write']
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['user two']
         assert rights == ['read']
 
     def testMixedNames(self):
         """ security: mixed wiki names and names with spaces """
         iter = acliter(self.request.cfg.acl_rights_valid, 'UserOne,user two:read,write user three,UserFour:read')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['UserOne', 'user two']
         assert rights == ['read', 'write']
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['user three', 'UserFour']
         assert rights == ['read']
 
     def testModifier(self):
         """ security: acl modifiers """
         iter = acliter(self.request.cfg.acl_rights_valid, '+UserOne:read -UserTwo:')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert mod == '+'
         assert entries == ['UserOne']
         assert rights == ['read']
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert mod == '-'
         assert entries == ['UserTwo']
         assert rights == []
@@ -128,10 +128,10 @@ class TestACLStringIterator(object):
         then it will be parsed as one name with spaces.
         """
         iter = acliter(self.request.cfg.acl_rights_valid, 'UserOne:read user two is ignored')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['UserOne']
         assert rights == ['read']
-        py.test.raises(StopIteration, iter.next)
+        py.test.raises(StopIteration, iter.__next__)
 
     def testEmptyNamesWithRight(self):
         """ security: empty names with rights
@@ -140,20 +140,20 @@ class TestACLStringIterator(object):
         the rights because there is no entry.
         """
         iter = acliter(self.request.cfg.acl_rights_valid, 'UserOne:read :read All:')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['UserOne']
         assert rights == ['read']
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == []
         assert rights == ['read']
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['All']
         assert rights == []
 
     def testIgnodeInvalidRights(self):
         """ security: ignore rights not in acl_rights_valid """
         iter = acliter(self.request.cfg.acl_rights_valid, 'UserOne:read,sing,write,drink,sleep')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert rights == ['read', 'write']
 
     def testBadGuy(self):
@@ -162,21 +162,21 @@ class TestACLStringIterator(object):
         This test was failing on the apply acl rights test.
         """
         iter = acliter(self.request.cfg.acl_rights_valid, 'UserOne:read,write BadGuy: All:read')
-        mod, entries, rights = iter.next()
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
+        mod, entries, rights = next(iter)
         assert entries == ['BadGuy']
         assert rights == []
 
     def testAllowExtraWhitespace(self):
         """ security: allow extra white space between entries """
         iter = acliter(self.request.cfg.acl_rights_valid, 'UserOne,user two:read,write   user three,UserFour:read  All:')
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert  entries == ['UserOne', 'user two']
         assert rights == ['read', 'write']
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['user three', 'UserFour']
         assert rights == ['read']
-        mod, entries, rights = iter.next()
+        mod, entries, rights = next(iter)
         assert entries == ['All']
         assert rights == []
 
@@ -254,13 +254,13 @@ class TestGroupACL(object):
     class Config(wikiconfig.Config):
         def groups(self, request):
             groups = {
-                u'PGroup': frozenset([u'Antony', u'Beatrice', ]),
-                u'AGroup': frozenset([u'All', ]),
+                'PGroup': frozenset(['Antony', 'Beatrice', ]),
+                'AGroup': frozenset(['All', ]),
                 # note: the next line is a INTENDED misnomer, there is "All" in
                 # the group NAME, but not in the group members. This makes
                 # sure that a bug that erroneously checked "in groupname" (instead
                 # of "in groupmembers") does not reappear.
-                u'AllGroup': frozenset([]), # note: intended misnomer
+                'AllGroup': frozenset([]), # note: intended misnomer
             }
             return ConfigGroups(request, groups)
 
@@ -296,29 +296,29 @@ class TestGroupACL(object):
 class TestPageAcls(object):
     """ security: real-life access control list on pages testing
     """
-    mainpage_name = u'AclTestMainPage'
-    subpage_name = u'AclTestMainPage/SubPage'
-    item_rwforall = u'EveryoneMayReadWriteMe'
-    subitem_4boss = u'EveryoneMayReadWriteMe/OnlyTheBossMayWMe'
+    mainpage_name = 'AclTestMainPage'
+    subpage_name = 'AclTestMainPage/SubPage'
+    item_rwforall = 'EveryoneMayReadWriteMe'
+    subitem_4boss = 'EveryoneMayReadWriteMe/OnlyTheBossMayWMe'
     pages = [
         # pagename, content
-        (mainpage_name, u"#acl JoeDoe:\n#acl JaneDoe:read,write\nFoo!"),
-        (subpage_name, u"FooFoo!"),
-        (item_rwforall, u"#acl All:read,write\nMay be read from and written to by anyone"),
-        (subitem_4boss, u"#acl JoeDoe:read,write\nOnly JoeDoe (the boss) may write"),
+        (mainpage_name, "#acl JoeDoe:\n#acl JaneDoe:read,write\nFoo!"),
+        (subpage_name, "FooFoo!"),
+        (item_rwforall, "#acl All:read,write\nMay be read from and written to by anyone"),
+        (subitem_4boss, "#acl JoeDoe:read,write\nOnly JoeDoe (the boss) may write"),
     ]
 
     from MoinMoin._tests import wikiconfig
     class Config(wikiconfig.Config):
-        acl_rights_before = u"WikiAdmin:admin,read,write,delete,revert"
-        acl_rights_default = u"All:read,write"
-        acl_rights_after = u"All:read"
+        acl_rights_before = "WikiAdmin:admin,read,write,delete,revert"
+        acl_rights_default = "All:read,write"
+        acl_rights_after = "All:read"
         acl_hierarchic = False
 
     def setup_class(self):
         # Backup user
         self.savedUser = self.request.user.name
-        self.request.user = User(self.request, auth_username=u'WikiAdmin')
+        self.request.user = User(self.request, auth_username='WikiAdmin')
         self.request.user.valid = True
 
         for page_name, page_content in self.pages:
@@ -335,24 +335,24 @@ class TestPageAcls(object):
         """ security: test page acls """
         tests = [
             # hierarchic, pagename, username, expected_rights
-            (False, self.mainpage_name, u'WikiAdmin', ['read', 'write', 'admin', 'revert', 'delete']),
-            (True,  self.mainpage_name, u'WikiAdmin', ['read', 'write', 'admin', 'revert', 'delete']),
-            (False, self.mainpage_name, u'AnyUser', ['read']), # by after acl
-            (True,  self.mainpage_name, u'AnyUser', ['read']), # by after acl
-            (False, self.mainpage_name, u'JaneDoe', ['read', 'write']), # by page acl
-            (True,  self.mainpage_name, u'JaneDoe', ['read', 'write']), # by page acl
-            (False, self.mainpage_name, u'JoeDoe', []), # by page acl
-            (True,  self.mainpage_name, u'JoeDoe', []), # by page acl
-            (False, self.subpage_name, u'WikiAdmin', ['read', 'write', 'admin', 'revert', 'delete']),
-            (True,  self.subpage_name, u'WikiAdmin', ['read', 'write', 'admin', 'revert', 'delete']),
-            (False, self.subpage_name, u'AnyUser', ['read', 'write']), # by default acl
-            (True,  self.subpage_name, u'AnyUser', ['read']), # by after acl
-            (False, self.subpage_name, u'JoeDoe', ['read', 'write']), # by default acl
-            (True,  self.subpage_name, u'JoeDoe', []), # by inherited acl from main page
-            (False, self.subpage_name, u'JaneDoe', ['read', 'write']), # by default acl
-            (True,  self.subpage_name, u'JaneDoe', ['read', 'write']), # by inherited acl from main page
-            (True,  self.subitem_4boss, u'AnyUser', ['read']), # by after acl
-            (True,  self.subitem_4boss, u'JoeDoe', ['read', 'write']), # by item acl
+            (False, self.mainpage_name, 'WikiAdmin', ['read', 'write', 'admin', 'revert', 'delete']),
+            (True,  self.mainpage_name, 'WikiAdmin', ['read', 'write', 'admin', 'revert', 'delete']),
+            (False, self.mainpage_name, 'AnyUser', ['read']), # by after acl
+            (True,  self.mainpage_name, 'AnyUser', ['read']), # by after acl
+            (False, self.mainpage_name, 'JaneDoe', ['read', 'write']), # by page acl
+            (True,  self.mainpage_name, 'JaneDoe', ['read', 'write']), # by page acl
+            (False, self.mainpage_name, 'JoeDoe', []), # by page acl
+            (True,  self.mainpage_name, 'JoeDoe', []), # by page acl
+            (False, self.subpage_name, 'WikiAdmin', ['read', 'write', 'admin', 'revert', 'delete']),
+            (True,  self.subpage_name, 'WikiAdmin', ['read', 'write', 'admin', 'revert', 'delete']),
+            (False, self.subpage_name, 'AnyUser', ['read', 'write']), # by default acl
+            (True,  self.subpage_name, 'AnyUser', ['read']), # by after acl
+            (False, self.subpage_name, 'JoeDoe', ['read', 'write']), # by default acl
+            (True,  self.subpage_name, 'JoeDoe', []), # by inherited acl from main page
+            (False, self.subpage_name, 'JaneDoe', ['read', 'write']), # by default acl
+            (True,  self.subpage_name, 'JaneDoe', ['read', 'write']), # by inherited acl from main page
+            (True,  self.subitem_4boss, 'AnyUser', ['read']), # by after acl
+            (True,  self.subitem_4boss, 'JoeDoe', ['read', 'write']), # by item acl
         ]
 
         for hierarchic, pagename, username, may in tests:
@@ -363,11 +363,11 @@ class TestPageAcls(object):
                 self.request.cfg.acl_hierarchic = hierarchic
                 can_access = u.may.__getattr__(right)(pagename)
                 if can_access:
-                    print "page %s: %s test if %s may %s (success)" % (
-                        pagename, ['normal', 'hierarchic'][hierarchic], username, right)
+                    print("page %s: %s test if %s may %s (success)" % (
+                        pagename, ['normal', 'hierarchic'][hierarchic], username, right))
                 else:
-                    print "page %s: %s test if %s may %s (failure)" % (
-                        pagename, ['normal', 'hierarchic'][hierarchic], username, right)
+                    print("page %s: %s test if %s may %s (failure)" % (
+                        pagename, ['normal', 'hierarchic'][hierarchic], username, right))
                 assert can_access
 
             # User should have these rights...
@@ -378,11 +378,11 @@ class TestPageAcls(object):
                 self.request.cfg.acl_hierarchic = hierarchic
                 can_access = u.may.__getattr__(right)(pagename)
                 if can_access:
-                    print "page %s: %s test if %s may not %s (failure)" % (
-                        pagename, ['normal', 'hierarchic'][hierarchic], username, right)
+                    print("page %s: %s test if %s may not %s (failure)" % (
+                        pagename, ['normal', 'hierarchic'][hierarchic], username, right))
                 else:
-                    print "page %s: %s test if %s may not %s (success)" % (
-                        pagename, ['normal', 'hierarchic'][hierarchic], username, right)
+                    print("page %s: %s test if %s may not %s (success)" % (
+                        pagename, ['normal', 'hierarchic'][hierarchic], username, right))
                 assert not can_access
 
             # User should NOT have these rights:

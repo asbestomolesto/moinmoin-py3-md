@@ -11,6 +11,7 @@
 from MoinMoin import user, util, wikiutil
 from MoinMoin.widget import html
 from MoinMoin.userprefs import UserPrefBase
+from functools import cmp_to_key
 
 
 class Settings(UserPrefBase):
@@ -34,7 +35,7 @@ class Settings(UserPrefBase):
         request = self.request
         form = request.form
 
-        if form.has_key('cancel'):
+        if 'cancel' in form:
             return
 
         if request.method != 'POST':
@@ -82,7 +83,7 @@ space between words. Group page name is not allowed.""", wiki=True) % wikiutil.e
             if uid != current_uid:
                 name = user.User(self.request, id=uid).name
                 options.append((uid, name))
-        options.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        options.sort(key=cmp_to_key(lambda x, y: cmp(x[1].lower(), y[1].lower())))
 
         if not options:
             _ = self._
@@ -112,4 +113,4 @@ space between words. Group page name is not allowed.""", wiki=True) % wikiutil.e
         buttons.append(html.INPUT(type="submit", name="cancel",
                                   value=_('Cancel')))
         self.make_row('', buttons)
-        return unicode(form)
+        return str(form)

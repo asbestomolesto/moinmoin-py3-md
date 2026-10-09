@@ -115,7 +115,7 @@ class TestWikiConversion:
             # macros
             ('[[BR]]', {}, '<<BR>>'),
             ('[[FullSearch(wtf)]]', {}, '<<FullSearch(wtf)>>'),
-            (u'[[ImageLink(töst.png)]]', {}, u'[[attachment:töst.png|{{attachment:töst.png}}]]'),
+            ('[[ImageLink(töst.png)]]', {}, '[[attachment:töst.png|{{attachment:töst.png}}]]'),
             ('[[ImageLink(test.png,OtherPage)]]', {}, '[[OtherPage|{{attachment:test.png}}]]'),
             ('[[ImageLink(test.png,OtherPage,width=123,height=456)]]', {}, '[[OtherPage|{{attachment:test.png||width=123, height=456}}]]'),
             ('[[ImageLink(test.png,OtherPage,width=123,height=456,alt=alttext)]]', {}, '[[OtherPage|{{attachment:test.png|alttext|width=123, height=456}}]]'),
@@ -164,19 +164,19 @@ class TestWikiConversion:
 
     def test_parser(self):
         #py.test.skip("not wanted right now")
-        markup_15 = u"""\
+        markup_15 = """\
 {{{#!html
 ...
 }}}
 
 """
-        expected_markup_160 = u"""\
+        expected_markup_160 = """\
 {{{#!html
 ...
 }}}
 
 """
-        markup_160 = convert_wiki(self.request, u'TestPage', markup_15, {})
+        markup_160 = convert_wiki(self.request, 'TestPage', markup_15, {})
         #print markup_15 ; print "---" ; print markup_160
         markup_160 = markup_160.replace('\r\n', '\n')
         assert markup_160 == expected_markup_160
@@ -184,19 +184,19 @@ class TestWikiConversion:
 
     def test_pre(self):
         #py.test.skip("not wanted right now")
-        markup_15 = u"""\
+        markup_15 = """\
 {{{
 ...
 }}}
 
 """
-        expected_markup_160 = u"""\
+        expected_markup_160 = """\
 {{{
 ...
 }}}
 
 """
-        markup_160 = convert_wiki(self.request, u'TestPage', markup_15, {})
+        markup_160 = convert_wiki(self.request, 'TestPage', markup_15, {})
         #print markup_15 ; print "---" ; print markup_160
         markup_160 = markup_160.replace('\r\n', '\n')
         assert markup_160 == expected_markup_160

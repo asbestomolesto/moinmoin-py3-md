@@ -13,7 +13,7 @@ import hashlib
 import os
 import re
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from MoinMoin import config
 from MoinMoin.util import pysupport, lock
@@ -49,18 +49,18 @@ def decodeUnknownInput(text):
     @return: decoded text (maybe wrong)
     """
     # Shortcut for unicode input
-    if isinstance(text, unicode):
+    if isinstance(text, str):
         return text
 
     try:
-        return unicode(text, 'utf-8')
+        return str(text, 'utf-8')
     except UnicodeError:
         if config.charset not in ['utf-8', 'iso-8859-1']:
             try:
-                return unicode(text, config.charset)
+                return str(text, config.charset)
             except UnicodeError:
                 pass
-        return unicode(text, 'iso-8859-1', 'replace')
+        return str(text, 'iso-8859-1', 'replace')
 
 
 def decodeUserInput(s, charsets=[config.charset]):
@@ -94,11 +94,11 @@ def url_quote(s, safe='/', want_unicode=False):
                          unicode and not str, set this to True
                          Default is False.
     """
-    if isinstance(s, unicode):
+    if isinstance(s, str):
         s = s.encode(config.charset)
     elif not isinstance(s, str):
         s = str(s)
-    s = urllib.quote(s, safe)
+    s = urllib.parse.quote(s, safe)
     if want_unicode:
         s = s.decode(config.charset) # ascii would also work
     return s
@@ -114,11 +114,11 @@ def url_quote_plus(s, safe='/', want_unicode=False):
                          unicode and not str, set this to True
                          Default is False.
     """
-    if isinstance(s, unicode):
+    if isinstance(s, str):
         s = s.encode(config.charset)
     elif not isinstance(s, str):
         s = str(s)
-    s = urllib.quote_plus(s, safe)
+    s = urllib.parse.quote_plus(s, safe)
     if want_unicode:
         s = s.decode(config.charset) # ascii would also work
     return s
@@ -133,9 +133,9 @@ def url_unquote(s, want_unicode=True):
                          str and not unicode, set this to False.
                          Default is True.
     """
-    if isinstance(s, unicode):
+    if isinstance(s, str):
         s = s.encode(config.charset) # ascii would also work
-    s = urllib.unquote(s)
+    s = urllib.parse.unquote(s)
     if want_unicode:
         s = s.decode(config.charset)
     return s
@@ -143,18 +143,18 @@ def url_unquote(s, want_unicode=True):
 def parseQueryString(qstr, want_unicode=True):
     """ Parse a querystring "key=value&..." into a dict.
     """
-    is_unicode = isinstance(qstr, unicode)
+    is_unicode = isinstance(qstr, str)
     if is_unicode:
         qstr = qstr.encode(config.charset)
     values = {}
-    for key, value in cgi.parse_qs(qstr).items():
+    for key, value in list(cgi.parse_qs(qstr).items()):
         if len(value) < 2:
             v = ''.join(value)
             if want_unicode:
                 try:
-                    v = unicode(v, config.charset)
+                    v = str(v, config.charset)
                 except UnicodeDecodeError:
-                    v = unicode(v, 'iso-8859-1', 'replace')
+                    v = str(v, 'iso-8859-1', 'replace')
             values[key] = v
     return values
 
@@ -175,7 +175,7 @@ def makeQueryString(qstr=None, want_unicode=False, **kw):
         qstr = {}
     if isinstance(qstr, dict):
         qstr.update(kw)
-        items = ['%s=%s' % (url_quote_plus(key, want_unicode=want_unicode), url_quote_plus(value, want_unicode=want_unicode)) for key, value in qstr.items()]
+        items = ['%s=%s' % (url_quote_plus(key, want_unicode=want_unicode), url_quote_plus(value, want_unicode=want_unicode)) for key, value in list(qstr.items())]
         qstr = '&'.join(items)
     return qstr
 
@@ -193,7 +193,7 @@ def quoteWikinameURL(pagename, charset=config.charset):
     @return: the quoted filename, all unsafe characters encoded
     """
     pagename = pagename.encode(charset)
-    return urllib.quote(pagename)
+    return urllib.parse.quote(pagename)
 
 
 def escape(s, quote=0):
@@ -208,7 +208,7 @@ def escape(s, quote=0):
     @rtype: when called with a unicode object, return unicode object - otherwise return string object
     @return: escaped version of s
     """
-    if not isinstance(s, (str, unicode)):
+    if not isinstance(s, str):
         s = str(s)
 
     # Must first replace &
@@ -227,13 +227,13 @@ def clean_comment(comment):
     """
     # we only have input fields with max 200 chars, but spammers send us more
     if len(comment) > 201:
-        comment = u''
+        comment = ''
     remap_chars = {
-        ord(u'\t'): u' ',
-        ord(u'\r'): u' ',
-        ord(u'\n'): u' ',
+        ord('\t'): ' ',
+        ord('\r'): ' ',
+        ord('\n'): ' ',
     }
-    control_chars = u'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x0b\x0c\x0e\x0f' \
+    control_chars = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x0b\x0c\x0e\x0f' \
                     '\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f'
     for c in control_chars:
         remap_chars[c] = None
@@ -315,7 +315,7 @@ def unquoteWikiname(filename, charsets=[config.charset]):
     """
     ### Temporary fix start ###
     # From some places we get called with Unicode strings
-    if isinstance(filename, type(u'')):
+    if isinstance(filename, type('')):
         filename = filename.encode(config.charset)
     ### Temporary fix end ###
 
@@ -362,7 +362,7 @@ def timestamp2version(ts):
         We don't want to use floats, so we just scale by 1e6 to get
         an integer in usecs.
     """
-    return long(ts*1000000L) # has to be long for py 2.2.x
+    return int(ts*1000000) # has to be long for py 2.2.x
 
 def version2timestamp(v):
     """ Convert version number to UNIX timestamp (float).
@@ -409,7 +409,7 @@ class MetaDict(dict):
             meta = metafile.read() # this is much faster than the file's line-by-line iterator
             metafile.close()
         except IOError:
-            meta = u''
+            meta = ''
         for line in meta.splitlines():
             key, value = line.split(':', 1)
             value = value.strip()
@@ -424,7 +424,7 @@ class MetaDict(dict):
             @param metadata: dict of the data to write to the file
         """
         meta = []
-        for key, value in self.items():
+        for key, value in list(self.items()):
             if key in INTEGER_METAS:
                 value = str(value)
             meta.append("%s: %s" % (key, value))
@@ -464,13 +464,13 @@ class MetaDict(dict):
 
 # Quoting of wiki names, file names, etc. (in the wiki markup) -----------------------------------
 
-QUOTE_CHARS = u"'\""
+QUOTE_CHARS = "'\""
 
 def quoteName(name):
     """ put quotes around a given name """
     for quote_char in QUOTE_CHARS:
         if quote_char not in name:
-            return u"%s%s%s" % (quote_char, name, quote_char)
+            return "%s%s%s" % (quote_char, name, quote_char)
     else:
         return name # XXX we need to be able to escape the quote char for worst case
 
@@ -613,7 +613,7 @@ def resolve_wiki(request, wikiurl):
     """
     _interwiki_list = load_wikimap(request)
     wikiname, pagename, linktext = split_wiki(wikiurl)
-    if _interwiki_list.has_key(wikiname):
+    if wikiname in _interwiki_list:
         return (wikiname, _interwiki_list[wikiname], pagename, False)
     else:
         return (wikiname, request.script_root, "/InterWiki", True)
@@ -649,7 +649,7 @@ def isSystemPage(request, pagename):
     @rtype: bool
     @return: true if page is a system page
     """
-    return (pagename in request.groups.get(u'SystemPagesGroup', []) or
+    return (pagename in request.groups.get('SystemPagesGroup', []) or
         isTemplatePage(request, pagename))
 
 
@@ -688,7 +688,7 @@ def filterCategoryPages(request, pagelist):
     @return: only the category pages of pagelist
     """
     func = request.cfg.cache.page_category_regex.search
-    return filter(func, pagelist)
+    return list(filter(func, pagelist))
 
 
 def getLocalizedPage(request, pagename): # was: getSysPage
@@ -805,7 +805,7 @@ def AbsPageName(request, context, pagename):
     @return: the absolute page name
     """
     if pagename.startswith(PARENT_PREFIX):
-        pagename = '/'.join(filter(None, context.split('/')[:-1] + [pagename[PARENT_PREFIX_LEN:]]))
+        pagename = '/'.join([_f for _f in context.split('/')[:-1] + [pagename[PARENT_PREFIX_LEN:]] if _f])
     elif pagename.startswith(CHILD_PREFIX):
         pagename = context + '/' + pagename[CHILD_PREFIX_LEN:]
     return pagename
@@ -816,7 +816,7 @@ def pagelinkmarkup(pagename):
     if re.match(Parser.word_rule + "$", pagename):
         return pagename
     else:
-        return u'["%s"]' % pagename # XXX use quoteName(pagename) later
+        return '["%s"]' % pagename # XXX use quoteName(pagename) later
 
 #############################################################################
 ### mimetype support
@@ -839,7 +839,7 @@ MIMETYPES_MORE = {
  '.otp': 'application/vnd.oasis.opendocument.presentation-template',
  '.otg': 'application/vnd.oasis.opendocument.graphics-template',
 }
-[mimetypes.add_type(mimetype, ext, True) for ext, mimetype in MIMETYPES_MORE.items()]
+[mimetypes.add_type(mimetype, ext, True) for ext, mimetype in list(MIMETYPES_MORE.items())]
 
 MIMETYPES_sanitize_mapping = {
     # this stuff is text, but got application/* for unknown reasons
@@ -850,7 +850,7 @@ MIMETYPES_sanitize_mapping = {
 }
 
 MIMETYPES_spoil_mapping = {} # inverse mapping of above
-for key, value in MIMETYPES_sanitize_mapping.items():
+for key, value in list(MIMETYPES_sanitize_mapping.items()):
     MIMETYPES_spoil_mapping[value] = key
 
 
@@ -893,7 +893,7 @@ class MimeType(object):
             if value[0] == '"' and value[-1] == '"': # remove quotes
                 value = value[1:-1]
             self.params[key.lower()] = value
-        if self.params.has_key('charset'):
+        if 'charset' in self.params:
             self.charset = self.params['charset'].lower()
         self.sanitize()
 
@@ -944,7 +944,7 @@ class MimeType(object):
             charset = charset or self.charset or params.get('charset', config.charset)
             params['charset'] = charset
         mimestr = "%s/%s" % (major, minor)
-        params = ['%s="%s"' % (key.lower(), value) for key, value in params.items()]
+        params = ['%s="%s"' % (key.lower(), value) for key, value in list(params.items())]
         params.insert(0, mimestr)
         return "; ".join(params)
 
@@ -1168,11 +1168,11 @@ def parseAttributes(request, attrstring, endtoken=None, extension=None):
     @rtype: dict, msg
     @return: a dict plus a possible error message
     """
-    import shlex, StringIO
+    import shlex, io
 
     _ = request.getText
 
-    parser = shlex.shlex(StringIO.StringIO(attrstring))
+    parser = shlex.shlex(io.StringIO(attrstring))
     parser.commenters = ''
     msg = None
     attrs = {}
@@ -1180,7 +1180,7 @@ def parseAttributes(request, attrstring, endtoken=None, extension=None):
     while not msg:
         try:
             key = parser.get_token()
-        except ValueError, err:
+        except ValueError as err:
             msg = str(err)
             break
         if not key: break
@@ -1198,7 +1198,7 @@ def parseAttributes(request, attrstring, endtoken=None, extension=None):
 
         try:
             eq = parser.get_token()
-        except ValueError, err:
+        except ValueError as err:
             msg = str(err)
             break
         if eq != "=":
@@ -1207,7 +1207,7 @@ def parseAttributes(request, attrstring, endtoken=None, extension=None):
 
         try:
             val = parser.get_token()
-        except ValueError, err:
+        except ValueError as err:
             msg = str(err)
             break
         if not val:
@@ -1303,7 +1303,7 @@ class ParameterParser:
                 named = True
                 self.param_dict[match.group('name')[1:-1]] = i
             elif named:
-                raise ValueError, "Named parameter expected"
+                raise ValueError("Named parameter expected")
             i += 1
 
     def __str__(self):
@@ -1325,7 +1325,7 @@ class ParameterParser:
         while start < len(input):
             match = re.match(self.param_re, input[start:])
             if not match:
-                raise ValueError, "Misformatted value"
+                raise ValueError("Misformatted value")
             start += match.end()
             value = None
             if match.group("int"):
@@ -1348,8 +1348,8 @@ class ParameterParser:
 
             parameter_list.append(value)
             if match.group("name"):
-                if not self.param_dict.has_key(match.group("name")):
-                    raise ValueError, "Unknown parameter name '%s'" % match.group("name")
+                if match.group("name") not in self.param_dict:
+                    raise ValueError("Unknown parameter name '%s'" % match.group("name"))
                 nr = self.param_dict[match.group("name")]
                 if check_list[nr]:
                     #raise ValueError, "Parameter specified twice"
@@ -1361,13 +1361,13 @@ class ParameterParser:
                 parameter_list[nr] = value
                 named = True
             elif named:
-                raise ValueError, "Only named parameters allowed"
+                raise ValueError("Only named parameters allowed")
             else:
                 nr = i
                 parameter_list[nr] = value
 
             #Let's populate and map our dictionary to what's been found
-            for name in self.param_dict.keys():
+            for name in list(self.param_dict.keys()):
                 tmp = self.param_dict[name]
                 parameter_dict[name]=parameter_list[tmp]
 
@@ -1448,7 +1448,7 @@ def mapURL(request, url):
     # check whether we have to map URLs
     if request.cfg.url_mappings:
         # check URL for the configured prefixes
-        for prefix in request.cfg.url_mappings.keys():
+        for prefix in list(request.cfg.url_mappings.keys()):
             if url.startswith(prefix):
                 # substitute prefix with replacement value
                 return request.cfg.url_mappings[prefix] + url[len(prefix):]
@@ -1467,13 +1467,13 @@ def getUnicodeIndexGroup(name):
     @return: group letter or None
     """
     c = name[0]
-    if u'\uAC00' <= c <= u'\uD7AF': # Hangul Syllables
-        return unichr(0xac00 + (int(ord(c) - 0xac00) / 588) * 588)
+    if '\uAC00' <= c <= '\uD7AF': # Hangul Syllables
+        return chr(0xac00 + (int(ord(c) - 0xac00) / 588) * 588)
     else:
         return c.upper() # we put lower and upper case words into the same index group
 
 
-def isStrictWikiname(name, word_re=re.compile(ur"^(?:[%(u)s][%(l)s]+){2,}$" % {'u': config.chars_upper, 'l': config.chars_lower})):
+def isStrictWikiname(name, word_re=re.compile(r"^(?:[%(u)s][%(l)s]+){2,}$" % {'u': config.chars_upper, 'l': config.chars_lower})):
     """
     Check whether this is NOT an extended name.
 
@@ -1513,7 +1513,7 @@ def link_tag(request, params, text=None, formatter=None, on=None, **kw):
     """
     if formatter is None:
         formatter = request.html_formatter
-    if kw.has_key('css_class'):
+    if 'css_class' in kw:
         css_class = kw['css_class']
         del kw['css_class'] # one time is enough
     else:
@@ -1588,7 +1588,7 @@ def createTicket(request, tm=None):
                 'interwikiname', 'user_homewiki', 'acl_rights_before', ]
     for varname in varnames:
         var = getattr(request.cfg, varname, None)
-        if isinstance(var, (str, unicode)):
+        if isinstance(var, str):
             digest.update(repr(var))
 
     return "%s.%s" % (ticket, digest.hexdigest())
@@ -1612,8 +1612,8 @@ def checkTicket(request, ticket):
 
 def renderText(request, Parser, text, line_anchors=False):
     """executes raw wiki markup with all page elements"""
-    import StringIO
-    out = StringIO.StringIO()
+    import io
+    out = io.StringIO()
     request.redirect(out)
     wikiizer = Parser(text, request)
     wikiizer.format(request.formatter, inhibit_p=True)

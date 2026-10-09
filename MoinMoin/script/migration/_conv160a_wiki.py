@@ -22,10 +22,10 @@ from MoinMoin import config, macro, wikiutil
 from MoinMoin.action import AttachFile
 from MoinMoin.Page import Page
 
-import wikiutil160a
-from text_moin160a_wiki import Parser
+from . import wikiutil160a
+from .text_moin160a_wiki import Parser
 
-QUOTE_CHARS = u"'\""
+QUOTE_CHARS = "'\""
 
 def convert_wiki(request, pagename, intext, renames):
     """ Convert content written in wiki markup """
@@ -89,7 +89,7 @@ class Converter(Parser):
         self._ = None
         self.in_pre = 0
 
-        self.formatting_rules = self.formatting_rules % {'macronames': u'|'.join(['ImageLink', ] + macro.getNames(self.request.cfg))}
+        self.formatting_rules = self.formatting_rules % {'macronames': '|'.join(['ImageLink', ] + macro.getNames(self.request.cfg))}
 
     # no change
     def return_word(self, word):
@@ -141,7 +141,7 @@ class Converter(Parser):
             if new_name is None:
                 # we don't have an entry in rename map - apply the same magic
                 # to the page name as 1.5 did (" " -> "_") and try again:
-                abs_magic_name = abs_page_name.replace(u' ', u'_')
+                abs_magic_name = abs_page_name.replace(' ', '_')
                 key = (item_type, abs_magic_name)
                 new_name = self.renames.get(key)
                 if new_name is None:
@@ -157,7 +157,7 @@ class Converter(Parser):
             if new_name is None:
                 # we don't have an entry in rename map - apply the same magic
                 # to the page name as 1.5 did (" " -> "_") and try again:
-                abs_magic_name = abs_page_name.replace(u' ', u'_')
+                abs_magic_name = abs_page_name.replace(' ', '_')
                 key = (item_type, abs_magic_name, file_name)
                 new_name = self.renames.get(key)
                 if new_name is None:
@@ -180,13 +180,13 @@ class Converter(Parser):
 
     def _macro_repl(self, word):
         # we use [[...]] for links now, macros will be <<...>>
-        macro_rule = ur"""
+        macro_rule = r"""
             \[\[
             (?P<macro_name>\w+)
             (\((?P<macro_args>.*?)\))?
             \]\]
         """
-        word = unicode(word) # XXX why is word not unicode before???
+        word = str(word) # XXX why is word not unicode before???
         m = re.match(macro_rule, word, re.X|re.U)
         macro_name = m.group('macro_name')
         macro_args = m.group('macro_args')
@@ -201,7 +201,7 @@ class Converter(Parser):
                 target = ''
             if '://' not in image:
                 # if it is not a URL, it is meant as attachment
-                image = u'attachment:%s' % image
+                image = 'attachment:%s' % image
             if not target:
                 target = image
             elif target.startswith('inline:'):
@@ -212,22 +212,22 @@ class Converter(Parser):
             alt = kw.get('alt') or ''
             width = kw.get('width')
             if width is not None:
-                image_attrs.append(u"width=%s" % width)
+                image_attrs.append("width=%s" % width)
             height = kw.get('height')
             if height is not None:
-                image_attrs.append(u"height=%s" % height)
-            image_attrs = u", ".join(image_attrs)
+                image_attrs.append("height=%s" % height)
+            image_attrs = ", ".join(image_attrs)
             if image_attrs:
-                image_attrs = u'|' + image_attrs
+                image_attrs = '|' + image_attrs
             if alt or image_attrs:
-                alt = u'|' + alt
-            result = u'[[%s|{{%s%s%s}}]]' % (target, image, alt, image_attrs)
+                alt = '|' + alt
+            result = '[[%s|{{%s%s%s}}]]' % (target, image, alt, image_attrs)
         else:
             if macro_args:
-                macro_args = u"(%s)" % macro_args
+                macro_args = "(%s)" % macro_args
             else:
-                macro_args = u''
-            result = u"<<%s%s>>" % (macro_name, macro_args)
+                macro_args = ''
+            result = "<<%s%s>>" % (macro_name, macro_args)
         # XXX later check whether some to be renamed pagename is used as macro param
         return result
 
@@ -440,13 +440,13 @@ class Converter(Parser):
 
         # Add remainder of the line
         result.append(line[lastpos:])
-        return u''.join(result)
+        return ''.join(result)
 
 
     def replace(self, match):
         """ Replace match using type name """
         result = []
-        for _type, hit in match.groupdict().items():
+        for _type, hit in list(match.groupdict().items()):
             if hit is not None and not _type in ["hmarker", ]:
                 # Get replace method and replace hit
                 replace = getattr(self, '_' + _type + '_repl')
@@ -472,7 +472,7 @@ class Converter(Parser):
         # prepare regex patterns
         rules = self.formatting_rules.replace('\n', '|')
         if self.request.cfg.bang_meta:
-            rules = ur'(?P<notword>!%(word_rule)s)|%(rules)s' % {
+            rules = r'(?P<notword>!%(word_rule)s)|%(rules)s' % {
                 'word_rule': self.word_rule,
                 'rules': rules,
             }

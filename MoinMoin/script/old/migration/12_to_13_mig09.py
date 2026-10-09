@@ -96,14 +96,14 @@ def convertUserData(text):
             key, value = line.split('=', 1)
         except ValueError:
             continue
-        if key == u'quicklinks':
+        if key == 'quicklinks':
             value = convert_quicklinks(value)
-        elif key == u'subscribed_pages':
+        elif key == 'subscribed_pages':
             value = convert_subscribed_pages(value)
-        lines[i] = u'%s=%s' % (key, value)
+        lines[i] = '%s=%s' % (key, value)
 
     # Join back, append newline to last line
-    text = u'\n'.join(lines) + u'\n'
+    text = '\n'.join(lines) + '\n'
     return text
 
 
@@ -139,7 +139,7 @@ def convertUsers(srcdir, dstdir):
             f = codecs.open(dstfile, 'wb', charset)
             f.write(text)
             f.close()
-            print "Converted '%s' to '%s'" % (srcfile, dstfile)
+            print("Converted '%s' to '%s'" % (srcfile, dstfile))
 
 
 if __name__ == '__main__':

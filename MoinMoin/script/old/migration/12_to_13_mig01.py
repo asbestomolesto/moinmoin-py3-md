@@ -50,7 +50,7 @@ from_encoding = 'iso8859-1'
 
 to_encoding = 'utf-8'
 
-import os.path, sys, shutil, urllib
+import os.path, sys, shutil, urllib.request, urllib.parse, urllib.error
 
 sys.path.insert(0, '../../../..')
 from MoinMoin import wikiutil
@@ -67,7 +67,7 @@ def unquoteFilename12(filename, encoding):
     @rtype: string
     @return: decoded, original filename
     """
-    str = urllib.unquote(filename.replace('_', '%'))
+    str = urllib.parse.unquote(filename.replace('_', '%'))
     try:
         newstr = str.decode(encoding)
     except UnicodeDecodeError: # try again with iso
@@ -90,7 +90,7 @@ def qf_convert_string(str, enc_from, enc_to):
     return str
 
 def convert_file(fname_from, fname_to, enc_from, enc_to):
-    print "%s -> %s" % (fname_from, fname_to)
+    print("%s -> %s" % (fname_from, fname_to))
     file_from = open(fname_from, "rb")
     if os.path.exists(fname_to):
         raise Exception("file exists %s" % fname_to)
@@ -122,7 +122,7 @@ def convert_pagedir(dir_from, dir_to, enc_from, enc_to):
     os.mkdir(dir_to)
     for dname_from in listdir(dir_from):
         dname_to = qf_convert_string(dname_from, enc_from, enc_to)
-        print "%s -> %s" % (dname_from, dname_to)
+        print("%s -> %s" % (dname_from, dname_to))
         shutil.copytree(opj(dir_from, dname_from), opj(dir_to, dname_to), 1)
         try:
             convert_editlog(opj(dir_from, dname_from, 'last-edited'),
@@ -162,7 +162,7 @@ try:
     os.rename('data', origdir)
     os.mkdir('data')
 except OSError:
-    print "You need to be in the directory where your copy of the 'data' directory is located."
+    print("You need to be in the directory where your copy of the 'data' directory is located.")
     sys.exit(1)
 
 convert_textdir(opj(origdir, 'text'), opj('data', 'text'), from_encoding, to_encoding)

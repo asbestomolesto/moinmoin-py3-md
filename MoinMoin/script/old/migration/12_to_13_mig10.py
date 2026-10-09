@@ -44,7 +44,7 @@ from_encoding = 'iso8859-1'
 
 to_encoding = 'utf-8'
 
-import os, os.path, sys, urllib
+import os, os.path, sys, urllib.request, urllib.parse, urllib.error
 
 # Insert THIS moin dir first into sys path, or you would run another
 # version of moin!
@@ -75,7 +75,7 @@ def migrate(dir_to):
                 except UnicodeDecodeError:
                     fnew = f.decode(from_encoding).encode(to_encoding)
                     os.rename(os.path.join(root, f), os.path.join(root, fnew))
-                    print 'renamed', f, '\n ->', fnew, ' in dir:', root
+                    print('renamed', f, '\n ->', fnew, ' in dir:', root)
 
 
 origdir = 'data.pre-mig10'
@@ -85,7 +85,7 @@ destdir = 'data'
 try:
     os.rename(destdir, origdir)
 except OSError:
-    print "You need to be in the directory where your copy of the 'data' directory is located."
+    print("You need to be in the directory where your copy of the 'data' directory is located.")
     sys.exit(1)
 
 copy_dir(origdir, destdir)

@@ -19,8 +19,8 @@ from farmconfig import FarmConfig
 class Config(FarmConfig):
 
     # basic options (you normally need to change these)
-    sitename = u'MyWiki' # [Unicode]
-    interwikiname = u'MyWiki' # [Unicode]
+    sitename = 'MyWiki' # [Unicode]
+    interwikiname = 'MyWiki' # [Unicode]
 
     # name of entry page / front page [Unicode], choose one of those:
 
@@ -28,7 +28,7 @@ class Config(FarmConfig):
     #page_front_page = u"MyStartingPage"
 
     # b) if wiki content is maintained in many languages
-    page_front_page = u"FrontPage"
+    page_front_page = "FrontPage"
 
     data_dir = '/org/mywiki/data/'
 

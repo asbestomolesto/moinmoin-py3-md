@@ -48,7 +48,7 @@
     @license: GPL, see COPYING for details
 """
 
-import os, sys, shutil, urllib
+import os, sys, shutil, urllib.request, urllib.parse, urllib.error
 
 sys.path.insert(0, '../../../..')
 from MoinMoin import wikiutil
@@ -90,7 +90,7 @@ def convert_textdir(dir_from, dir_to, is_backupdir=0):
 def convert_pagedir(dir_from, dir_to):
     os.mkdir(dir_to)
     for dname_from in listdir(dir_from):
-        print "%s" % (dname_from, )
+        print("%s" % (dname_from, ))
         dname_to = dname_from
         shutil.copytree(opj(dir_from, dname_from), opj(dir_to, dname_to), 1)
         try:
@@ -103,7 +103,7 @@ def convert_editlog(file_from, file_to, dir_to):
         data = l.split('\t')
         pagename = data[0]
         timestamp = data[2]
-        data[2] = str(long(float(timestamp))) # we only want integer (must be long for py 2.2.x)
+        data[2] = str(int(float(timestamp))) # we only want integer (must be long for py 2.2.x)
         data = '\t'.join(data)
 
         f = open(file_to, 'a')
@@ -122,7 +122,7 @@ try:
     os.rename('data', origdir)
     os.mkdir('data')
 except OSError:
-    print "You need to be in the directory where your copy of the 'data' directory is located."
+    print("You need to be in the directory where your copy of the 'data' directory is located.")
     sys.exit(1)
 
 convert_pagedir(opj(origdir, 'pages'), opj('data', 'pages'))

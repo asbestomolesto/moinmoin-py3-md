@@ -38,14 +38,14 @@
 import os.path
 import re
 import time
-import codecs, urllib, glob
+import codecs, urllib.request, urllib.parse, urllib.error, glob
 
 from MoinMoin import config, wikiutil
 from MoinMoin.script.migration.migutil import opj, listdir, copy_file, move_file, copy_dir
 
 import mimetypes # this MUST be after wikiutil import!
 
-from _conv160a_wiki import convert_wiki
+from ._conv160a_wiki import convert_wiki
 
 create_rev = True # create a <new> rev with the converted content of <new-1> rev?
 
@@ -91,11 +91,11 @@ class EventLog:
                     timestamp = int(timestamp)
                     kvdict = wikiutil.parseQueryString(kvpairs)
                     data.append((timestamp, action, kvdict))
-                except ValueError, err:
+                except ValueError as err:
                     # corrupt event log line, log error and skip it
-                    print "Error: invalid event log (%s) line %d, err: %s, SKIPPING THIS LINE!" % (self.fname, lineno, str(err))
+                    print("Error: invalid event log (%s) line %d, err: %s, SKIPPING THIS LINE!" % (self.fname, lineno, str(err)))
             f.close()
-        except IOError, err:
+        except IOError as err:
             # no event-log
             pass
         self.data = data
@@ -144,14 +144,14 @@ class EditLog:
                 try:
                     timestamp = int(timestamp)
                     rev = int(rev)
-                except ValueError, err:
-                    print "Error: %r has a damaged timestamp or revision number in log line %d [%s] - skipping this entry" % (
-                        self.fname, lineno, str(err))
+                except ValueError as err:
+                    print("Error: %r has a damaged timestamp or revision number in log line %d [%s] - skipping this entry" % (
+                        self.fname, lineno, str(err)))
                     continue # ignore this line, do not terminate - to find all those errors in one go
                 pagename = wikiutil.unquoteWikiname(pagename)
                 data[(timestamp, rev, pagename)] = (timestamp, rev, action, pagename, ip, hostname, userid, extra, comment)
             f.close()
-        except IOError, err:
+        except IOError as err:
             # no edit-log
             pass
         self.data = data
@@ -159,7 +159,7 @@ class EditLog:
     def write(self, fname, deleted=False):
         """ write complete edit-log to disk """
         if self.data:
-            editlog = self.data.items()
+            editlog = list(self.data.items())
             editlog.sort()
             f = file(fname, 'wb') # write in binary mode, so it stays exactly as we write it, even on windows.
                                   # the code in MoinMoin.logfile also uses binary mode and writes \n only.
@@ -168,12 +168,12 @@ class EditLog:
                 timestamp, rev, action, pagename, ip, hostname, userid, extra, comment = fields
                 if action.startswith('ATT'):
                     try:
-                        fname = urllib.unquote(extra).decode('utf-8')
+                        fname = urllib.parse.unquote(extra).decode('utf-8')
                     except UnicodeDecodeError:
-                        fname = urllib.unquote(extra).decode('iso-8859-1')
+                        fname = urllib.parse.unquote(extra).decode('iso-8859-1')
                     if ('FILE', pagename, fname) in self.renames:
                         fname = self.renames[('FILE', pagename, fname)]
-                    extra = urllib.quote(fname.encode('utf-8'))
+                    extra = urllib.parse.quote(fname.encode('utf-8'))
                 if ('PAGE', pagename) in self.renames:
                     pagename = self.renames[('PAGE', pagename)]
                 timestamp = str(timestamp)
@@ -277,7 +277,7 @@ class Page:
             try:
                 self.current = int(current_rev)
             except ValueError:
-                print "Error: invalid current file %s, SKIPPING THIS PAGE!" % current_fname
+                print("Error: invalid current file %s, SKIPPING THIS PAGE!" % current_fname)
                 return
         # read edit-log
         editlog_fname = opj(page_dir, 'edit-log')
@@ -309,7 +309,7 @@ class Page:
         if ('PAGE', self.name) in self.renames:
             name_new = self.renames[('PAGE', self.name)]
             if name_new != self.name:
-                print "Renaming page %r -> %r" % (self.name, name_new)
+                print("Renaming page %r -> %r" % (self.name, name_new))
                 self.name_old = self.name
                 self.name = name_new
         qpagename = wikiutil.quoteWikinameFS(self.name)
@@ -348,12 +348,12 @@ class Page:
         if self.attachments is not None:
             attach_dir = opj(page_dir, 'attachments')
             os.makedirs(attach_dir)
-            for fn, att in self.attachments.items():
+            for fn, att in list(self.attachments.items()):
                 # we have to check for renames here because we need the (old) pagename, too:
                 if ('FILE', self.name_old, fn) in self.renames:
                     fn_new = self.renames[('FILE', self.name_old, fn)]
                     if fn_new != fn:
-                        print "Renaming file %r %r -> %r" % (self.name_old, fn, fn_new)
+                        print("Renaming file %r %r -> %r" % (self.name_old, fn, fn_new))
                         att.name = fn_new
                 att.copy(attach_dir)
 
@@ -379,13 +379,13 @@ class User:
         # read user profile
         f = codecs.open(fname, 'r', config.charset)
         for line in f:
-            line = line.replace(u'\r', '').replace(u'\n', '')
-            if not line.strip() or line.startswith(u'#'): # skip empty or comment lines
+            line = line.replace('\r', '').replace('\n', '')
+            if not line.strip() or line.startswith('#'): # skip empty or comment lines
                 continue
             try:
-                key, value = line.split(u'=', 1)
-            except Exception, err:
-                print "Error: User reader can not parse line %r from profile %r (%s)" % (line, fname, str(err))
+                key, value = line.split('=', 1)
+            except Exception as err:
+                print("Error: User reader can not parse line %r from profile %r (%s)" % (line, fname, str(err)))
                 continue
             self.profile[key] = value
         f.close()
@@ -404,28 +404,28 @@ class User:
         """ write profile and bookmarks data to disk """
         fname = opj(users_dir, self.uid)
         f = codecs.open(fname, 'w', config.charset)
-        for key, value in self.profile.items():
-            if key in (u'subscribed_pages', u'quicklinks'):
-                pages = value.split(u'\t')
+        for key, value in list(self.profile.items()):
+            if key in ('subscribed_pages', 'quicklinks'):
+                pages = value.split('\t')
                 for i in range(len(pages)):
                     pagename = pages[i]
                     try:
-                        interwiki, pagename = pagename.split(u':', 1)
+                        interwiki, pagename = pagename.split(':', 1)
                     except:
-                        interwiki, pagename = u'Self', pagename
-                    if interwiki == u'Self' or interwiki == self.request.cfg.interwikiname:
+                        interwiki, pagename = 'Self', pagename
+                    if interwiki == 'Self' or interwiki == self.request.cfg.interwikiname:
                         if ('PAGE', pagename) in self.renames:
                             pagename = self.renames[('PAGE', pagename)]
-                            pages[i] = u'%s:%s' % (interwiki, pagename)
+                            pages[i] = '%s:%s' % (interwiki, pagename)
                 key += '[]' # we have lists here
-                value = u'\t'.join(pages)
-                f.write(u"%s=%s\n" % (key, value))
+                value = '\t'.join(pages)
+                f.write("%s=%s\n" % (key, value))
             else:
-                f.write(u"%s=%s\n" % (key, value))
-        bookmark_entries = [u'%s:%s' % item for item in self.bookmarks.items()]
-        key = u"bookmarks{}"
-        value = u'\t'.join(bookmark_entries)
-        f.write(u"%s=%s\n" % (key, value))
+                f.write("%s=%s\n" % (key, value))
+        bookmark_entries = ['%s:%s' % item for item in list(self.bookmarks.items())]
+        key = "bookmarks{}"
+        value = '\t'.join(bookmark_entries)
+        f.write("%s=%s\n" % (key, value))
         f.close()
         # don't care about trail
 
@@ -454,7 +454,7 @@ class DataConverter(object):
         """
         self.read_src()
         # pages
-        for pn, p in self.pages.items():
+        for pn, p in list(self.pages.items()):
             p.read()
             if not p.revisions:
                 continue # we don't care for pages with no revisions (trash)
@@ -482,10 +482,10 @@ class DataConverter(object):
         self.save_list(self.complete_fname, self.complete)
         self.save_list(self.rename_fname1, self.renames)
 
-    LIST_FIELDSEP = u'|' # in case | makes trouble, one can use \t tab char
+    LIST_FIELDSEP = '|' # in case | makes trouble, one can use \t tab char
 
     def save_list(self, fname, what):
-        what_sorted = what.keys()
+        what_sorted = list(what.keys())
         # make sure we have 3-tuples:
         what_sorted = [(k + (None, ))[:3] for k in what_sorted]
         # we only have python 2.3, thus no cmp keyword for the sort() call,
@@ -500,7 +500,7 @@ class DataConverter(object):
             elif rtype == 'FILE':
                 line = (rtype, pn, fn, fn)
             line = self.LIST_FIELDSEP.join(line)
-            f.write(line + u'\n')
+            f.write(line + '\n')
         f.close()
 
     def load_list(self, fname, what):
@@ -511,9 +511,9 @@ class DataConverter(object):
                 continue
             t = line.split(self.LIST_FIELDSEP)
             rtype, p1, p2, p3 = (t + [None]*3)[:4]
-            if rtype == u'PAGE':
+            if rtype == 'PAGE':
                 what[(str(rtype), p1)] = p2
-            elif rtype == u'FILE':
+            elif rtype == 'FILE':
                 what[(str(rtype), p1, p2)] = p3
         f.close()
 
@@ -549,14 +549,14 @@ class DataConverter(object):
         self.init_dest()
         # copy pages
         pages_dir = opj(self.ddata, 'pages')
-        for pn, page in self.pages.items():
+        for pn, page in list(self.pages.items()):
             if pn.endswith('/MoinEditorBackup'):
                 continue # we don't care for old editor backups
             page.copy(pages_dir, self.renames)
 
         # copy users
         users_dir = opj(self.ddata, 'user')
-        for user in self.users.values():
+        for user in list(self.users.values()):
             user.copy(users_dir, self.renames)
 
         # copy logs

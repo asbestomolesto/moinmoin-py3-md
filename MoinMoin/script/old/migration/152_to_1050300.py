@@ -38,12 +38,12 @@ def migrate(dirlist):
     for dir in dirlist:
         if not (os.path.exists(os.path.join(dir, 'pages')) and
                 os.path.exists(os.path.join(dir, 'user'))):
-            print "Error: Skipping %s - does not look like a data_dir" % dir
+            print("Error: Skipping %s - does not look like a data_dir" % dir)
             errors += 1
         else:
             fname = os.path.join(dir, 'meta')
             if os.path.exists(fname):
-                print "Warning: There already is a meta file there, skipping %s" % dir
+                print("Warning: There already is a meta file there, skipping %s" % dir)
                 warnings += 1
             else:
                 try:
@@ -53,8 +53,8 @@ def migrate(dirlist):
                     success += 1
                 except:
                     errors += 1
-                    print "Error: Exception when migrating %s" % dir
-    print "%d data_dirs successfully migrated, %d warnings, %d errors." % (success, warnings, errors)
+                    print("Error: Exception when migrating %s" % dir)
+    print("%d data_dirs successfully migrated, %d warnings, %d errors." % (success, warnings, errors))
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

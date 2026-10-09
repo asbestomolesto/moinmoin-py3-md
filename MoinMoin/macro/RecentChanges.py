@@ -12,6 +12,7 @@ import time
 from MoinMoin import util, wikiutil
 from MoinMoin.Page import Page
 from MoinMoin.logfile import editlog
+from functools import cmp_to_key
 
 _DAYS_SELECTION = [1, 2, 3, 7, 14, 30, 60, 90]
 _MAX_DAYS = 7
@@ -98,7 +99,7 @@ def format_page_edits(macro, lines, bookmark_usecs):
     # print time of change
     d['time_html'] = None
     if request.cfg.changed_time_fmt:
-        tdiff = long(tnow - wikiutil.version2timestamp(long(line.ed_time_usecs))) / 60 # has to be long for py 2.2.x
+        tdiff = int(tnow - wikiutil.version2timestamp(int(line.ed_time_usecs))) / 60 # has to be long for py 2.2.x
         if tdiff < 100:
             d['time_html'] = _("%(mins)dm ago") % {
                 'mins': tdiff}
@@ -115,7 +116,7 @@ def format_page_edits(macro, lines, bookmark_usecs):
                 if not name in counters:
                     counters[name] = []
                 counters[name].append(idx+1)
-            poslist = [(v, k) for k, v in counters.items()]
+            poslist = [(v, k) for k, v in list(counters.items())]
             poslist.sort()
             d['editors'] = []
             for positions, name in poslist:
@@ -304,8 +305,8 @@ def macro_RecentChanges(macro, abandoned=False):
             this_day = day
             for p in pages:
                 ignore_pages[p] = None
-            pages = pages.values()
-            pages.sort(cmp_lines)
+            pages = list(pages.values())
+            pages.sort(key=cmp_to_key(cmp_lines))
             pages.reverse()
 
             if request.user.valid:
@@ -346,8 +347,8 @@ def macro_RecentChanges(macro, abandoned=False):
             # but above does not trigger if we have the first day in wiki history
             for p in pages:
                 ignore_pages[p] = None
-            pages = pages.values()
-            pages.sort(cmp_lines)
+            pages = list(pages.values())
+            pages.sort(key=cmp_to_key(cmp_lines))
             pages.reverse()
 
             if request.user.valid:

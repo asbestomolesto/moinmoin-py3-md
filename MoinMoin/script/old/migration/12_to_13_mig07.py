@@ -14,7 +14,7 @@
     @license: GPL, see COPYING for details
 """
 
-import os.path, sys, urllib
+import os.path, sys, urllib.request, urllib.parse, urllib.error
 
 # Insert THIS moin dir first into sys path, or you would run another
 # version of moin!
@@ -65,7 +65,7 @@ origdir = 'data.pre-mig7'
 try:
     os.rename('data', origdir)
 except OSError:
-    print "You need to be in the directory where your copy of the 'data' directory is located."
+    print("You need to be in the directory where your copy of the 'data' directory is located.")
     sys.exit(1)
 
 os.makedirs(opj('data', 'pages'))

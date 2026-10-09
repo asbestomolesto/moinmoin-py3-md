@@ -40,7 +40,7 @@
 """
 
 
-import os.path, sys, urllib
+import os.path, sys, urllib.request, urllib.parse, urllib.error
 
 sys.path.insert(0, '../../../..')
 from MoinMoin import wikiutil
@@ -52,7 +52,7 @@ def convert_ts(ts_from):
         ts_to = ts_from # we already have usec kind of timestamp
     else:
         ts_to = wikiutil.timestamp2version(ts_from)
-    return long(ts_to) # must be long for py 2.2.x
+    return int(ts_to) # must be long for py 2.2.x
 
 def convert_eventlog(file_from, file_to):
     if not os.path.exists(file_from):
@@ -140,7 +140,7 @@ try:
     os.rename('data', origdir)
     os.mkdir('data')
 except OSError:
-    print "You need to be in the directory where your copy of the 'data' directory is located."
+    print("You need to be in the directory where your copy of the 'data' directory is located.")
     sys.exit(1)
 
 convert_pagedir(opj(origdir, 'pages'), opj('data', 'pages'))

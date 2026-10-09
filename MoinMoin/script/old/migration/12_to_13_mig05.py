@@ -69,7 +69,7 @@
 """
 
 
-import os.path, sys, urllib
+import os.path, sys, urllib.request, urllib.parse, urllib.error
 
 # Insert THIS moin dir first into sys path, or you would run another
 # version of moin!
@@ -102,7 +102,7 @@ def gather_editlog(dir_from, el_from):
 
         extra = ''
         if action == 'SAVE/REVERT': # we missed to convert that in mig4
-            ts = long(comment) # must be long for py 2.2.x
+            ts = int(comment) # must be long for py 2.2.x
             if ts < 4000000000: # UNIX timestamp (secs)
                 extra = str(wikiutil.timestamp2version(ts))
             else: # usecs timestamp
@@ -113,7 +113,7 @@ def gather_editlog(dir_from, el_from):
             extra = comment # filename
             comment = '' # so we can use comments on ATT* in future
 
-        timestamp = long(timestamp) # must be long for py 2.2.x
+        timestamp = int(timestamp) # must be long for py 2.2.x
         data = [timestamp, '', action, pagename, ip, host, id, extra, comment]
 
         entry = info.get(pagename, {})
@@ -134,7 +134,7 @@ def gather_pagedirs(dir_from, is_backupdir=0):
         entry = info.get(pagename, {})
 
         loglist = [] # editlog timestamps of page revisions
-        for ts, data in entry.items():
+        for ts, data in list(entry.items()):
             if data[1][2] in ['SAVE', 'SAVENEW', 'SAVE/REVERT', ]:
                 loglist.append(ts)
         loglist.sort()
@@ -152,7 +152,7 @@ def gather_pagedirs(dir_from, is_backupdir=0):
             bleftover = backuplist[:]
             for bfile in backuplist:
                 backup_from = opj(backupdir_from, bfile)
-                ts = long(bfile)
+                ts = int(bfile)
                 if ts in loglist: # we have an editlog entry, exact match
                     entry[ts][0] = backup_from
                     lleftover.remove(ts)
@@ -185,7 +185,7 @@ def gather_pagedirs(dir_from, is_backupdir=0):
             for bfile in backuplist:
                 if not bfile in bleftover: continue
                 backup_from = opj(backupdir_from, bfile)
-                bts = long(bfile) # must be long for py 2.2.x
+                bts = int(bfile) # must be long for py 2.2.x
                 for ts in lleftover:
                     tdiff = abs(bts-ts)
                     if tdiff < 2000000: # editlog, inexact match
@@ -196,7 +196,7 @@ def gather_pagedirs(dir_from, is_backupdir=0):
                         entry[ts][0] = backup_from
                         lleftover.remove(ts)
                         bleftover.remove(bfile)
-                        print "Warning: Win32 daylight saving bug encountered & fixed!"
+                        print("Warning: Win32 daylight saving bug encountered & fixed!")
 
             if len(bleftover) == 1 and len(lleftover) == 1: # only 1 left, must be this
                 backup_from = opj(backupdir_from, bleftover[0])
@@ -207,7 +207,7 @@ def gather_pagedirs(dir_from, is_backupdir=0):
             # fake some log entries
             for bfile in bleftover:
                 backup_from = opj(backupdir_from, bfile)
-                bts = long(bfile) # must be long py 2.2.x
+                bts = int(bfile) # must be long py 2.2.x
                 data = [ts, '', 'SAVE', pagename, '', '', '', '', 'missing editlog entry for this page version']
                 entry[bts] = [backup_from, data]
 
@@ -241,7 +241,7 @@ def remove_trash(dir_from):
 def generate_pages(dir_from, dir_to):
     for pagename in info2:
         entry = info2.get(pagename, {})
-        tslist = entry.keys()
+        tslist = list(entry.keys())
         if tslist:
             pagedir = opj(dir_to, 'pages', pagename)
             os.makedirs(opj(pagedir, 'revisions'))
@@ -257,12 +257,12 @@ def generate_pages(dir_from, dir_to):
                 data[1] = revstr
                 if data[2].endswith('/REVERT'):
                     # replace the timestamp with the revision number
-                    revertts = long(data[7]) # must be long for py 2.2.x
+                    revertts = int(data[7]) # must be long for py 2.2.x
                     try:
                         revertrev = int(entry[revertts][1][1])
                     except KeyError:
                         # never should trigger...
-                        print "********* KeyError %s entry[%d][1][1] **********" % (pagename, revertts)
+                        print("********* KeyError %s entry[%d][1][1] **********" % (pagename, revertts))
                         revertrev = 0
                     data[7] = '%08d' % revertrev
                 f.write('\t'.join(data)+'\n')
@@ -290,7 +290,7 @@ def generate_editlog(dir_from, dir_to):
             file_from, data = entry[ts]
             editlog[ts] = data
 
-    tslist = editlog.keys()
+    tslist = list(editlog.keys())
     tslist.sort()
 
     editlog_file = opj(dir_to, 'edit-log')
@@ -308,7 +308,7 @@ try:
     os.rename('data', origdir)
     os.mkdir('data')
 except OSError:
-    print "You need to be in the directory where your copy of the 'data' directory is located."
+    print("You need to be in the directory where your copy of the 'data' directory is located.")
     sys.exit(1)
 
 gather_editlog(origdir, opj(origdir, 'edit-log'))

@@ -12,6 +12,7 @@ from MoinMoin import user, util, wikiutil, events
 from MoinMoin.theme import load_theme_fallback
 from MoinMoin.widget import html
 from MoinMoin.userprefs import UserPrefBase
+from functools import cmp_to_key
 
 
 #################################################################
@@ -164,7 +165,7 @@ space between words. Group page name is not allowed.""", wiki=True) % wikiutil.e
 
         # try to get the (optional) preferred language
         request.user.language = wikiutil.clean_input(form.get('language', ''))
-        if request.user.language == u'': # For language-statistics
+        if request.user.language == '': # For language-statistics
             from MoinMoin import i18n
             request.user.real_language = i18n.get_browser_language(request)
         else:
@@ -274,11 +275,11 @@ space between words. Group page name is not allowed.""", wiki=True) % wikiutil.e
         try:
             dt_d_combined = '%s & %s' % (self.request.user.datetime_fmt, self.request.user.date_fmt)
             selected = [
-                k for k, v in self._date_formats.items()
+                k for k, v in list(self._date_formats.items())
                     if v == dt_d_combined][0]
         except IndexError:
             selected = ''
-        options = [('', _('Default'))] + self._date_formats.items()
+        options = [('', _('Default'))] + list(self._date_formats.items())
 
         return util.web.makeSelection('datetime_fmt', options, selected)
 
@@ -288,8 +289,8 @@ space between words. Group page name is not allowed.""", wiki=True) % wikiutil.e
         from MoinMoin import i18n
         _ = self._
         cur_lang = self.request.user.valid and self.request.user.language or ''
-        langs = i18n.wikiLanguages().items()
-        langs.sort(lambda x, y: cmp(x[1]['x-language'], y[1]['x-language']))
+        langs = list(i18n.wikiLanguages().items())
+        langs.sort(key=cmp_to_key(lambda x, y: cmp(x[1]['x-language'], y[1]['x-language'])))
         options = [('', _('<Browser setting>'))]
         for lang in langs:
             name = lang[1]['x-language']
@@ -375,7 +376,7 @@ space between words. Group page name is not allowed.""", wiki=True) % wikiutil.e
             # boolean user options
             bool_options = []
             checkbox_fields = self.cfg.user_checkbox_fields
-            checkbox_fields.sort(lambda a, b: cmp(a[1](_), b[1](_)))
+            checkbox_fields.sort(key=cmp_to_key(lambda a, b: cmp(a[1](_), b[1](_))))
             for key, label in checkbox_fields:
                 if not key in self.cfg.user_checkbox_remove:
                     bool_options.extend([
@@ -407,4 +408,4 @@ space between words. Group page name is not allowed.""", wiki=True) % wikiutil.e
                 ])
         self.make_row('', button_cell)
 
-        return unicode(self._form)
+        return str(self._form)

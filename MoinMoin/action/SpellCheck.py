@@ -23,6 +23,7 @@
 import os, re, codecs
 from MoinMoin import config, wikiutil
 from MoinMoin.Page import Page
+from functools import cmp_to_key
 
 
 def _getWordsFiles(request):
@@ -74,18 +75,18 @@ def _loadDict(request):
     """ Load words from words files or cached dict """
     # check for "dbhash" module
     try:
-        import dbhash
+        import dbm.bsd
     except ImportError:
         dbhash = None
 
     # load the words
     cachename = os.path.join(request.cfg.data_dir, 'cache', 'spellchecker.dict')
     if dbhash and os.path.exists(cachename):
-        wordsdict = dbhash.open(cachename, "r")
+        wordsdict = dbm.bsd.open(cachename, "r")
     else:
         wordsfiles = _getWordsFiles(request)
         if dbhash:
-            wordsdict = dbhash.open(cachename, 'n')
+            wordsdict = dbm.bsd.open(cachename, 'n')
         else:
             wordsdict = {}
 
@@ -106,7 +107,7 @@ def _addLocalWords(request):
     except KeyError:
         # no new words checked
         return
-    newwords = u' '.join(newwords)
+    newwords = ' '.join(newwords)
 
     # get the page contents
     lsw_page = PageEditor(request, request.cfg.page_local_spelling_words)
@@ -164,8 +165,8 @@ def checkSpelling(page, request, own_form=1):
         word_re.sub(checkword, line)
 
     if badwords:
-        badwords = badwords.keys()
-        badwords.sort(lambda x, y: cmp(x.lower(), y.lower()))
+        badwords = list(badwords.keys())
+        badwords.sort(key=cmp_to_key(lambda x, y: cmp(x.lower(), y.lower())))
 
         # build regex recognizing the bad words
         badwords_re = r'(^|(?<!\w))(%s)(?!\w)'

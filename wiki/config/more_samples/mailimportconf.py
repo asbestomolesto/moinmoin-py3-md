@@ -4,5 +4,5 @@
 mail_import_secret = "use same string as in secrets setting in wiki config"
 
 # The target wiki URL
-mail_import_url = u"http://localhost/?action=xmlrpc2"
+mail_import_url = "http://localhost/?action=xmlrpc2"
 
