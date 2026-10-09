@@ -23,8 +23,9 @@ Create a new MoinMoin wiki instance in DIRECTORY (it must not exist yet).
 Options:
   -n NAME     name of the wiki (sitename), default: the directory name
   -l LANG     default language of the wiki, default: en
-  -s USER     name of the wiki superuser (create the account later with
-              "moin ... account create"), default: none
+  -s USER     name of the wiki superuser, who also gets all ACL rights
+              (create the account later with "moin ... account create"),
+              default: none
   -u USER     owner of the wiki files (the user running the wiki), default: www-data
   -g GROUP    group of the wiki files, default: www-data
   -h          show this help
@@ -98,6 +99,8 @@ s = s.replace("    language_default = 'en'", "    language_default = %r" % langu
 extra = "\n    # created by moin-mkwiki\n    secrets = %r\n" % secret
 if superuser:
     extra += "    superuser = [%r, ]\n" % superuser
+    # like suggested in the sample configuration: the superuser may do everything
+    extra += "    acl_rights_before = %r\n" % ("%s:read,write,delete,revert,admin" % superuser)
 # put the extra settings at the end of the Config class
 s = s.rstrip('\n') + '\n' + extra
 open(dst, 'w', encoding='utf-8').write(s)

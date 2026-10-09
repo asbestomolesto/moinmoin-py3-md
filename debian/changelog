@@ -8,5 +8,7 @@ moin (1.9.11+py3-1) unstable; urgency=medium
   * Works without systemd: optional sysvinit script for standalone
     wiki servers; WSGI (Apache mod_wsgi, uWSGI, gunicorn), CGI,
     FastCGI and SCGI are supported, too.
+  * moin-mkwiki creates new wiki instances; with -s the superuser also
+    gets all ACL rights (acl_rights_before).
 
  -- asbesto <aladarmrgradymezil@gmail.com>  Fri, 09 Oct 2026 15:00:00 +0200
