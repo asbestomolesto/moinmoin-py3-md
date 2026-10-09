@@ -28,7 +28,8 @@
 """
 
 import os, time, zipfile, errno, datetime
-from io import StringIO
+from io import BytesIO
+from urllib.parse import quote as _url_quote
 import tarfile
 
 from werkzeug.http import http_date
@@ -157,11 +158,11 @@ def getFilename(request, pagename, filename):
         @param request: request object
         @param pagename: name of page where the file is attached to (unicode)
         @param filename: filename of attached file (unicode)
-        @rtype: string (in config.charset encoding)
+        @rtype: string
         @return: complete path/filename of attached file
     """
-    if isinstance(filename, str):
-        filename = filename.encode(config.charset)
+    if isinstance(filename, bytes):
+        filename = filename.decode(config.charset)
     return os.path.join(getAttachDir(request, pagename, create=1), filename)
 
 
@@ -194,12 +195,24 @@ def info(pagename, request):
     return "\n<p>\n%s\n</p>\n" % attach_info
 
 
+def content_disposition(dispo, filename):
+    """ Content-Disposition header value for filename (RFC 6266): an ascii
+        fallback filename plus the real filename as RFC 5987 UTF-8 value.
+    """
+    ascii_name = filename.encode('ascii', 'replace').decode('ascii')
+    ascii_name = ascii_name.replace('"', '_').replace('\\', '_')
+    return "%s; filename=\"%s\"; filename*=UTF-8''%s" % (
+           dispo, ascii_name, _url_quote(filename.encode('utf-8'), safe=''))
+
+
 def _write_stream(content, stream, bufsize=8192):
     if hasattr(content, 'read'): # looks file-like
         import shutil
         shutil.copyfileobj(content, stream, bufsize)
-    elif isinstance(content, str):
+    elif isinstance(content, bytes):
         stream.write(content)
+    elif isinstance(content, str):
+        stream.write(content.encode(config.charset))
     else:
         msg = "unsupported content object: %r" % content
         logging.error(msg)
@@ -216,7 +229,7 @@ def add_attachment(request, pagename, target, filecontent, overwrite=0):
 
     # get directory, and possibly create it
     attach_dir = getAttachDir(request, pagename, create=1)
-    fpath = os.path.join(attach_dir, target).encode(config.charset)
+    fpath = os.path.join(attach_dir, target)
 
     exists = os.path.exists(fpath)
     if exists:
@@ -250,7 +263,7 @@ def remove_attachment(request, pagename, target):
     # get directory, do not create it
     attach_dir = getAttachDir(request, pagename, create=0)
     # remove file
-    fpath = os.path.join(attach_dir, target).encode(config.charset)
+    fpath = os.path.join(attach_dir, target)
     try:
         filesize = os.path.getsize(fpath)
         os.remove(fpath)
@@ -291,9 +304,9 @@ def move_attachment(request, pagename, dest_pagename, target, dest_target,
     dest_target = wikiutil.taintfilename(dest_target)
 
     attachment_path = os.path.join(getAttachDir(request, pagename),
-                                   target).encode(config.charset)
+                                   target)
     dest_attachment_path = os.path.join(getAttachDir(request, dest_pagename, create=1),
-                                        dest_target).encode(config.charset)
+                                        dest_target)
     if not overwrite and os.path.exists(dest_attachment_path):
         raise DestPathExists
     if dest_attachment_path == attachment_path:
@@ -328,9 +341,9 @@ def copy_attachment(request, pagename, dest_pagename, target, dest_target,
     dest_target = wikiutil.taintfilename(dest_target)
 
     attachment_path = os.path.join(getAttachDir(request, pagename),
-                                   target).encode(config.charset)
+                                   target)
     dest_attachment_path = os.path.join(getAttachDir(request, dest_pagename, create=1),
-                                        dest_target).encode(config.charset)
+                                        dest_target)
     if not overwrite and os.path.exists(dest_attachment_path):
         raise DestPathExists
     if dest_attachment_path == attachment_path:
@@ -448,7 +461,7 @@ function checkAll(bx, targets_name) {
         html.append(fmt.bullet_list(1))
         for file in files:
             mt = wikiutil.MimeType(filename=file)
-            fullpath = os.path.join(attach_dir, file).encode(config.charset)
+            fullpath = os.path.join(attach_dir, file)
             st = os.stat(fullpath)
             base, ext = os.path.splitext(file)
             parmdict = {'file': wikiutil.escape(file),
@@ -598,7 +611,7 @@ def _do_multifile(pagename, request):
 def _get_files(request, pagename):
     attach_dir = getAttachDir(request, pagename)
     if os.path.isdir(attach_dir):
-        files = [fn.decode(config.charset) for fn in os.listdir(attach_dir)]
+        files = os.listdir(attach_dir)
         files.sort()
     else:
         files = []
@@ -811,13 +824,15 @@ class ContainerItem:
     def put(self, member, content, content_length=None):
         """ save data into a container's member """
         tf = tarfile.TarFile(self.container_filename, mode='a')
-        if isinstance(member, str):
-            member = member.encode('utf-8')
+        if isinstance(member, bytes):
+            member = member.decode('utf-8')
         ti = tarfile.TarInfo(member)
         if isinstance(content, str):
+            content = content.encode(config.charset)
+        if isinstance(content, bytes):
             if content_length is None:
                 content_length = len(content)
-            content = StringIO(content) # we need a file obj
+            content = BytesIO(content) # we need a file obj
         elif not hasattr(content, 'read'):
             msg = "unsupported content object: %r" % content
             logging.error(msg)
@@ -828,7 +843,7 @@ class ContainerItem:
         tf.close()
 
     def truncate(self):
-        f = open(self.container_filename, 'w')
+        f = open(self.container_filename, 'wb')
         f.close()
 
     def exists(self):
@@ -998,9 +1013,6 @@ def _do_box(pagename, request):
         content_type = mt.content_type()
         mime_type = mt.mime_type()
 
-        # TODO: fix the encoding here, plain 8 bit is not allowed according to the RFCs
-        # There is no solution that is compatible to IE except stripping non-ascii chars
-        filename_enc = filename.encode(config.charset)
 
         # for dangerous files (like .html), when we are in danger of cross-site-scripting attacks,
         # we just let the user store them to disk ('attachment').
@@ -1014,7 +1026,7 @@ def _do_box(pagename, request):
         request.headers['Last-Modified'] = http_date(timestamp)
         request.headers['Expires'] = http_date(now - 365 * 24 * 3600)
         #request.headers['Content-Length'] = os.path.getsize(fpath)
-        content_dispo_string = '%s; filename="%s"' % (content_dispo, filename_enc)
+        content_dispo_string = content_disposition(content_dispo, filename)
         request.headers['Content-Disposition'] = content_dispo_string
 
         # send data
@@ -1040,9 +1052,6 @@ def _do_get(pagename, request):
         content_type = mt.content_type()
         mime_type = mt.mime_type()
 
-        # TODO: fix the encoding here, plain 8 bit is not allowed according to the RFCs
-        # There is no solution that is compatible to IE except stripping non-ascii chars
-        filename_enc = filename.encode(config.charset)
 
         # for dangerous files (like .html), when we are in danger of cross-site-scripting attacks,
         # we just let the user store them to disk ('attachment').
@@ -1056,7 +1065,7 @@ def _do_get(pagename, request):
         request.headers['Last-Modified'] = http_date(timestamp)
         request.headers['Expires'] = http_date(now - 365 * 24 * 3600)
         request.headers['Content-Length'] = os.path.getsize(fpath)
-        content_dispo_string = '%s; filename="%s"' % (content_dispo, filename_enc)
+        content_dispo_string = content_disposition(content_dispo, filename)
         request.headers['Content-Disposition'] = content_dispo_string
 
         # send data
@@ -1133,7 +1142,10 @@ def _do_unzip(pagename, request, overwrite=False):
                     mapping = []  # zip is not acceptable
                     break
                 finalname = name[fname_index:]  # remove common path prefix
-                finalname = finalname.decode(config.charset, 'replace')  # replaces trash with \uFFFD char
+                if not zi.flag_bits & 0x800:
+                    # no UTF-8 flag: Python 3 decoded the name as cp437, but
+                    # like MoinMoin on Python 2 we assume config.charset
+                    finalname = finalname.encode('cp437').decode(config.charset, 'replace')  # replaces trash with \uFFFD char
                 mapping.append((name, finalname))
                 new_fsizes[finalname] = zi.file_size
 
@@ -1233,8 +1245,9 @@ def send_viewfile(pagename, request):
             try:
                 # rU: universal newline support so that even a \r is considered a valid line separator.
                 # CSV exported by office (on Mac?) has \r line separators.
-                content = open(fpath, "r").read()
+                content = open(fpath, "rb").read()
                 content = wikiutil.decodeUnknownInput(content)
+                content = content.replace('\r\n', '\n').replace('\r', '\n')
                 colorizer = Parser(content, request, filename=filename)
                 colorizer.format(request.formatter)
                 return
@@ -1243,7 +1256,7 @@ def send_viewfile(pagename, request):
 
         request.write(request.formatter.preformatted(1))
         # If we have text but no colorizing parser we try to decode file contents.
-        content = open(fpath, 'r').read()
+        content = open(fpath, 'rb').read()
         content = wikiutil.decodeUnknownInput(content)
         content = wikiutil.escape(content)
         request.write(request.formatter.text(content))
@@ -1357,7 +1370,7 @@ def do_admin_browser(request):
                 data.addRow((
                     (Page(request, pagename).link_to(request,
                                 querystr="action=AttachFile"), wikiutil.escape(pagename, 1)),
-                    wikiutil.escape(filename.decode(config.charset)),
+                    wikiutil.escape(filename),
                     os.path.getsize(filepath),
                 ))
 
