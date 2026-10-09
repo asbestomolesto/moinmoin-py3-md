@@ -497,7 +497,7 @@ class User:
         self.theme_name = self._cfg.theme_default
         self.editor_default = self._cfg.editor_default
         self.editor_ui = self._cfg.editor_ui
-        self.last_saved = str(time.time())
+        self.last_saved = "%.12g" % time.time() # like str(float) of Python 2
 
         # attrs not saved to profile
         self._request = request
@@ -542,7 +542,7 @@ class User:
         # and some other things identifying remote users, then we could also
         # use it reliably in edit locking
         from random import randint
-        return "%s.%d" % (str(time.time()), randint(0, 65535))
+        return "%.12g.%d" % (time.time(), randint(0, 65535)) # like str(float) of Python 2
 
     def create_or_update(self, changed=False):
         """ Create or update a user profile
@@ -766,7 +766,7 @@ class User:
         if not os.path.exists(user_dir):
             os.makedirs(user_dir)
 
-        self.last_saved = str(time.time())
+        self.last_saved = "%.12g" % time.time() # like str(float) of Python 2
 
         # !!! should write to a temp file here to avoid race conditions,
         # or even better, use locking
