@@ -262,8 +262,8 @@ space between words. Group page name is not allowed.""", wiki=True) % wikiutil.e
                 '%s [%s%s:%s]' % (
                     time.strftime(self.cfg.datetime_fmt, util.timefuncs.tmtuple(t)),
                     "+-"[offset < 0],
-                    "%02d" % (abs(offset) / 3600),
-                    "%02d" % (abs(offset) % 3600 / 60),
+                    "%02d" % (abs(offset) // 3600),
+                    "%02d" % (abs(offset) % 3600 // 60),
                 ),
             ))
 

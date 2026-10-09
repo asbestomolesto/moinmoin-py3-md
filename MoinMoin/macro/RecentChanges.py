@@ -100,7 +100,7 @@ def format_page_edits(macro, lines, bookmark_usecs):
     # print time of change
     d['time_html'] = None
     if request.cfg.changed_time_fmt:
-        tdiff = int(tnow - wikiutil.version2timestamp(int(line.ed_time_usecs))) / 60 # has to be long for py 2.2.x
+        tdiff = int(tnow - wikiutil.version2timestamp(int(line.ed_time_usecs))) // 60 # has to be long for py 2.2.x
         if tdiff < 100:
             d['time_html'] = _("%(mins)dm ago") % {
                 'mins': tdiff}

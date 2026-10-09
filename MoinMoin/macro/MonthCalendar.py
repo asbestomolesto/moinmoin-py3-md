@@ -284,7 +284,7 @@ def execute(macro, text):
         r, g, b = (255, 0, 0)
         l = len(parmpagename[0])
         steps = len(parmpagename)
-        maxsteps = (255 / colorstep)
+        maxsteps = (255 // colorstep)
         if steps > maxsteps:
             steps = maxsteps
         chstep = int(l / steps)

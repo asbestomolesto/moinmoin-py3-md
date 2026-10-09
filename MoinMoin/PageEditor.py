@@ -230,7 +230,7 @@ class PageEditor(Page):
             self.set_raw_body(preview, modified=1)
 
         # send header stuff
-        lock_timeout = self.lock.timeout / 60
+        lock_timeout = self.lock.timeout // 60
         lock_page = wikiutil.escape(self.page_name, quote=1)
         lock_expire = _("Your edit lock on %(lock_page)s has expired!") % {'lock_page': lock_page}
         lock_mins = _("Your edit lock on %(lock_page)s will expire in # minutes.") % {'lock_page': lock_page}
@@ -763,8 +763,8 @@ Try a different name.""", wiki=True) % (wikiutil.escape(newpagename), )
             tz = u.tz_offset
             # round to minutes
             tz -= tz % 60
-            minutes = tz / 60
-            hours = minutes / 60
+            minutes = tz // 60
+            hours = minutes // 60
             minutes -= hours * 60
 
             # construct the offset
@@ -1246,7 +1246,7 @@ class PageLock:
 
             msg = []
             if self.owner is not None and -10800 < secs_valid < 0:
-                mins_ago = secs_valid / -60
+                mins_ago = secs_valid // -60
                 msg.append(_(
                     "The lock of %(owner)s timed out %(mins_ago)d minute(s) ago,"
                     " and you were granted the lock for this page."
@@ -1265,7 +1265,7 @@ class PageLock:
                 ))
             result = 1, '\n'.join(msg)
         else:
-            mins_valid = (secs_valid+59) / 60
+            mins_valid = (secs_valid+59) // 60
             if self.locktype == 'lock':
                 # lock out user
                 timestamp_until = self.request.user.getFormattedDateTime(self.timestamp+secs_valid)

@@ -258,7 +258,7 @@ class SlideshowAction:
         """ Return range of slides to display, current centered """
         other = self.maxSlideLinks - 1 # other slides except current
         first, last = self.first_slide(), self.last_slide()
-        start = max(first, (self.slideNumber or 1) - other / 2)
+        start = max(first, (self.slideNumber or 1) - other // 2)
         end = min(start + other, last)
         start = max(first, end - other)
         return list(range(start, end + 1))

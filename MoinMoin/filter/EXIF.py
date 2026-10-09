@@ -415,7 +415,7 @@ def nikon_ev_bias(seq):
     else:
         ret_str = "+"
     b = seq[2]	# Assume third value means the step size
-    whole = a / b
+    whole = a // b
     a = a % b
     if whole != 0:
         ret_str = ret_str + str(whole) + " "
@@ -1113,8 +1113,8 @@ class Ratio:
     def reduce_size(self):
         div = gcd(self.num, self.den)
         if div > 1:
-            self.num = self.num / div
-            self.den = self.den / div
+            self.num = self.num // div
+            self.den = self.den // div
 
 # for ease of dealing with tags
 class IFD_Tag:

@@ -593,8 +593,8 @@ class SearchResults(object):
         """
         # Start by giving equal context on both sides of match
         contextlen = max(context - len(match), 0)
-        cstart = match.start - contextlen / 2
-        cend = match.end + contextlen / 2
+        cstart = match.start - contextlen // 2
+        cend = match.end + contextlen // 2
 
         # If context start before start, give more context on end
         if cstart < start:

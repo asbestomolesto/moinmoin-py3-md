@@ -115,8 +115,8 @@ def execute(pagename, request):
                 cur_offset = max_count
                 near_count = 5 # request.cfg.pagination_size
 
-                min_offset = max(0, (offset + max_count - 1) / max_count - near_count)
-                max_offset = min((log_size - 1) / max_count, offset / max_count + near_count)
+                min_offset = max(0, (offset + max_count - 1) // max_count - near_count)
+                max_offset = min((log_size - 1) // max_count, offset // max_count + near_count)
                 offset_added = False
 
                 def add_offset_link(offset, caption=None):
@@ -131,7 +131,7 @@ def execute(pagename, request):
 
                 # link to previous page - only if not at start
                 if offset > 0:
-                    add_offset_link(((offset - 1) / max_count) * max_count, _("Newer"))
+                    add_offset_link(((offset - 1) // max_count) * max_count, _("Newer"))
 
                 # link to beggining of event log - if min_offset is not minimal
                 if min_offset > 0:
@@ -154,10 +154,10 @@ def execute(pagename, request):
                         add_offset_link(cur_offset * max_count)
 
                 # link to the last page of event log
-                if max_offset < (log_size - 1) / max_count:
-                    if max_offset < (log_size - 1) / max_count - 1:
+                if max_offset < (log_size - 1) // max_count:
+                    if max_offset < (log_size - 1) // max_count - 1:
                         offset_links.append(f.table_cell(1, css_class="info-offset-gap") + f.text('\u2026') + f.table_cell(0))
-                    add_offset_link(((log_size - 1) / max_count) * max_count)
+                    add_offset_link(((log_size - 1) // max_count) * max_count)
 
                 # special case - if offset is greater than max_offset * max_count
                 if offset > max_offset * max_count:
@@ -165,7 +165,7 @@ def execute(pagename, request):
 
                 # link to next page
                 if offset < (log_size - max_count):
-                    add_offset_link(((offset + max_count) / max_count) * max_count, _("Older"))
+                    add_offset_link(((offset + max_count) // max_count) * max_count, _("Older"))
 
                 # generating html
                 paging_nav_html += "".join([
