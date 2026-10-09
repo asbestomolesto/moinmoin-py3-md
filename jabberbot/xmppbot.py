@@ -1592,7 +1592,7 @@ The call should look like:\n\n%(command)s %(params)s")
             # If so, queue the message for delayed delivery.
             contact = self.contacts.get(jid_text, '')
             if contact:
-                if command.async and contact.is_dnd() and not ignore_dnd:
+                if command.async_ and contact.is_dnd() and not ignore_dnd:
                     contact.messages.append(command)
                     return
 

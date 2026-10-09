@@ -14,12 +14,12 @@ from pyxmpp.jid import JID
 # First, XML RPC -> XMPP commands
 class NotificationCommand:
     """Class representing a notification request"""
-    def __init__(self, jids, notification, msg_type="normal", async=True):
+    def __init__(self, jids, notification, msg_type="normal", async_=True):
         """A constructor
 
         @param jids: a list of jids to sent this message to
         @param notification: dictionary with notification data
-        @param async: async notifications get queued if contact is DnD
+        @param async_: async_ notifications get queued if contact is DnD
         @type jids: list
 
         """
@@ -28,18 +28,18 @@ class NotificationCommand:
 
         self.notification = notification
         self.jids = jids
-        self.async = async
+        self.async_ = async_
         self.msg_type = msg_type
 
 class NotificationCommandI18n(NotificationCommand):
     """Notification request that should be translated by the XMPP bot"""
-    def __init__(self, jids, notification, msg_type="normal", async=True):
+    def __init__(self, jids, notification, msg_type="normal", async_=True):
         """A constructor
 
         Params as in NotificationCommand.
 
         """
-        NotificationCommand.__init__(self, jids, notification, msg_type, async)
+        NotificationCommand.__init__(self, jids, notification, msg_type, async_)
 
     def translate(self, gettext_func):
         """Translate the message using a provided gettext function

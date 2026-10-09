@@ -149,7 +149,7 @@ class XMLRPCClient(Thread):
         _ = lambda x: x
 
         cmddata = {'text': text, 'data': data}
-        report = cmd.NotificationCommandI18n(jid, cmddata, msg_type="chat", async=False)
+        report = cmd.NotificationCommandI18n(jid, cmddata, msg_type="chat", async_=False)
         self.commands_out.put_nowait(report)
 
     def get_auth_token(self, jid):
@@ -174,7 +174,7 @@ class XMLRPCClient(Thread):
         _ = lambda x: x
 
         cmddata = {'text': _("Credentials check failed, you might be unable to see all information.")}
-        warning = cmd.NotificationCommandI18n([jid], cmddata, async=False)
+        warning = cmd.NotificationCommandI18n([jid], cmddata, async_=False)
         self.commands_out.put_nowait(warning)
 
     def _get_multicall_result(self, jid):
@@ -222,7 +222,7 @@ class XMLRPCClient(Thread):
         _ = lambda x: x
 
         cmd_data = {'text': _("This command may take a while to complete, please be patient...")}
-        info = cmd.NotificationCommandI18n([command.jid], cmd_data, async=False, msg_type="chat")
+        info = cmd.NotificationCommandI18n([command.jid], cmd_data, async_=False, msg_type="chat")
         self.commands_out.put_nowait(info)
 
         self.multicall.getAllPages()
@@ -246,7 +246,7 @@ class XMLRPCClient(Thread):
         _ = lambda x: x
 
         cmd_data = {'text': _("This command may take a while to complete, please be patient...")}
-        info = cmd.NotificationCommandI18n([command.jid], cmd_data, async=False, msg_type="chat")
+        info = cmd.NotificationCommandI18n([command.jid], cmd_data, async_=False, msg_type="chat")
         self.commands_out.put_nowait(info)
 
         c = command
@@ -271,7 +271,7 @@ class XMLRPCClient(Thread):
         else:
             cmd_data = {'text': _("Revert failed.")}
 
-        info = cmd.NotificationCommandI18n([command.jid], cmd_data, async=False, msg_type="chat")
+        info = cmd.NotificationCommandI18n([command.jid], cmd_data, async_=False, msg_type="chat")
         self.commands_out.put_nowait(info)
 
     do_revert = _xmlrpc_decorator(do_revert)
@@ -366,7 +366,7 @@ class XMLRPCServer(Thread):
         @type notification: dict
 
         """
-        command = cmd.NotificationCommand(jids, notification, async=True)
+        command = cmd.NotificationCommand(jids, notification, async_=True)
         self.commands.put_nowait(command)
         return True
     send_notification.export = True
