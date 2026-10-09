@@ -24,18 +24,14 @@ import os, time, codecs, base64
 import hashlib
 import hmac
 from copy import deepcopy
-import md5crypt
 
-try:
-    import crypt
-except ImportError:
-    crypt = None
+from passlib.hash import apr_md5_crypt, md5_crypt, des_crypt
 
 from MoinMoin import log
 logging = log.getLogger(__name__)
 
 from MoinMoin import config, caching, wikiutil, i18n, events
-from werkzeug.security import safe_str_cmp as safe_str_equal
+from hmac import compare_digest as safe_str_equal
 from MoinMoin.util import timefuncs, random_string
 from MoinMoin.wikiutil import url_quote_plus
 
@@ -284,10 +280,11 @@ def encodePassword(cfg, pwd, salt=None, scheme=None):
         pwd = pwd.encode('utf-8')
         if salt is None:
             salt = random_string(20)
-        assert isinstance(salt, str)
+        if isinstance(salt, str):
+            salt = salt.encode('utf-8')
         hash = hashlib.new('sha1', pwd)
         hash.update(salt)
-        return '{SSHA}' + base64.encodestring(hash.digest() + salt).rstrip()
+        return '{SSHA}' + base64.b64encode(hash.digest() + salt).decode('ascii')
     else:
         # should never happen as we check the value of cfg.password_scheme
         raise NotImplementedError
@@ -713,32 +710,27 @@ class User:
                 else:
                     # a password hash to be checked by legacy, builtin code
                     if scheme == '{SSHA}':
-                        d = base64.decodestring(d)
+                        d = base64.b64decode(d)
                         salt = d[20:]
                         hash = hashlib.new('sha1', password.encode('utf-8'))
                         hash.update(salt)
-                        enc = base64.encodestring(hash.digest() + salt).rstrip()
+                        enc = base64.b64encode(hash.digest() + salt).decode('ascii')
 
                     elif scheme == '{SHA}':
-                        enc = base64.encodestring(
-                            hashlib.new('sha1', password.encode('utf-8')).digest()).rstrip()
+                        enc = base64.b64encode(
+                            hashlib.new('sha1', password.encode('utf-8')).digest()).decode('ascii')
 
-                    elif scheme == '{APR1}':
-                        # d is of the form "$apr1$<salt>$<hash>"
-                        salt = d.split('$')[2]
-                        enc = md5crypt.apache_md5_crypt(password.encode('utf-8'),
-                                                        salt.encode('ascii'))
-                    elif scheme == '{MD5}':
-                        # d is of the form "$1$<salt>$<hash>"
-                        salt = d.split('$')[2]
-                        enc = md5crypt.unix_md5_crypt(password.encode('utf-8'),
-                                                      salt.encode('ascii'))
-                    elif scheme == '{DES}':
-                        if crypt is None:
-                            return False, False
-                        # d is 2 characters salt + 11 characters hash
-                        salt = d[:2]
-                        enc = crypt.crypt(password.encode('utf-8'), salt.encode('ascii'))
+                    elif scheme in ('{APR1}', '{MD5}', '{DES}', ):
+                        # {APR1}: "$apr1$<salt>$<hash>", {MD5}: "$1$<salt>$<hash>",
+                        # {DES}: 2 characters salt + 11 characters hash
+                        handler = {'{APR1}': apr_md5_crypt,
+                                   '{MD5}': md5_crypt,
+                                   '{DES}': des_crypt, }[scheme]
+                        try:
+                            ok = handler.verify(password, d)
+                        except ValueError:
+                            ok = False
+                        enc = d if ok else ''
 
                     else:
                         logging.error('in user profile %r, password hash with unknown scheme encountered: %r' % (self.id, scheme))

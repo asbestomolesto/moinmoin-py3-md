@@ -140,9 +140,9 @@ class TestExpandPrivateVariables(TestExpandUserName):
             revisionsDir = os.path.join(path, 'revisions')
             os.mkdir(revisionsDir)
             current = '00000001'
-            file(os.path.join(path, 'current'), 'w').write('%s\n' % current)
+            open(os.path.join(path, 'current'), 'w').write('%s\n' % current)
             text = ' ME:: %s\n' % self.name
-            file(os.path.join(revisionsDir, current), 'w').write(text)
+            open(os.path.join(revisionsDir, current), 'w').write(text)
         except Exception as err:
             py.test.skip("Can not be create test page: %s" % err)
 
@@ -286,9 +286,9 @@ class TestCopyPage(object):
             revisionsDir = os.path.join(path, 'revisions')
             os.mkdir(revisionsDir)
             current = '00000001'
-            file(os.path.join(path, 'current'), 'w').write('%s\n' % current)
+            open(os.path.join(path, 'current'), 'w').write('%s\n' % current)
 
-            file(os.path.join(revisionsDir, current), 'w').write(self.text)
+            open(os.path.join(revisionsDir, current), 'w').write(self.text)
         except Exception as err:
             py.test.skip("Can not be create test page: %s" % err)
 

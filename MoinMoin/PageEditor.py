@@ -954,7 +954,7 @@ Try a different name.""", wiki=True) % (wikiutil.escape(newpagename), )
             os.mkdir(pagedir)
         if not os.path.exists(revdir):
             os.mkdir(revdir)
-            f = file(cfn, 'w')
+            f = open(cfn, 'w')
             f.write('%08d\n' % 0)
             f.close()
 
@@ -978,7 +978,7 @@ Try a different name.""", wiki=True) % (wikiutil.escape(newpagename), )
                 raise self.CouldNotLock(_("Page could not get locked. Missing 'current' file?"))
 
             # increment rev number of current(-locked) page
-            f = file(clfn)
+            f = open(clfn)
             revstr = f.read()
             f.close()
             try:
@@ -992,7 +992,7 @@ Try a different name.""", wiki=True) % (wikiutil.escape(newpagename), )
             revstr = '%08d' % rev
             # write the current page rev to a temporary file
             try:
-                f = file(cltfn, 'w')
+                f = open(cltfn, 'w')
                 f.write(revstr+'\n')
                 f.close()
             except IOError as err:

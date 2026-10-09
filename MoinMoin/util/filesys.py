@@ -294,19 +294,10 @@ def dcdisable():
     global DCENABLED
     DCENABLED = 0
 
-import dircache
-
 def dclistdir(path):
     warnings.warn(dc_deprecated, DeprecationWarning, stacklevel=2)
-    if sys.platform == 'win32' or not DCENABLED:
-        return os.listdir(path)
-    else:
-        return dircache.listdir(path)
+    return os.listdir(path)
 
 def dcreset():
     warnings.warn(dc_deprecated, DeprecationWarning, stacklevel=2)
-    if sys.platform == 'win32' or not DCENABLED:
-        return
-    else:
-        return dircache.reset()
 

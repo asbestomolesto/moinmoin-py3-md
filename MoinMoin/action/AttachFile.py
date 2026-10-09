@@ -1233,7 +1233,7 @@ def send_viewfile(pagename, request):
             try:
                 # rU: universal newline support so that even a \r is considered a valid line separator.
                 # CSV exported by office (on Mac?) has \r line separators.
-                content = file(fpath, 'rU').read()
+                content = open(fpath, "r").read()
                 content = wikiutil.decodeUnknownInput(content)
                 colorizer = Parser(content, request, filename=filename)
                 colorizer.format(request.formatter)

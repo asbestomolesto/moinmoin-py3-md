@@ -14,7 +14,7 @@ class TestFilters:
     def make_file(self, data):
         import tempfile
         fname = tempfile.mktemp()
-        f = file(fname, 'wb')
+        f = open(fname, 'wb')
         f.write(data)
         f.close()
         return fname

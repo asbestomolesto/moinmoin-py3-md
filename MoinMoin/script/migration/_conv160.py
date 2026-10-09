@@ -82,7 +82,7 @@ class EventLog:
         data = []
         try:
             lineno = 0
-            f = file(self.fname, 'r') # read in text mode, so we can iterate over text lines
+            f = open(self.fname, 'r') # read in text mode, so we can iterate over text lines
             for line in f:
                 lineno += 1
                 line = line.replace('\r', '').replace('\n', '')
@@ -107,7 +107,7 @@ class EventLog:
         """ write complete event-log to disk """
         print("Writing event-log. Depending on the size of event-log this may take a long time.")
         if self.data:
-            f = file(fname, 'wb') # write in binary mode, so it stays exactly as we write it, even on windows.
+            f = open(fname, 'wb') # write in binary mode, so it stays exactly as we write it, even on windows.
                                   # the code in MoinMoin.logfile also uses binary mode and writes \n only.
             for timestamp, action, kvdict in self.data:
                 pagename = kvdict.get('pagename')
@@ -137,7 +137,7 @@ class EditLog:
         data = {}
         try:
             lineno = 0
-            f = file(self.fname, 'r') # read in text mode, so we can iterate over text lines
+            f = open(self.fname, 'r') # read in text mode, so we can iterate over text lines
             for line in f:
                 lineno += 1
                 line = line.replace('\r', '').replace('\n', '')
@@ -165,7 +165,7 @@ class EditLog:
         if self.data:
             editlog = list(self.data.items())
             editlog.sort()
-            f = file(fname, 'wb') # write in binary mode, so it stays exactly as we write it, even on windows.
+            f = open(fname, 'wb') # write in binary mode, so it stays exactly as we write it, even on windows.
                                   # the code in MoinMoin.logfile also uses binary mode and writes \n only.
             max_rev = 0
             for key, fields in editlog:
@@ -218,7 +218,7 @@ class PageRev:
 
     def read(self):
         fname = opj(self.rev_dir, '%08d' % self.rev)
-        f = file(fname, "rb")
+        f = open(fname, "rb")
         data = f.read()
         f.close()
         data = data.decode(config.charset)
@@ -231,7 +231,7 @@ class PageRev:
             data = markup_converter(self.request, self.pagename, data, self.renames)
         fname = opj(rev_dir, '%08d' % rev)
         data = data.encode(config.charset)
-        f = file(fname, "wb")
+        f = open(fname, "wb")
         f.write(data)
         f.close()
 
@@ -275,7 +275,7 @@ class Page:
         # read current file
         current_fname = opj(page_dir, 'current')
         if os.path.exists(current_fname):
-            current_file = file(current_fname, "r")
+            current_file = open(current_fname, "r")
             current_rev = current_file.read()
             current_file.close()
             try:
@@ -325,7 +325,7 @@ class Page:
             if create_rev and not self.is_deleted:
                 current += 1
             current_fname = opj(page_dir, 'current')
-            current_file = file(current_fname, "w")
+            current_file = open(current_fname, "w")
             current_str = '%08d\n' % current
             current_file.write(current_str)
             current_file.close()
@@ -397,7 +397,7 @@ class User:
         self.bookmarks = {}
         fname_pattern = opj(self.users_dir, "%s.*.bookmark" % self.uid)
         for fname in glob.glob(fname_pattern):
-            f = file(fname, "r")
+            f = open(fname, "r")
             bookmark = f.read()
             f.close()
             wiki = fname.replace('.bookmark', '').replace(opj(self.users_dir, self.uid+'.'), '')

@@ -76,7 +76,7 @@ def pep8_error_count(path):
 
 def check_py_file(reldir, path, mtime):
     if TRAILING_SPACES == 'fix':
-        f = file(path, 'rb')
+        f = open(path, 'rb')
         data = f.read()
         f.close()
         fixed = FIX_TS_RE.sub('', data)
@@ -86,7 +86,7 @@ def check_py_file(reldir, path, mtime):
         if fixed == data:
             return
 
-        f = file(path, 'wb')
+        f = open(path, 'wb')
         f.write(fixed)
         f.close()
     # Please read and follow PEP8 - rerun this test until it does not fail any more,

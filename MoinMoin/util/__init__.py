@@ -119,9 +119,9 @@ def random_string(length, allowed_chars=None):
         @param length: length of the string
         @param allowed_chars: string with allowed characters or None
                               to indicate all 256 byte values should be used
-        @return: random string
+        @return: random string (bytes if allowed_chars is None)
     """
     if allowed_chars is None:
-        return ''.join([chr(random.randint(0, 255)) for dummy in range(length)])
+        return bytes([random.randint(0, 255) for dummy in range(length)])
 
     return ''.join([random.choice(allowed_chars) for dummy in range(length)])

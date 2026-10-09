@@ -8,9 +8,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import string
-
-rsplit = string.rsplit
+rsplit = str.rsplit
 
 sorted = sorted
 
@@ -25,3 +23,8 @@ hash_new = hashlib.new
 
 def hmac_new(key, msg, digestmod=hashlib.sha1):
     return hmac.new(key, msg, digestmod)
+
+
+def cmp(a, b):
+    """ the cmp() builtin of Python 2 """
+    return (a > b) - (a < b)

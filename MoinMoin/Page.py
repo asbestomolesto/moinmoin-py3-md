@@ -299,7 +299,7 @@ class Page(object):
         """
         revfilename = os.path.join(pagedir, 'current')
         try:
-            revfile = file(revfilename)
+            revfile = open(revfilename)
             revstr = revfile.read().strip()
             revfile.close()
             rev = int(revstr)

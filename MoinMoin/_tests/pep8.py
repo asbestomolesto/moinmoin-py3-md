@@ -548,7 +548,7 @@ class Checker:
 
     def __init__(self, filename):
         self.filename = filename
-        self.lines = file(filename, 'rb').readlines()
+        self.lines = open(filename, 'rb').readlines()
         self.physical_checks = find_checks('physical_line')
         self.logical_checks = find_checks('logical_line')
         options.counters['physical lines'] = \

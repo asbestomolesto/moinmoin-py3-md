@@ -110,14 +110,17 @@ class MsgFmt(object):
         # the keys are sorted in the .mo file
         keys.sort()
         offsets = []
-        ids = ''
-        strs = ''
+        ids = b''
+        strs = b''
         for id in keys:
             # For each string, we need size and file offset.  Each string is NUL
             # terminated; the NUL does not count into the size.
-            offsets.append((len(ids), len(id), len(strs), len(self.messages[id])))
-            ids += id + '\0'
-            strs += self.messages[id] + '\0'
+            # Note: the .po files are UTF-8, so the .mo strings are UTF-8, too.
+            bid = id.encode('utf-8')
+            bstr = self.messages[id].encode('utf-8')
+            offsets.append((len(ids), len(bid), len(strs), len(bstr)))
+            ids += bid + b'\0'
+            strs += bstr + b'\0'
         output = []
         # The header is 7 32-bit unsigned integers.  We don't use hash tables, so
         # the keys start right after the index tables.
@@ -140,17 +143,17 @@ class MsgFmt(object):
                              7*4,               # start of key index
                              7*4 + len(keys)*8, # start of value index
                              0, 0))             # size and offset of hash table
-        output.append(array.array("i", offsets).tostring())
+        output.append(array.array("i", offsets).tobytes())
         output.append(ids)
         output.append(strs)
-        return ''.join(output)
+        return b''.join(output)
 
 
 def make(filename, outfile):
     mf = MsgFmt()
     infile, outfile = mf.make_filenames(filename, outfile)
     try:
-        lines = file(infile).readlines()
+        lines = open(infile, encoding='utf-8').readlines()
     except IOError as msg:
         print(msg, file=sys.stderr)
         sys.exit(1)

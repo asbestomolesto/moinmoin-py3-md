@@ -1425,7 +1425,7 @@ def parse(request, text):
     except xml.parsers.expat.ExpatError as msg:
         # this sometimes crashes when it should not, so save the stuff to analyze it:
         logname = os.path.join(request.cfg.data_dir, "expaterror.log")
-        f = file(logname, "w")
+        f = open(logname, "w")
         f.write(text)
         f.write("\n" + "-"*80 + "\n" + str(msg))
         f.close()

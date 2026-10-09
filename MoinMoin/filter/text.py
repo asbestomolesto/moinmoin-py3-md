@@ -19,7 +19,7 @@ def execute(indexobj, filename):
             return data
         except UnicodeError:
             pass
-    f = file(filename, "r")
+    f = open(filename, "r")
     data = f.read()
     f.close()
     data = data.decode('ascii', 'replace')

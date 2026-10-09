@@ -171,7 +171,7 @@ class Daemon:
         """
         pid = None
         try:
-            pid = int(file(self.pidFile).read())
+            pid = int(open(self.pidFile).read())
         except IOError as err:
             if err.errno != errno.ENOENT:
                 raise

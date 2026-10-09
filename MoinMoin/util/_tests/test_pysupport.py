@@ -116,7 +116,7 @@ class Parser:
     key = '%s'
 ''' % self.key
         try:
-            file(self.pluginFilePath('.py'), 'w').write(data)
+            open(self.pluginFilePath('.py'), 'w').write(data)
         except Exception as err:
             py.test.skip("Can't create test plugin: %s" % str(err))
 

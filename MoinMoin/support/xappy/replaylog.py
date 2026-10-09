@@ -64,7 +64,7 @@ class ReplayLog(object):
         """
         # Mutex used to protect all access to _fd
         self._fd_mutex = threading.Lock()
-        self._fd = file(logpath, 'wb')
+        self._fd = open(logpath, 'wb')
 
         # Mutex used to protect all access to members other than _fd
         self._mutex = threading.Lock()

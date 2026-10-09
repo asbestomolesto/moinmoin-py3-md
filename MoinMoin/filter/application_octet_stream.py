@@ -45,7 +45,7 @@ def execute(indexobj, filename):
     fileext = os.path.splitext(filename)[1]
     if fileext.lower() in blacklist:
         return ''
-    f = file(filename, "rb")
+    f = open(filename, "rb")
     data = f.read(maxread)
     f.close()
     data = data.translate(trans_nontext) # replace non-ascii by blanks

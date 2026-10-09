@@ -26,7 +26,7 @@
 """
 
 import os, gettext, glob
-from io import StringIO
+from io import StringIO, BytesIO
 
 from MoinMoin import log
 logging = log.getLogger(__name__)
@@ -81,7 +81,7 @@ def i18n_init(request):
             for lang_file in glob.glob(po_filename(request, language='*', domain='MoinMoin')): # XXX only MoinMoin domain for now
                 language, domain, ext = os.path.basename(lang_file).split('.')
                 t = Translation(language, domain)
-                f = file(lang_file)
+                f = open(lang_file, encoding='utf-8')
                 t.load_po(f)
                 f.close()
                 logging.debug("loading translation %r" % language)
@@ -89,7 +89,7 @@ def i18n_init(request):
                 _languages[language] = {}
                 for key, value in list(t.info.items()):
                     #logging.debug("meta key %s value %r" % (key, value))
-                    _languages[language][key] = value.decode(encoding)
+                    _languages[language][key] = value
                 for pagename in strings.all_pages:
                     try:
                         pagename_translated = t.translation._catalog[pagename]
@@ -130,7 +130,7 @@ def bot_translations(request):
     for lang_file in glob.glob(po_filename(request, i18n_dir=po_dir, language='*', domain='JabberBot')):
         language, domain, ext = os.path.basename(lang_file).split('.')
         t = Translation(language, domain)
-        f = file(lang_file)
+        f = open(lang_file, encoding='utf-8')
         t.load_po(f)
         f.close()
         t.loadLanguage(request, trans_dir=po_dir)
@@ -159,7 +159,7 @@ class Translation(object):
         mf = MsgFmt()
         mf.read_po(f.readlines())
         mo_data = mf.generate_mo()
-        f = StringIO(mo_data)
+        f = BytesIO(mo_data)
         self.load_mo(f)
         f.close()
 
@@ -236,7 +236,7 @@ class Translation(object):
 
         if needsupdate:
             logging.debug("langfilename %s needs update" % langfilename)
-            f = file(langfilename)
+            f = open(langfilename, encoding='utf-8')
             self.load_po(f)
             f.close()
             trans = self.translation

@@ -1,0 +1,3 @@
+tests/wiki/
+__pycache__/
+*.pyc
