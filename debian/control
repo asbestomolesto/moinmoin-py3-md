@@ -29,9 +29,10 @@ Description: easy to use, full-featured and extensible wiki (Python 3 port)
  themes and plugins (actions, macros, parsers, formatters).
  .
  This is MoinMoin 1.10.0, MoinMoin 1.9.11 ported to Python 3. Existing
- 1.9 wikis can be used without converting the data. The wiki can be run with its own
- web server (an init script for sysvinit is included), with any WSGI
- server (Apache mod_wsgi, uWSGI, gunicorn), as CGI, FastCGI or SCGI.
+ 1.9 wikis can be used without converting the data. The wiki can be run
+ with its own web server (an init script for sysvinit is included), with
+ any WSGI server (Apache mod_wsgi, uWSGI, gunicorn), as CGI, FastCGI or
+ SCGI.
  .
  Not supported in this port: the Jabber notification bot (its pyxmpp
  library only exists for Python 2) and the DocBook/XSLT parsers that
