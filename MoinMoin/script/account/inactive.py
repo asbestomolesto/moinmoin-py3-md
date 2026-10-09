@@ -95,12 +95,12 @@ General syntax: moin [options] account inactive [inactive-options]
             editlog_uids = set()
             for log in logs(request):
                 editlog_uids |= set(uids(log))
-            with open(fn, "a") as f:
+            with open(fn, "a", encoding='utf-8') as f:
                 for uid in editlog_uids:
                     u = User(request, uid)
                     code = 'editlog_uids.add(%r)  # %r %r %r\n' % (
                                uid, u.name, u.email, u.jid)
-                    f.write(code.encode('utf-8'))
+                    f.write(code)
 
         elif self.options.py_exec_file:
             def check_interactive(u):
