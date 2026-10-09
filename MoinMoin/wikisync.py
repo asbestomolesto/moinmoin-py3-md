@@ -70,7 +70,7 @@ class SyncPage(object):
     def __repr__(self):
         return repr("<Sync Page %r>" % str(self))
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s[%s|%s]<%r:%r>" % (self.name, self.local_name, self.remote_name, self.local_rev, self.remote_rev)
 
     def __lt__(self, other):

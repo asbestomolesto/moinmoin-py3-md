@@ -61,9 +61,6 @@ class BaseExpression(object):
 
         self.pattern, self.search_re = self._build_re(self._pattern, use_re=use_re, case=case)
 
-    def __str__(self):
-        return str(self).encode(config.charset, 'replace')
-
     def negate(self):
         """ Negate the result of this term """
         self.negated = 1
@@ -155,7 +152,7 @@ class BaseExpression(object):
     def xapian_need_postproc(self):
         return self.case
 
-    def __unicode__(self):
+    def __str__(self):
         neg = self.negated and '-' or ''
         return '%s%s"%s"' % (neg, self._tag, str(self._pattern))
 
@@ -180,7 +177,7 @@ class AndExpression(BaseExpression):
     def costs(self):
         return sum([t.costs for t in self._subterms])
 
-    def __unicode__(self):
+    def __str__(self):
         result = ''
         for t in self._subterms:
             result += self.operator + str(t)

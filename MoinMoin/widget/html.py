@@ -22,7 +22,7 @@ class Text:
     def __init__(self, text):
         self.text = text
 
-    def __unicode__(self):
+    def __str__(self):
         return wikiutil.escape(self.text)
 
 
@@ -32,7 +32,7 @@ class Raw:
     def __init__(self, markup):
         self.markup = markup
 
-    def __unicode__(self):
+    def __str__(self):
         return self.markup
 
 
@@ -86,7 +86,7 @@ class Element:
                 result.append('%s="%s"' % (key, wikiutil.escape(val, 1)))
         return ' '.join(result)
 
-    def __unicode__(self):
+    def __str__(self):
         raise NotImplementedError
 
 
@@ -94,7 +94,7 @@ class EmptyElement(Element):
     """ HTML elements with an empty content model.
     """
 
-    def __unicode__(self):
+    def __str__(self):
         return "<%s>" % self._openingtag()
 
 
@@ -116,7 +116,7 @@ class CompositeElement(Element):
             self.append(child)
         return self
 
-    def __unicode__(self):
+    def __str__(self):
         childout = []
         for c in self.children:
             co = str(c)

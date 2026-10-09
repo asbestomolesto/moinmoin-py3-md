@@ -64,14 +64,14 @@ def decodeUnknownInput(text):
         return text
 
     try:
-        return str(text, 'utf-8')
+        return text.decode('utf-8')
     except UnicodeError:
         if config.charset not in ['utf-8', 'iso-8859-1']:
             try:
-                return str(text, config.charset)
+                return text.decode(config.charset)
             except UnicodeError:
                 pass
-        return str(text, 'iso-8859-1', 'replace')
+        return text.decode('iso-8859-1', 'replace')
 
 
 def decodeUserInput(s, charsets=[config.charset]):

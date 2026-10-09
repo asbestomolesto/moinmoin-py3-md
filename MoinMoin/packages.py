@@ -28,10 +28,10 @@ class PackageException(Exception):
 class ScriptException(Exception):
     """ Raised when there is a problem in the script. """
 
-    def __unicode__(self):
-        """ Return unicode error message """
-        if isinstance(self.args[0], str):
-            return str(self.args[0], config.charset)
+    def __str__(self):
+        """ Return the error message """
+        if isinstance(self.args[0], bytes):
+            return self.args[0].decode(config.charset)
         else:
             return str(self.args[0])
 

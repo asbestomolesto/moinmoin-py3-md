@@ -318,9 +318,6 @@ class Fragment(object):
             else:
                 yield escape(child, quotes=False)
 
-    def __unicode__(self):
-        return ''.join(self.serialize())
-
     def __str__(self):
         return ''.join(self.serialize())
 
