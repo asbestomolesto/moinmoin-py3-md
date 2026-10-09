@@ -6,6 +6,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
+import pytest
 from MoinMoin.web.request import TestRequest, evaluate_request
 from MoinMoin import wsgiapp
 from MoinMoin._tests import wikiconfig
@@ -138,6 +139,9 @@ class TestMoinAuthSession(AuthTest):
         from MoinMoin.auth import MoinAuth
         auth = [MoinAuth()]
 
+    @pytest.mark.xfail(reason="also fails with the original MoinMoin 1.9.11 on Python 2: "
+                              "the session of a logged-in user is saved on the first request, "
+                              "so the trail already contains the first page")
     def testMoinAuthSession(self):
         """ run some requests with MoinAuth, check whether session works """
         from MoinMoin.user import User

@@ -7,8 +7,6 @@ MoinMoin - change or reset the password of a user account
 @license: GNU GPL, see COPYING for details.
 """
 
-
-
 import sys
 
 from MoinMoin.script import MoinScript, log
