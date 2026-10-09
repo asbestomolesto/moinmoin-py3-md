@@ -11,6 +11,7 @@ import re
 
 from . import wikiutil160a as wikiutil
 from MoinMoin import config, macro
+from MoinMoin.util.py2order import groupdict_items
 
 Dependencies = []
 
@@ -908,7 +909,7 @@ class Parser:
     def replace(self, match, inhibit_p=False):
         """ Replace match using type name """
         result = []
-        for type, hit in list(match.groupdict().items()):
+        for type, hit in groupdict_items(match):
             if hit is not None and not type in ["hmarker", ]:
 
                 ##result.append(u'<span class="info">[replace: %s: "%s"]</span>' % (type, hit))

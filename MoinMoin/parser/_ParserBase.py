@@ -28,6 +28,7 @@ import hashlib
 import re
 
 from MoinMoin import log
+from MoinMoin.util.py2order import groupdict_items
 logging = log.getLogger(__name__)
 
 from MoinMoin import config, wikiutil
@@ -251,7 +252,7 @@ class ParserBase:
 
     def format_match(self, formatter, match):
         result = []
-        for n, hit in list(match.groupdict().items()):
+        for n, hit in groupdict_items(match):
             if hit is None:
                 continue
             r = self._formatting_rules_n2r[n]

@@ -11,6 +11,7 @@
 import re
 
 from MoinMoin import log
+from MoinMoin.util.py2order import groupdict_items
 logging = log.getLogger(__name__)
 
 from MoinMoin import config, wikiutil, macro
@@ -1383,7 +1384,7 @@ class Parser:
 
     def _replace(self, match):
         """ Same as replace() but with no magic """
-        for name, text in match.groupdict().items():
+        for name, text in groupdict_items(match):
             if text is not None:
                 # Get replace method and replace text
                 replace_func = getattr(self, '_%s_repl' % name)
@@ -1393,7 +1394,7 @@ class Parser:
     def replace(self, match, inhibit_p=False):
         """ Replace match using type name """
         result = []
-        for type, hit in list(match.groupdict().items()):
+        for type, hit in groupdict_items(match):
             if hit is not None and not type in ["hmarker", ]:
 
                 ##result.append(u'<span class="info">[replace: %s: "%s"]</span>' % (type, hit))

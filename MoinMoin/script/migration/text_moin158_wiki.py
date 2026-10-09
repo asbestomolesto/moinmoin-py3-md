@@ -9,6 +9,7 @@
 import os, re
 import hashlib
 from MoinMoin import config, wikiutil
+from MoinMoin.util.py2order import groupdict_items
 from MoinMoin import macro as wikimacro
 from MoinMoin.Page import Page
 from MoinMoin.util import web
@@ -893,7 +894,7 @@ class Parser:
     def replace(self, match):
         """ Replace match using type name """
         result = []
-        for type, hit in list(match.groupdict().items()):
+        for type, hit in groupdict_items(match):
             if hit is not None and type != "hmarker":
 
                 ###result.append(u'<span class="info">[replace: %s: "%s"]</span>' % (type, hit))

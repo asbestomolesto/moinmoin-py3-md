@@ -25,6 +25,8 @@
 import re
 import sys
 
+from MoinMoin.util.py2order import groupdict_items
+
 __version__ = '1.1'
 
 
@@ -388,7 +390,7 @@ class Parser:
         """Invoke appropriate _*_repl method. Called for every matched group."""
 
         groups = match.groupdict()
-        for name, text in groups.items():
+        for name, text in groupdict_items(match):
             if text is not None:
                 replace = getattr(self, '_%s_repl' % name)
                 replace(groups)

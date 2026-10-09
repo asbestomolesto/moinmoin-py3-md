@@ -28,6 +28,7 @@
 import re
 
 from MoinMoin import i18n
+from MoinMoin.util.py2order import groupdict_items
 i18n.wikiLanguages = lambda: {}
 
 from MoinMoin import config, wikiutil, macro
@@ -456,7 +457,7 @@ class Converter(Parser):
     def replace(self, match):
         """ Replace match using type name """
         result = []
-        for _type, hit in list(match.groupdict().items()):
+        for _type, hit in groupdict_items(match):
             if hit is not None and not _type in ["hmarker", ]:
                 # Get replace method and replace hit
                 replace = getattr(self, '_' + _type + '_repl')
