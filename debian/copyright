@@ -45,8 +45,6 @@ Comment: based on JHotDraw 5.1, see docs/licenses/twikidraw.txt
 Files: MoinMoin/web/static/htdocs/modernized/img/*
 Copyright: Tango Desktop Project
 License: CC-BY-SA-2.5
- Creative Commons Attribution-ShareAlike 2.5,
- https://creativecommons.org/licenses/by-sa/2.5/
 
 Files: debian/*
 Copyright: 2026 asbesto <aladarmrgradymezil@gmail.com>
@@ -109,4 +107,7 @@ License: BSD-2-clause
  THE POSSIBILITY OF SUCH DAMAGE.
 
 License: CC-BY-SA-2.5
- See https://creativecommons.org/licenses/by-sa/2.5/legalcode
+ Creative Commons Attribution-ShareAlike 2.5 Generic.
+ The full text of the license is available at
+ https://creativecommons.org/licenses/by-sa/2.5/legalcode
+ (it is not shipped with Debian, see docs/licenses/modernized.icons.txt).
