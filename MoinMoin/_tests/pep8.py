@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 # pep8.py - Check Python source code formatting, according to PEP 8
 # Copyright (C) 2006 Johann C. Rocholl <johann@browsershots.org>
 #

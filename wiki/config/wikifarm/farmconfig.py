@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 # IMPORTANT! This encoding (charset) setting MUST be correct! If you live in a
 # western country and you don't know that you use utf-8, you probably want to
 # use iso-8859-1 (or some other iso charset). If you use utf-8 (a Unicode

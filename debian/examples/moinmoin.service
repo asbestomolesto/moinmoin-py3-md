@@ -1,3 +1,5 @@
+# Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
+# as part of the Python 3 port of MoinMoin (version 1.10.0).
 # For systems WITH systemd only (Devuan does not need it, it uses
 # /etc/init.d/moinmoin): standalone server of one wiki instance.
 # Copy to /etc/systemd/system/moinmoin-mywiki.service and adapt.

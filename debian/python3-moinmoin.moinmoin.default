@@ -1,3 +1,5 @@
+# Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
+# as part of the Python 3 port of MoinMoin (version 1.10.0).
 # Configuration of /etc/init.d/moinmoin
 #
 # The init script runs MoinMoin wikis with the standalone server of

@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
+# Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     12_to_13.py - converting CRLF / LF style to the future standard
     Use this to convert from 1.3 pre patch-275 to patch-275.

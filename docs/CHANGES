@@ -40,6 +40,12 @@ Version 1.10.0 (2026-10-09)
   * the Jabber bot (needs pyxmpp, Python 2 only) and the DocBook/XSLT
     parsers (need 4Suite, Python 2 only).
 
+  Credits:
+  * Python 3 port by Gabriele 'asbesto' Zaverio, made with the assistance
+    of Claude (Anthropic AI). The files written or modified by Claude are
+    marked with a comment at their top; every change is in the git history
+    (commits with "Co-Authored-By: Claude").
+
 
 Version 1.9.11 (2020-11-08)
 

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 # copied from trac.util.html, revision 3609, merged on 2006-08-20
 #
 # Copyright (C) 2003-2006 Edgewall Software

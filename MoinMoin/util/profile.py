@@ -1,3 +1,5 @@
+# MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 """ profile - moin profiling utilities
 
 This module provides profilers used to profile the memory usage of a

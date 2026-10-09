@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 """
     MoinMoin installer
 
@@ -77,6 +79,9 @@ setup_args = {
     'description': "MoinMoin %s is an easy to use, full-featured and extensible wiki software package (Python 3 port)" % (release, ),
     'author': "Juergen Hermann et al.",
     'author_email': "moin-user@python.org",
+    # MoinMoin 1.10.0, the Python 3 port, made with the assistance of Claude (Anthropic AI)
+    'maintainer': "Gabriele 'asbesto' Zaverio",
+    'maintainer_email': "aladarmrgradymezil@gmail.com",
     'url': "https://moinmo.in/",
     'license': "GNU GPL",
     'long_description': """

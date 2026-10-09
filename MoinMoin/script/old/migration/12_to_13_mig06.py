@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
+# Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     12_to_13.py - migration from < moin--main--patch-248 to >= patch 249
     * convert event-log from iso8859-1 to config.charset (utf-8) encoding

@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 """
     remove everthing top of the first msgid line (PIs destroyed by gettext),
     prepend some processing instructions to a .po file to be able to put it

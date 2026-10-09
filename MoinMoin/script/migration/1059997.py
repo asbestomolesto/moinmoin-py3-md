@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
+# MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
+# Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin - 1st pass of 1.6a to 1.6 migration
 

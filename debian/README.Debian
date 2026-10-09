@@ -80,3 +80,11 @@ Running the test suite (source package)
 ---------------------------------------
 
   python3 -m pytest MoinMoin
+
+Credits
+-------
+
+MoinMoin was written by Juergen Hermann, Thomas Waldmann and the MoinMoin
+developers. Version 1.10.0 (the Python 3 port) and this package were made by
+Gabriele 'asbesto' Zaverio with the assistance of Claude (Anthropic AI): the
+files written or modified by Claude carry a comment saying so at their top.

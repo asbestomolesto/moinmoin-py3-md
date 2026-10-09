@@ -1,3 +1,5 @@
+# MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 """
 Verify that the MoinMoin source files conform (mostly) to PEP8 coding style.
 

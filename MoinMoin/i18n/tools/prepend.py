@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
+# Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     prepend some processing instructions to a .po file to be able to put it
     onto moinmaster wiki, letting it get processed by gettext parser

@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: iso-8859-1 -*-
+# MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 """check_i18n - compare texts in the source with the language files
 
 Searches in the MoinMoin sources for calls of _() and tries to extract

@@ -1,4 +1,6 @@
 # -*- coding: iso-8859-1 -*-
+# MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 """
     MoinMoin - convert content in 1.5.8 wiki markup to 1.6.0 style
                by using a modified 1.5.8 parser as translator.

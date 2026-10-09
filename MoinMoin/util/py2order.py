@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
+# as part of the Python 3 port of MoinMoin (version 1.10.0).
 """
     MoinMoin - Python 2 dict ordering
 

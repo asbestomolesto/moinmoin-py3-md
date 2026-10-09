@@ -1,4 +1,6 @@
 # -*- coding: iso-8859-1 -*-
+# MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
+# Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 # This is some sample code you might find useful when you want to use some
 # external cookie (made by some other program, not moin) with moin.
 # See the +++ places for customizing it to your needs. You need to put this

@@ -1,3 +1,5 @@
+# MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
+# Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
    MoinMoin - Subscribeuser - Action
    Subscribe (or unsubscribe) a user to a page.

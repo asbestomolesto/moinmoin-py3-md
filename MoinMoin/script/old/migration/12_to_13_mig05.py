@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
+# Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     migration from moin 1.3 < patch-221 to moin 1.3 >= patch-221
     We need to make versioning completely different. Problem:
