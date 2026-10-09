@@ -39,10 +39,16 @@ def copyData():
 
 
 def untarUnderlay():
+    tarname = os.path.join(SHARE, 'underlay.tar')
+    if not os.path.exists(tarname):
+        # released tarballs ship the underlay as a directory
+        print('copying underlay ...')
+        shutil.copytree(os.path.join(SHARE, 'underlay'), os.path.join(WIKI, 'underlay'))
+        return
     print('untaring underlay ...')
-    tar = tarfile.open(os.path.join(SHARE, 'underlay.tar'))
+    tar = tarfile.open(tarname)
     for member in tar:
-        tar.extract(member, WIKI)
+        tar.extract(member, WIKI, filter='data')
     tar.close()
 
 
