@@ -251,4 +251,54 @@ class TestProcessingInstructions(object):
         assert 'text_markdown' in list(mt.module_name())
 
 
+class TestDetectMarkup(object):
+    """ pages without a #format line: the markup is guessed from the text """
+
+    def test_markdown(self):
+        text = '# Title\n\nSome **bold** text and [a link](FrontPage).\n\n- one\n- two\n'
+        assert wikiutil.detect_markup(text) == 'markdown'
+
+    def test_markdown_setext_and_code(self):
+        text = 'Title\n=====\n\n```python\nx = 1\n```\n'
+        assert wikiutil.detect_markup(text) == 'markdown'
+
+    def test_wiki(self):
+        text = "= Title =\n\n'''bold''' text\n\n * one\n * two\n\n||a||b||\n"
+        assert wikiutil.detect_markup(text) == 'wiki'
+
+    def test_wiki_with_comments(self):
+        text = ('##master-page:FooTemplate\n#language en\n'
+                '## these are just samples\n<<Include(Foo)>>\n## and more comments\n')
+        assert wikiutil.detect_markup(text) != 'markdown'
+
+    def test_plain_text_is_not_decided(self):
+        assert wikiutil.detect_markup('Just some text.\n\nAnother paragraph.\n') is None
+        assert wikiutil.detect_markup('') is None
+
+    def test_format_line_wins(self):
+        assert wikiutil.detect_markup('#format wiki\n# Title\n**x**\n') is None
+
+    def test_markup_inside_code_is_ignored(self):
+        text = "{{{\n# not a heading\n**not bold**\n[x](y)\n}}}\n= Title =\n"
+        assert wikiutil.detect_markup(text) == 'wiki'
+
+    def test_page_uses_detected_markup(self):
+        page = Page(self.request, PAGENAME)
+        page.set_raw_body('# Title\n\nSome **bold** and [a link](FrontPage).\n')
+        assert page.pi['format'] == 'markdown'
+        assert page.data.startswith('# Title')
+        page = Page(self.request, PAGENAME)
+        page.set_raw_body("= Title =\n'''bold'''\n")
+        assert page.pi['format'] == 'wiki'
+
+    def test_autodetect_off(self):
+        self.request.cfg.markup_autodetect = False
+        try:
+            page = Page(self.request, PAGENAME)
+            page.set_raw_body('# Title\n\nSome **bold** and [a link](FrontPage).\n')
+            assert page.pi['format'] == self.request.cfg.default_markup
+        finally:
+            self.request.cfg.markup_autodetect = True
+
+
 coverage_modules = ['MoinMoin.parser.text_markdown']

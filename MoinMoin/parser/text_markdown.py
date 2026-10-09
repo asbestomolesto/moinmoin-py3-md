@@ -4,11 +4,11 @@
 """
     MoinMoin - Markdown parser
 
-    Renders pages written in Markdown. A page uses it with the processing
-    instruction "#format markdown" in its first lines (or for all pages
-    without a #format line, with default_markup = 'markdown' in the wiki
-    configuration). Markdown and native MoinMoin wiki pages can be mixed
-    freely in the same wiki.
+    Renders pages written in Markdown. A page without a #format line is
+    recognized as Markdown from its text (cfg.markup_autodetect, see
+    wikiutil.detect_markup); "#format markdown" in the first lines forces
+    it. Markdown and native MoinMoin wiki pages can be mixed freely in the
+    same wiki.
 
     The rendering is done by the Python-Markdown library; the parts that
     need the wiki are given to the MoinMoin formatter, so they work like in

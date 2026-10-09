@@ -18,10 +18,12 @@ Version 1.11.0+md1 (2026-10-09)
   HINT: the URL prefix of the static files changed to /moin_static1110.
 
   New features:
-  * Pages can be written in Markdown: put "#format markdown" at the top of
-    the page, or set default_markup = 'markdown' in the wiki configuration
-    for all pages without a #format line. Markdown and wiki syntax pages
-    can be used side by side in the same wiki.
+  * Pages can be written in Markdown. Markdown and wiki syntax pages can be
+    used side by side in the same wiki. A page without a #format line is
+    recognized as Markdown or wiki markup from its text (new option
+    markup_autodetect, default True; when the text is not clearly one of
+    them, default_markup is used). "#format markdown" / "#format wiki" at
+    the top of the page force the markup. Existing pages are not changed.
     Markdown pages support:
     - wiki links [[PageName]], [[PageName|text]], [text](PageName),
       relative page names, anchors, interwiki links;

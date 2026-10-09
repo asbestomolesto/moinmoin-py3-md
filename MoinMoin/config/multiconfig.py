@@ -1123,6 +1123,8 @@ options_no_group_name = {
     # MoinMoin 1.11.0+md1 (Markdown support), Claude (Anthropic AI):
     ('markdown_extensions', ['tables', 'footnotes', 'def_list', 'abbr', 'sane_lists'],
      'Python-Markdown extensions used for Markdown pages (#format markdown). Raw HTML is never rendered.'),
+    ('markup_autodetect', True,
+     'Pages without a #format line: guess from the text whether they are written in Markdown or in wiki markup (default_markup is used when the text is not clearly one of them).'),
 
     ('html_head', '', "Additional <HEAD> tags, see HelpOnThemes."),
     ('html_head_queries', '<meta name="robots" content="noindex,nofollow">\n',

@@ -14,17 +14,27 @@ recenti e nei backlink, e hanno cronologia, differenze e allegati.
 
 ## Scrivere una pagina in Markdown
 
-Metti questa riga all'inizio della pagina (non viene mostrata):
+Basta scrivere la pagina in Markdown: MoinMoin legge il testo e riconosce da
+solo se una pagina è scritta in Markdown o nella sintassi wiki di MoinMoin
+(per esempio dai titoli `# Titolo`, dal `**grassetto**`, dai link
+`[testo](link)`, dagli elenchi a inizio riga, dai blocchi di codice
+```` ``` ````). Le pagine wiki esistenti restano come sono.
+
+Se una pagina è troppo corta o semplice per essere riconosciuta (viene
+allora mostrata come sintassi wiki), metti questa riga all'inizio della
+pagina (non viene mostrata):
 
 ```
 #format markdown
 ```
 
-oppure crea la pagina dal [[MarkdownTemplate]]. Se l'amministratore imposta
-`default_markup = 'markdown'` nella configurazione, le pagine senza riga
-`#format` sono in Markdown.
+oppure crea la pagina dal [[MarkdownTemplate]]. Una riga `#format` vale
+sempre più del riconoscimento automatico (`#format wiki` impone la sintassi
+wiki). L'amministratore può disattivare il riconoscimento con
+`markup_autodetect = False`, e rendere Markdown il formato delle pagine
+senza riga `#format` con `default_markup = 'markdown'`.
 
-Le righe `# Titolo` e `## Sezione` dopo `#format markdown` sono intestazioni
+Le righe `# Titolo` e `## Sezione` in una pagina Markdown sono intestazioni
 Markdown (le istruzioni di MoinMoin, come `#acl`, non hanno uno spazio dopo
 il `#`).
 

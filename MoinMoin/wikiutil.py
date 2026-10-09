@@ -2637,6 +2637,87 @@ def get_processing_instructions(body, default_format=None):
     return pi, body
 
 
+# Guessing the markup of a page without a #format line: each kind of markup
+# has constructs that the other one does not have (or writes differently).
+# (MoinMoin 1.11.0+md1: Markdown support, written by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio)
+_pi_verbs = ('acl', 'pragma', 'language', 'redirect', 'refresh',
+             'deprecated', 'openiduser', )
+_markup_code_blocks_re = re.compile(r'^(```|~~~).*?^\1[ \t]*$|\{\{\{.*?\}\}\}', re.M | re.S)
+_markdown_code_re = re.compile(r'^(```|~~~)', re.M)
+_wiki_code_re = re.compile(r'\{\{\{')
+_markdown_signs = [
+    (3, re.compile(r'^#[ \t]+\S', re.M)),                       # # heading
+    (2, re.compile(r'^#{2,6}[ \t]+[^\sa-z]', re.M)),            # ## Heading (a wiki comment is
+                                                                # usually a sentence)
+    (3, re.compile(r'^[^\s=|#].*\n=+[ \t]*$', re.M)),           # setext heading
+    (2, re.compile(r'^[^\s=|#-].*\n-{3,}[ \t]*$', re.M)),       # setext heading (or text + ----)
+    (3, re.compile(r'!?\[[^\[\]]{1,200}\]\([^()\s]+(?:\s+"[^"\n]*")?\)')), # [text](url)
+    (3, re.compile(r'^ {0,3}\[[^\]\n]+\]:[ \t]+\S', re.M)),     # [ref]: url
+    (3, re.compile(r'^\|?[ \t]*:?-{3,}:?[ \t]*(\|[ \t]*:?-{3,}:?[ \t]*)+\|?[ \t]*$', re.M)), # table
+    (2, re.compile(r'\*\*[^*\s][^*\n]*\*\*')),                  # **bold**
+    (2, re.compile(r'^[-*+][ \t]+\S', re.M)),                   # list at column 0
+    (2, re.compile(r'^\d+\.[ \t]+\S', re.M)),                   # numbered list at column 0
+    (2, re.compile(r'^>[ \t]?\S', re.M)),                       # > quote
+]
+_wiki_signs = [
+    (3, re.compile(r'^[ \t]*(=+)[ \t].*[ \t]\1[ \t]*$', re.M)), # = heading =
+    (3, re.compile(r'^[ \t]*\|\|', re.M)),                      # || table ||
+    (3, re.compile(r'\{\{[^{}\n]+\}\}')),                       # {{embedded}}
+    (2, re.compile(r"''[^'\n]+''")),                            # ''italic'', '''bold'''
+    (1, re.compile(r'^[ \t]+(\*|\d+\.|[aAiI]\.)[ \t]+\S', re.M)), # indented list (also Markdown)
+    (2, re.compile(r'^[ \t]+\S[^\n]*::[ \t]', re.M)),           # term:: definition
+    (2, re.compile(r",,[^,\n]+,,|\^[^^\n ]+\^|--\([^\n]*?\)--|~-[^\n]*?-~|~\+[^\n]*?\+~")),
+]
+_markup_sign_max = 4 # count each construct at most this many times
+
+
+def _markup_score(signs, text):
+    score = 0
+    for weight, sign in signs:
+        n = 0
+        for m in sign.finditer(text):
+            n += 1
+            if n == _markup_sign_max:
+                break
+        score += weight * n
+    return score
+
+
+def detect_markup(body):
+    """ Guess the markup of a page text that has no #format line.
+
+        @param body: the whole page text, processing instructions included
+        @rtype: str or None
+        @return: 'markdown' or 'wiki' if the text clearly uses one of them,
+                 None if it has a #format line or if it is not clear
+                 (e.g. plain text, that is the same in both)
+    """
+    lines = body.replace('\r\n', '\n').split('\n')
+    # skip the processing instructions and the ## comments on top
+    # ("## Section" could also be a Markdown heading: it is not counted)
+    while lines and lines[0].startswith('#'):
+        line = lines[0]
+        verb = line[1:].split(' ', 1)[0].lower()
+        if verb == 'format':
+            return None # the page says itself
+        if not (line.startswith('##') or verb in _pi_verbs):
+            break # e.g. a "# Title" Markdown heading
+        lines.pop(0)
+    text = '\n'.join(lines)
+    plain = _markup_code_blocks_re.sub('', text) # no markup inside code
+
+    markdown = _markup_score(_markdown_signs, plain)
+    markdown += 3 * min(len(_markdown_code_re.findall(text)) // 2, _markup_sign_max)
+    wiki = _markup_score(_wiki_signs, plain)
+    wiki += 3 * min(len(_wiki_code_re.findall(text)), _markup_sign_max)
+    if markdown >= 4 and markdown > 1.5 * wiki:
+        return 'markdown'
+    if wiki >= 3 and wiki > 1.5 * markdown:
+        return 'wiki'
+    return None
+
+
 class Version(tuple):
     """
     Version objects store versions like 1.2.3-4.5alpha6 in a structured

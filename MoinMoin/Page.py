@@ -241,15 +241,28 @@ class Page(object):
 
     def get_meta(self):
         if self.__meta is None:
-            self.__meta, self.__data = wikiutil.get_processing_instructions(self.body, self.cfg.default_markup)
+            self.__meta, self.__data = wikiutil.get_processing_instructions(self.body, self.default_markup())
         return self.__meta
     meta = property(fget=get_meta) # processing instructions, ACLs (upper part of page text)
 
     def get_data(self):
         if self.__data is None:
-            self.__meta, self.__data = wikiutil.get_processing_instructions(self.body, self.cfg.default_markup)
+            self.__meta, self.__data = wikiutil.get_processing_instructions(self.body, self.default_markup())
         return self.__data
     data = property(fget=get_data) # content (lower part of page text)
+
+    def default_markup(self):
+        """ markup of the page if it has no #format line: cfg.default_markup,
+            or the one guessed from the text (cfg.markup_autodetect)
+            (MoinMoin 1.11.0+md1, written by Claude (Anthropic AI))
+        """
+        body = self.body
+        if getattr(self, '_default_markup_body', None) is not body:
+            markup = self.cfg.default_markup or "wiki"
+            if getattr(self.cfg, 'markup_autodetect', False):
+                markup = wikiutil.detect_markup(body) or markup
+            self._default_markup, self._default_markup_body = markup, body
+        return self._default_markup
 
     def get_pi(self):
         if self.__pi is None:
@@ -1014,7 +1027,7 @@ class Page(object):
         meta = self.meta
 
         # default is wiki markup
-        pi['format'] = self.cfg.default_markup or "wiki"
+        pi['format'] = self.default_markup()
         pi['formatargs'] = ''
         pi['lines'] = len(meta)
         acl = []

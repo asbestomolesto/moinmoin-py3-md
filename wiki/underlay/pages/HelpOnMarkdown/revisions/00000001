@@ -14,19 +14,28 @@ RecentChanges and backlinks, and they have history, diffs and attachments.
 
 ## Writing a Markdown page
 
-Put this line at the very top of the page (it is not shown):
+Just write the page in Markdown: MoinMoin reads the text and recognizes by
+itself whether a page is written in Markdown or in MoinMoin wiki markup
+(e.g. from `# Title` headings, `**bold**`, `[text](link)` links, lists
+starting at the beginning of the line, ```` ``` ```` code blocks). Existing
+wiki pages stay as they are.
+
+If a page is too short or too plain to be recognized (it is then shown as
+wiki markup), put this line at the very top of the page (it is not shown):
 
 ```
 #format markdown
 ```
 
-Or create the page from the [[MarkdownTemplate]]. If the wiki
-administrator sets `default_markup = 'markdown'` in the wiki
-configuration, pages without a `#format` line are Markdown.
+or create the page from the [[MarkdownTemplate]]. A `#format` line always
+wins over the automatic recognition (`#format wiki` forces wiki markup).
+The wiki administrator can turn the recognition off with
+`markup_autodetect = False`, and make Markdown the format of the pages
+without a `#format` line with `default_markup = 'markdown'`.
 
-Lines like `# Title` and `## Section` after `#format markdown` are
-Markdown headings (the MoinMoin processing instructions, like `#acl`,
-have no blank after the `#`).
+Lines like `# Title` and `## Section` in a Markdown page are Markdown
+headings (the MoinMoin processing instructions, like `#acl`, have no blank
+after the `#`).
 
 ## Text
 
