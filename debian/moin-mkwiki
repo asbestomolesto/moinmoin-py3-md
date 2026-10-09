@@ -74,8 +74,10 @@ chmod 0755 "$DIR/moin.cgi" "$DIR/moin.fcgi" "$DIR/moin.scgi"
 for f in moin.wsgi moin.cgi moin.fcgi moin.scgi; do
     python3 - "$DIR/$f" "$DIR" <<'PY'
 import sys
+import tokenize
 fn, instance = sys.argv[1], sys.argv[2]
-s = open(fn, encoding='utf-8').read()
+with tokenize.open(fn) as f:
+    s = f.read()
 line = "sys.path.insert(0, %r)\n" % instance
 if line not in s:
     s = s.replace("import sys, os\n", "import sys, os\n" + line, 1)
@@ -86,8 +88,11 @@ done
 SECRET=$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')
 python3 - "$SHARE/config/wikiconfig.py" "$DIR/wikiconfig.py" "$SITENAME" "$LANGUAGE" "$SUPERUSER" "$SECRET" <<'PY'
 import sys
+import tokenize
 src, dst, sitename, language, superuser, secret = sys.argv[1:]
-s = open(src, encoding='utf-8').read()
+with tokenize.open(src) as f:   # honours the "coding:" line of the file
+    s = f.read()
+s = s.replace("coding: iso-8859-1", "coding: utf-8")
 s = s.replace("    sitename = 'Untitled Wiki'", "    sitename = %r" % sitename, 1)
 s = s.replace("    language_default = 'en'", "    language_default = %r" % language, 1)
 extra = "\n    # created by moin-mkwiki\n    secrets = %r\n" % secret
