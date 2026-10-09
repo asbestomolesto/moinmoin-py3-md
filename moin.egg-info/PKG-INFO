@@ -1,0 +1,52 @@
+Metadata-Version: 2.4
+Name: moin
+Version: 1.9.11
+Summary: MoinMoin 1.9.11 is an easy to use, full-featured and extensible wiki software package (Python 3 port)
+Home-page: https://moinmo.in/
+Author: Juergen Hermann et al.
+Author-email: moin-user@python.org
+License: GNU GPL
+Keywords: wiki web
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: No Input/Output (Daemon)
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: System Administrators
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Application
+Classifier: Topic :: Office/Business :: Groupware
+Classifier: Topic :: Text Processing :: Markup
+Requires-Python: >=3.9
+Requires-Dist: pygments
+Requires-Dist: passlib
+Requires-Dist: parsedatetime
+Requires-Dist: legacy-cgi; python_version >= "3.13"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: platform
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+
+    MoinMoin is an easy to use, full-featured and extensible wiki software
+    package written in Python. It can fulfill a wide range of roles, such as
+    a personal notes organizer deployed on a laptop or home web server,
+    a company knowledge base deployed on an intranet, or an Internet server
+    open to individuals sharing the same interests, goals or projects.
+
+    This is MoinMoin 1.9.11 ported to Python 3. Wiki data, configuration
+    and plugins of the 1.9 series stay compatible (plugins have to be
+    ported to Python 3, too).
