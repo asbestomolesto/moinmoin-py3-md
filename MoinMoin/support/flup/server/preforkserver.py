@@ -52,7 +52,7 @@ if not hasattr(socket, 'socketpair'):
         import eunuchs.socketpair
     except ImportError:
         # TODO: Other alternatives? Perhaps using os.pipe()?
-        raise ImportError, 'Requires eunuchs module for Python < 2.4'
+        raise ImportError('Requires eunuchs module for Python < 2.4')
 
     def socketpair():
         s1, s2 = eunuchs.socketpair.socketpair()
@@ -83,13 +83,21 @@ class PreforkServer(object):
     jobClass should have a run() method (taking no arguments) that does
     the actual work. When run() returns, the request is considered
     complete and the child process moves to idle state.
+    
+    -- added by Velko Ivanov
+    sockTimeout is a timeout in seconds for the server's sockets. This
+    should be 0 (pure non-blocking mode, default) or more (timeout mode).
+    Fractional values (float) accepted. Setting this could help limit the
+    damage in situations of bad connectivity.
+    
     """
     def __init__(self, minSpare=1, maxSpare=5, maxChildren=50,
-                 maxRequests=0, jobClass=None, jobArgs=()):
+                 maxRequests=0, sockTimeout=0, jobClass=None, jobArgs=()):
         self._minSpare = minSpare
         self._maxSpare = maxSpare
         self._maxChildren = max(maxSpare, maxChildren)
         self._maxRequests = maxRequests
+        self._sockTimeout = sockTimeout
         self._jobClass = jobClass
         self._jobArgs = jobArgs
 
@@ -106,6 +114,9 @@ class PreforkServer(object):
             raise ValueError("minSpare must be at least 1!")
         if maxSpare < minSpare:
             raise ValueError("maxSpare must be greater than, or equal to, minSpare!")
+        t = type(sockTimeout)
+        if (t != int and t != float) or (sockTimeout < 0):
+            raise ValueError("sockTimeout must be an int or float, greater than or equal to 0")
 
     def run(self, sock):
         """
@@ -119,7 +130,7 @@ class PreforkServer(object):
         self._installSignalHandlers()
 
         # Don't want operations on main socket to block.
-        sock.setblocking(0)
+        sock.setblocking(self._sockTimeout)
 
         # Set close-on-exec
         setCloseOnExec(sock)
@@ -135,7 +146,7 @@ class PreforkServer(object):
                 if not self._spawnChild(sock): break
 
             # Wait on any socket activity from live children.
-            r = [x['file'] for x in self._children.values()
+            r = [x['file'] for x in list(self._children.values())
                  if x['file'] is not None]
 
             if len(r) == len(self._children) and not self._children_to_purge:
@@ -151,8 +162,8 @@ class PreforkServer(object):
                 w = [x for x in self._children_to_purge if x.fileno() != -1]
             try:
                 r, w, e = select.select(r, w, [], timeout)
-            except select.error, e:
-                if e[0] != errno.EINTR:
+            except select.error as e:
+                if e.args[0] != errno.EINTR:
                     raise
 
             # Scan child sockets and tend to those that need attention.
@@ -160,13 +171,13 @@ class PreforkServer(object):
                 # Receive status byte.
                 try:
                     state = child.recv(1)
-                except socket.error, e:
-                    if e[0] in (errno.EAGAIN, errno.EINTR):
+                except socket.error as e:
+                    if e.args[0] in (errno.EAGAIN, errno.EINTR):
                         # Guess it really didn't need attention?
                         continue
                     raise
                 # Try to match it with a child. (Do we need a reverse map?)
-                for pid,d in self._children.items():
+                for pid,d in list(self._children.items()):
                     if child is d['file']:
                         if state:
                             # Set availability status accordingly.
@@ -197,7 +208,7 @@ class PreforkServer(object):
             self._reapChildren()
 
             # See who and how many children are available.
-            availList = filter(lambda x: x[1]['avail'], self._children.items())
+            availList = [x for x in list(self._children.items()) if x[1]['avail']]
             avail = len(availList)
 
             if avail < self._minSpare:
@@ -235,7 +246,7 @@ class PreforkServer(object):
         Any children remaining after 10 seconds is SIGKILLed.
         """
         # Let all children know it's time to go.
-        for pid,d in self._children.items():
+        for pid,d in list(self._children.items()):
             if d['file'] is not None:
                 d['file'].close()
                 d['file'] = None
@@ -243,8 +254,8 @@ class PreforkServer(object):
                 # Child is unavailable. SIGINT it.
                 try:
                     os.kill(pid, signal.SIGINT)
-                except OSError, e:
-                    if e[0] != errno.ESRCH:
+                except OSError as e:
+                    if e.args[0] != errno.ESRCH:
                         raise
 
         def alrmHandler(signum, frame):
@@ -259,21 +270,21 @@ class PreforkServer(object):
         while len(self._children):
             try:
                 pid, status = os.wait()
-            except OSError, e:
-                if e[0] in (errno.ECHILD, errno.EINTR):
+            except OSError as e:
+                if e.args[0] in (errno.ECHILD, errno.EINTR):
                     break
-            if self._children.has_key(pid):
+            if pid in self._children:
                 del self._children[pid]
 
         signal.alarm(0)
         signal.signal(signal.SIGALRM, oldSIGALRM)
 
         # Forcefully kill any remaining children.
-        for pid in self._children.keys():
+        for pid in list(self._children.keys()):
             try:
                 os.kill(pid, signal.SIGKILL)
-            except OSError, e:
-                if e[0] != errno.ESRCH:
+            except OSError as e:
+                if e.args[0] != errno.ESRCH:
                     raise
 
     def _reapChildren(self):
@@ -281,13 +292,13 @@ class PreforkServer(object):
         while True:
             try:
                 pid, status = os.waitpid(-1, os.WNOHANG)
-            except OSError, e:
-                if e[0] == errno.ECHILD:
+            except OSError as e:
+                if e.args[0] == errno.ECHILD:
                     break
                 raise
             if pid <= 0:
                 break
-            if self._children.has_key(pid): # Sanity check.
+            if pid in self._children: # Sanity check.
                 if self._children[pid]['file'] is not None:
                     self._children[pid]['file'].close()
                     self._children[pid]['file'] = None
@@ -306,8 +317,8 @@ class PreforkServer(object):
         setCloseOnExec(child)
         try:
             pid = os.fork()
-        except OSError, e:
-            if e[0] in (errno.EAGAIN, errno.ENOMEM):
+        except OSError as e:
+            if e.args[0] in (errno.EAGAIN, errno.ENOMEM):
                 return False # Can't fork anymore.
             raise
         if not pid:
@@ -319,7 +330,7 @@ class PreforkServer(object):
             # Restore signal handlers.
             self._restoreSignalHandlers()
             # Close copies of child sockets.
-            for f in [x['file'] for x in self._children.values()
+            for f in [x['file'] for x in list(self._children.values())
                       if x['file'] is not None]:
                 f.close()
             self._children = {}
@@ -347,10 +358,10 @@ class PreforkServer(object):
             try:
                 parent.send(msg)
                 return True
-            except socket.error, e:
-                if e[0] == errno.EPIPE:
+            except socket.error as e:
+                if e.args[0] == errno.EPIPE:
                     return False # Parent is gone
-                if e[0] == errno.EAGAIN:
+                if e.args[0] == errno.EAGAIN:
                     # Wait for socket change before sending again
                     select.select([], [parent], [])
                 else:
@@ -386,8 +397,8 @@ class PreforkServer(object):
             # Otherwise, there's activity on the main socket...
             try:
                 clientSock, addr = sock.accept()
-            except socket.error, e:
-                if e[0] == errno.EAGAIN:
+            except socket.error as e:
+                if e.args[0] == errno.EAGAIN:
                     # Or maybe not.
                     continue
                 raise
@@ -400,7 +411,7 @@ class PreforkServer(object):
                 continue
 
             # Notify parent we're no longer available.
-            self._notifyParent(parent, '\x00')
+            self._notifyParent(parent, b'\x00')
 
             # Do the job.
             self._jobClass(clientSock, addr, *self._jobArgs).run()
@@ -412,7 +423,7 @@ class PreforkServer(object):
                     break
                 
             # Tell parent we're free again.
-            if not self._notifyParent(parent, '\xff'):
+            if not self._notifyParent(parent, b'\xff'):
                 return # Parent is gone.
 
     # Signal handlers
@@ -460,12 +471,12 @@ if __name__ == '__main__':
             self._sock = sock
             self._addr = addr
         def run(self):
-            print "Client connection opened from %s:%d" % self._addr
+            print("Client connection opened from %s:%d" % self._addr)
             self._sock.send('Hello World!\n')
             self._sock.setblocking(1)
             self._sock.recv(1)
             self._sock.close()
-            print "Client connection closed from %s:%d" % self._addr
+            print("Client connection closed from %s:%d" % self._addr)
     sock = socket.socket()
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind(('', 8080))

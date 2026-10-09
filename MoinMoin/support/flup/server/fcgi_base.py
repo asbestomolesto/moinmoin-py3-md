@@ -31,18 +31,18 @@ import sys
 import os
 import signal
 import struct
-import cStringIO as StringIO
+import io as StringIO
 import select
 import socket
 import errno
 import traceback
 
 try:
-    import thread
+    import _thread
     import threading
     thread_available = True
 except ImportError:
-    import dummy_thread as thread
+    import _dummy_thread as thread
     import dummy_threading as threading
     thread_available = False
 
@@ -126,7 +126,7 @@ class InputStream(object):
         # See Server.
         self._shrinkThreshold = conn.server.inputStreamShrinkThreshold
 
-        self._buf = ''
+        self._buf = b''
         self._bufList = []
         self._pos = 0 # Current read position.
         self._avail = 0 # Number of bytes currently available.
@@ -148,7 +148,7 @@ class InputStream(object):
 
     def read(self, n=-1):
         if self._pos == self._avail and self._eof:
-            return ''
+            return b''
         while True:
             if n < 0 or (self._avail - self._pos) < n:
                 # Not enough data available.
@@ -165,7 +165,7 @@ class InputStream(object):
                 break
         # Merge buffer list, if necessary.
         if self._bufList:
-            self._buf += ''.join(self._bufList)
+            self._buf += b''.join(self._bufList)
             self._bufList = []
         r = self._buf[self._pos:newPos]
         self._pos = newPos
@@ -174,14 +174,14 @@ class InputStream(object):
 
     def readline(self, length=None):
         if self._pos == self._avail and self._eof:
-            return ''
+            return b''
         while True:
             # Unfortunately, we need to merge the buffer list early.
             if self._bufList:
-                self._buf += ''.join(self._bufList)
+                self._buf += b''.join(self._bufList)
                 self._bufList = []
             # Find newline.
-            i = self._buf.find('\n', self._pos)
+            i = self._buf.find(b'\n', self._pos)
             if i < 0:
                 # Not found?
                 if self._eof:
@@ -218,7 +218,7 @@ class InputStream(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         r = self.readline()
         if not r:
             raise StopIteration
@@ -306,6 +306,8 @@ class OutputStream(object):
 
         if not data:
             return
+        if type(data) == str:
+            data = data.encode()
 
         self.dataWritten = True
 
@@ -323,7 +325,7 @@ class OutputStream(object):
     def flush(self):
         # Only need to flush if this OutputStream is actually buffered.
         if self._buffered:
-            data = ''.join(self._bufList)
+            data = b''.join(self._bufList)
             self._bufList = []
             self._write(data)
 
@@ -367,7 +369,7 @@ class StdoutWrapper(object):
     def write(self, data):
         if data:
             self.dataWritten = True
-        self._file.write(data)
+        self._file.buffer.write(data)
 
     def writelines(self, lines):
         for line in lines:
@@ -383,14 +385,14 @@ def decode_pair(s, pos=0):
     The number of bytes decoded as well as the name/value pair
     are returned.
     """
-    nameLength = ord(s[pos])
+    nameLength = s[pos]
     if nameLength & 128:
         nameLength = struct.unpack('!L', s[pos:pos+4])[0] & 0x7fffffff
         pos += 4
     else:
         pos += 1
 
-    valueLength = ord(s[pos])
+    valueLength = s[pos]
     if valueLength & 128:
         valueLength = struct.unpack('!L', s[pos:pos+4])[0] & 0x7fffffff
         pos += 4
@@ -412,15 +414,15 @@ def encode_pair(name, value):
     """
     nameLength = len(name)
     if nameLength < 128:
-        s = chr(nameLength)
+        s = bytes([nameLength])
     else:
-        s = struct.pack('!L', nameLength | 0x80000000L)
+        s = struct.pack('!L', nameLength | 0x80000000)
 
     valueLength = len(value)
     if valueLength < 128:
-        s += chr(valueLength)
+        s += bytes([valueLength])
     else:
-        s += struct.pack('!L', valueLength | 0x80000000L)
+        s += struct.pack('!L', valueLength | 0x80000000)
 
     return s + name + value
     
@@ -436,7 +438,7 @@ class Record(object):
         self.requestId = requestId
         self.contentLength = 0
         self.paddingLength = 0
-        self.contentData = ''
+        self.contentData = b''
 
     def _recvall(sock, length):
         """
@@ -448,8 +450,8 @@ class Record(object):
         while length:
             try:
                 data = sock.recv(length)
-            except socket.error, e:
-                if e[0] == errno.EAGAIN:
+            except socket.error as e:
+                if e.args[0] == errno.EAGAIN:
                     select.select([sock], [], [])
                     continue
                 else:
@@ -460,7 +462,7 @@ class Record(object):
             dataLen = len(data)
             recvLen += dataLen
             length -= dataLen
-        return ''.join(dataList), recvLen
+        return b''.join(dataList), recvLen
     _recvall = staticmethod(_recvall)
 
     def read(self, sock):
@@ -505,8 +507,8 @@ class Record(object):
         while length:
             try:
                 sent = sock.send(data)
-            except socket.error, e:
-                if e[0] == errno.EAGAIN:
+            except socket.error as e:
+                if e.args[0] == errno.EAGAIN:
                     select.select([], [sock], [])
                     continue
                 else:
@@ -531,7 +533,7 @@ class Record(object):
         if self.contentLength:
             self._sendall(sock, self.contentData)
         if self.paddingLength:
-            self._sendall(sock, '\x00'*self.paddingLength)
+            self._sendall(sock, b'\x00'*self.paddingLength)
             
 class TimeoutException(Exception):
     pass
@@ -591,11 +593,11 @@ class Request(object):
         try:
             self._flush()
             self._end(appStatus, protocolStatus)
-        except socket.error, e:
-            if e[0] != errno.EPIPE:
+        except socket.error as e:
+            if e.args[0] != errno.EPIPE:
                 raise
 
-    def _end(self, appStatus=0L, protocolStatus=FCGI_REQUEST_COMPLETE):
+    def _end(self, appStatus=0, protocolStatus=FCGI_REQUEST_COMPLETE):
         self._conn.end_request(self, appStatus, protocolStatus)
         
     def _flush(self):
@@ -619,7 +621,7 @@ class CGIRequest(Request):
         self.data = StringIO.StringIO()
         self._timeout = 0
         
-    def _end(self, appStatus=0L, protocolStatus=FCGI_REQUEST_COMPLETE):
+    def _end(self, appStatus=0, protocolStatus=FCGI_REQUEST_COMPLETE):
         sys.exit(appStatus)
 
     def _flush(self):
@@ -669,8 +671,8 @@ class Connection(object):
                 self.process_input()
             except (EOFError, KeyboardInterrupt):
                 break
-            except (select.error, socket.error), e:
-                if e[0] == errno.EBADF: # Socket was closed by Request.
+            except (select.error, socket.error) as e:
+                if e.args[0] == errno.EBADF: # Socket was closed by Request.
                     break
                 raise
 
@@ -719,7 +721,7 @@ class Connection(object):
         """
         rec.write(self._sock)
 
-    def end_request(self, req, appStatus=0L,
+    def end_request(self, req, appStatus=0,
                     protocolStatus=FCGI_REQUEST_COMPLETE, remove=True):
         """
         End a Request.
@@ -753,7 +755,7 @@ class Connection(object):
             pos, (name, value) = decode_pair(inrec.contentData, pos)
             cap = self.server.capability.get(name)
             if cap is not None:
-                outrec.contentData += encode_pair(name, str(cap))
+                outrec.contentData += encode_pair(name, str(cap).encode('latin-1'))
 
         outrec.contentLength = len(outrec.contentData)
         self.writeRecord(outrec)
@@ -769,7 +771,7 @@ class Connection(object):
 
         if not self._multiplexed and self._requests:
             # Can't multiplex requests.
-            self.end_request(req, 0L, FCGI_CANT_MPX_CONN, remove=False)
+            self.end_request(req, 0, FCGI_CANT_MPX_CONN, remove=False)
         else:
             self._requests[inrec.requestId] = req
 
@@ -800,7 +802,7 @@ class Connection(object):
                 pos = 0
                 while pos < inrec.contentLength:
                     pos, (name, value) = decode_pair(inrec.contentData, pos)
-                    req.params[name] = value
+                    req.params[name.decode('latin-1')] = value.decode('latin-1')
             else:
                 self._start_request(req)
 
@@ -861,7 +863,7 @@ class MultiplexedConnection(Connection):
         finally:
             self._lock.release()
 
-    def end_request(self, req, appStatus=0L,
+    def end_request(self, req, appStatus=0,
                     protocolStatus=FCGI_REQUEST_COMPLETE, remove=True):
         self._lock.acquire()
         try:
@@ -888,9 +890,9 @@ class MultiplexedConnection(Connection):
 
     def _start_request(self, req):
         try:
-            thread.start_new_thread(req.run, ())
-        except thread.error, e:
-            self.end_request(req, 0L, FCGI_OVERLOADED, remove=True)
+            _thread.start_new_thread(req.run, ())
+        except thread.error as e:
+            self.end_request(req, 0, FCGI_OVERLOADED, remove=True)
 
     def _do_params(self, inrec):
         self._lock.acquire()
@@ -969,7 +971,7 @@ class BaseFCGIServer(object):
         self._umask = umask
         
         # Used to force single-threadedness
-        self._appLock = thread.allocate_lock()
+        self._appLock = _thread.allocate_lock()
 
         if thread_available:
             try:
@@ -1002,7 +1004,6 @@ class BaseFCGIServer(object):
     def _setupSocket(self):
         if self._bindAddress is None:
             # Run as a normal FastCGI?
-
             # FastCGI/CGI discrimination is broken on Mac OS X.
             # Set the environment variable FCGI_FORCE_CGI to "Y" or "y"
             # if you want to run your app as a simple CGI. (You can do
@@ -1026,11 +1027,11 @@ class BaseFCGIServer(object):
                 isFCGI = True
                 try:
                     sock.getpeername()
-                except socket.error, e:
-                    if e[0] == errno.ENOTSOCK:
+                except socket.error as e:
+                    if e.args[0] == errno.ENOTSOCK:
                         # Not a socket, assume CGI context.
                         isFCGI = False
-                    elif e[0] != errno.ENOTCONN:
+                    elif e.args[0] != errno.ENOTCONN:
                         raise
 
             if not isFCGI:
@@ -1052,8 +1053,10 @@ class BaseFCGIServer(object):
             else:
                 # INET socket
                 assert type(self._bindAddress) is tuple
-                assert len(self._bindAddress) == 2
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                family = socket.AF_INET
+                if len(self._bindAddress) > 2:
+                    family = socket.AF_INET6
+                sock = socket.socket(family, socket.SOCK_STREAM)
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
             sock.bind(self._bindAddress)
@@ -1102,27 +1105,30 @@ class BaseFCGIServer(object):
         result = None
 
         def write(data):
-            assert type(data) is str, 'write() argument must be string'
+            if type(data) is str:
+                data = data.encode('latin-1')
+
+            assert type(data) is bytes, 'write() argument must be bytes'
             assert headers_set, 'write() before start_response()'
 
             if not headers_sent:
                 status, responseHeaders = headers_sent[:] = headers_set
                 found = False
                 for header,value in responseHeaders:
-                    if header.lower() == 'content-length':
+                    if header.lower() == b'content-length':
                         found = True
                         break
                 if not found and result is not None:
                     try:
                         if len(result) == 1:
-                            responseHeaders.append(('Content-Length',
-                                                    str(len(data))))
+                            responseHeaders.append((b'Content-Length',
+                                                    str(len(data)).encode('latin-1')))
                     except:
                         pass
-                s = 'Status: %s\r\n' % status
-                for header in responseHeaders:
-                    s += '%s: %s\r\n' % header
-                s += '\r\n'
+                s = b'Status: ' + status + b'\r\n'
+                for header,value in responseHeaders:
+                    s += header + b': ' + value + b'\r\n'
+                s += b'\r\n'
                 req.stdout.write(s)
 
             req.stdout.write(data)
@@ -1133,23 +1139,33 @@ class BaseFCGIServer(object):
                 try:
                     if headers_sent:
                         # Re-raise if too late
-                        raise exc_info[0], exc_info[1], exc_info[2]
+                        raise exc_info[0](exc_info[1]).with_traceback(exc_info[2])
                 finally:
                     exc_info = None # avoid dangling circular ref
             else:
                 assert not headers_set, 'Headers already set!'
 
-            assert type(status) is str, 'Status must be a string'
+            if type(status) is str:
+                status = status.encode('latin-1')
+
+            assert type(status) is bytes, 'Status must be a string'
             assert len(status) >= 4, 'Status must be at least 4 characters'
             assert int(status[:3]), 'Status must begin with 3-digit code'
-            assert status[3] == ' ', 'Status must have a space after code'
+            assert status[3] == 0x20, 'Status must have a space after code'
             assert type(response_headers) is list, 'Headers must be a list'
-            if __debug__:
-                for name,val in response_headers:
-                    assert type(name) is str, 'Header name "%s" must be a string' % name
-                    assert type(val) is str, 'Value of header "%s" must be a string' % name
+            new_response_headers = []
+            for name,val in response_headers:
+                if type(name) is str:
+                    name = name.encode('latin-1')
+                if type(val) is str:
+                    val = val.encode('latin-1')
 
-            headers_set[:] = [status, response_headers]
+                assert type(name) is bytes, 'Header name "%s" must be bytes' % name
+                assert type(val) is bytes, 'Value of header "%s" must be bytes' % name
+
+                new_response_headers.append((name, val))
+
+            headers_set[:] = [status, new_response_headers]
             return write
 
         if not self.multithreaded:
@@ -1162,12 +1178,12 @@ class BaseFCGIServer(object):
                         if data:
                             write(data)
                     if not headers_sent:
-                        write('') # in case body was empty
+                        write(b'') # in case body was empty
                 finally:
                     if hasattr(result, 'close'):
                         result.close()
-            except socket.error, e:
-                if e[0] != errno.EPIPE:
+            except socket.error as e:
+                if e.args[0] != errno.EPIPE:
                     raise # Don't let EPIPE propagate beyond server
         finally:
             if not self.multithreaded:
@@ -1177,14 +1193,14 @@ class BaseFCGIServer(object):
 
     def _sanitizeEnv(self, environ):
         """Ensure certain values are present, if required by WSGI."""
-        if not environ.has_key('SCRIPT_NAME'):
+        if 'SCRIPT_NAME' not in environ:
             environ['SCRIPT_NAME'] = ''
 
         reqUri = None
-        if environ.has_key('REQUEST_URI'):
+        if 'REQUEST_URI' in environ:
             reqUri = environ['REQUEST_URI'].split('?', 1)
 
-        if not environ.has_key('PATH_INFO') or not environ['PATH_INFO']:
+        if 'PATH_INFO' not in environ or not environ['PATH_INFO']:
             if reqUri is not None:
                 scriptName = environ['SCRIPT_NAME']
                 if not reqUri[0].startswith(scriptName):
@@ -1192,7 +1208,7 @@ class BaseFCGIServer(object):
                 environ['PATH_INFO'] = reqUri[0][len(scriptName):]
             else:
                 environ['PATH_INFO'] = ''
-        if not environ.has_key('QUERY_STRING') or not environ['QUERY_STRING']:
+        if 'QUERY_STRING' not in environ or not environ['QUERY_STRING']:
             if reqUri is not None and len(reqUri) > 1:
                 environ['QUERY_STRING'] = reqUri[1]
             else:
@@ -1204,7 +1220,7 @@ class BaseFCGIServer(object):
                              ('SERVER_NAME', 'localhost'),
                              ('SERVER_PORT', '80'),
                              ('SERVER_PROTOCOL', 'HTTP/1.0')]:
-            if not environ.has_key(name):
+            if name not in environ:
                 environ['wsgi.errors'].write('%s: missing FastCGI param %s '
                                              'required by WSGI!\n' %
                                              (self.__class__.__name__, name))
@@ -1217,11 +1233,11 @@ class BaseFCGIServer(object):
         """
         if self.debug:
             import cgitb
-            req.stdout.write('Status: 500 Internal Server Error\r\n' +
-                             'Content-Type: text/html\r\n\r\n' +
-                             cgitb.html(sys.exc_info()))
+            req.stdout.write(b'Status: 500 Internal Server Error\r\n' +
+                             b'Content-Type: text/html\r\n\r\n' +
+                             cgitb.html(sys.exc_info()).encode('latin-1'))
         else:
-            errorpage = """<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+            errorpage = b"""<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html><head>
 <title>Unhandled Exception</title>
 </head><body>
@@ -1229,6 +1245,6 @@ class BaseFCGIServer(object):
 <p>An unhandled exception was thrown by the application.</p>
 </body></html>
 """
-            req.stdout.write('Status: 500 Internal Server Error\r\n' +
-                             'Content-Type: text/html\r\n\r\n' +
+            req.stdout.write(b'Status: 500 Internal Server Error\r\n' +
+                             b'Content-Type: text/html\r\n\r\n' +
                              errorpage)
