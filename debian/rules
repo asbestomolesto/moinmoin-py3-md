@@ -29,6 +29,12 @@ override_dh_auto_install:
 	find debian/python3-moinmoin-markdown -path '*FCKeditor*' -name '*.cgi' -delete
 	install -D -m 0755 debian/moin-mkwiki debian/python3-moinmoin-markdown/usr/sbin/moin-mkwiki
 
+override_dh_python3:
+	dh_python3
+	# python3-supported-max does not exist before Debian 12 / Ubuntu 24.04:
+	# "python3 (<< 3.13)" means the same and is installable everywhere
+	sed -i 's/python3-supported-max (<< 3.13)/python3 (<< 3.13)/' debian/python3-moinmoin-markdown.substvars
+
 override_dh_installinit:
 	dh_installinit --name=moinmoin --no-start --no-stop-on-upgrade
 
