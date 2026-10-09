@@ -39,7 +39,7 @@
 SLAPD_EXECUTABLE = 'slapd'  # filename of LDAP server executable - if it is not
                             # in your PATH, you have to give full path/filename.
 
-import os, shutil, tempfile, time, base64, md5
+import os, shutil, tempfile, time, base64, hashlib
 from io import StringIO
 import signal
 import subprocess
@@ -179,7 +179,7 @@ class LdapEnvironment(object):
         f.write(db_config)
         f.close()
 
-        rootpw = '{MD5}' + base64.b64encode(md5.new(self.rootpw).digest())
+        rootpw = '{MD5}' + base64.b64encode(hashlib.md5(self.rootpw.encode('utf-8')).digest()).decode('ascii')
 
         # create slapd.conf from content template in slapd_config
         slapd_config = slapd_config % {
@@ -246,7 +246,7 @@ try:
             self.ldap_env.create_env(slapd_config=self.slapd_config)
             started = self.ldap_env.start_slapd()
             if not started:
-                py.test.skip("Failed to start %s process, please see your syslog / log files"
+                pytest.skip("Failed to start %s process, please see your syslog / log files"
                              " (and check if stopping apparmor helps, in case you use it)." % SLAPD_EXECUTABLE)
             self.ldap_env.load_directory(ldif_content=self.ldif_content)
 

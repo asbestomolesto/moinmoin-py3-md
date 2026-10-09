@@ -9,7 +9,7 @@
 """
 
 import os
-import py
+import pytest
 import tempfile
 import zipfile
 
@@ -60,7 +60,7 @@ class TestUnsafePackage:
 
     def setup_class(self):
         if not getattr(self.request.cfg, 'is_test_wiki', False):
-            py.test.skip('This test needs to be run using the test wiki.')
+            pytest.skip('This test needs to be run using the test wiki.')
 
     def teardown_class(self):
         nuke_page(self.request, "FooPage")
@@ -102,7 +102,7 @@ class TestRealCreation:
                                 filter=lambda name: not wikiutil.isSystemPage(self.request, name)),
                                 temp)
         if not package:
-            py.test.skip("No user created pages in wiki!")
+            pytest.skip("No user created pages in wiki!")
         assert zipfile.is_zipfile(temp.name)
 
     def testInvalidCreate(self):

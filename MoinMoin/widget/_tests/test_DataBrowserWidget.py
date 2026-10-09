@@ -6,7 +6,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
+import pytest
 from MoinMoin.util.dataset import TupleDataset, Column
 from MoinMoin.widget.browser import DataBrowserWidget
 

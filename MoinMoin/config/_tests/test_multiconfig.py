@@ -6,9 +6,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
-
-
+import pytest
 class TestPasswordChecker:
     username = "SomeUser"
     tests_builtin = [
@@ -28,7 +26,7 @@ class TestPasswordChecker:
     def testBuiltinPasswordChecker(self):
         pw_checker = self.request.cfg.password_checker
         if not pw_checker:
-            py.test.skip("password_checker is disabled in the configuration, not testing it")
+            pytest.skip("password_checker is disabled in the configuration, not testing it")
         else:
             for pw, result in self.tests_builtin:
                 pw_error = pw_checker(self.request, self.username, pw)

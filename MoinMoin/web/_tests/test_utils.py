@@ -5,8 +5,7 @@
     @copyright: 2008 MoinMoin:FlorianKrupicka
     @license: GNU GPL, see COPYING for details.
 """
-import py
-
+import pytest
 from MoinMoin.web import utils
 
 class TestUniqueIDGenerator(object):
@@ -23,7 +22,7 @@ class TestUniqueIDGenerator(object):
             assert self.uid_gen(base) == expected
 
     def testStack(self):
-        py.test.skip("TODO: needs implementation")
+        pytest.skip("TODO: needs implementation")
 
     def testDocuments(self):
-        py.test.skip("TODO: needs implementation")
+        pytest.skip("TODO: needs implementation")

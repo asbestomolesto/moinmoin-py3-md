@@ -10,8 +10,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
-
+import pytest
 from MoinMoin import security
 acliter = security.ACLStringIterator
 AccessControlList = security.AccessControlList
@@ -27,12 +26,12 @@ class TestACLStringIterator(object):
     def testEmpty(self):
         """ security: empty acl string raise StopIteration """
         iter = acliter(self.request.cfg.acl_rights_valid, '')
-        py.test.raises(StopIteration, iter.__next__)
+        pytest.raises(StopIteration, iter.__next__)
 
     def testWhiteSpace(self):
         """ security: white space acl string raise StopIteration """
         iter = acliter(self.request.cfg.acl_rights_valid, '       ')
-        py.test.raises(StopIteration, iter.__next__)
+        pytest.raises(StopIteration, iter.__next__)
 
     def testDefault(self):
         """ security: default meta acl """
@@ -131,7 +130,7 @@ class TestACLStringIterator(object):
         mod, entries, rights = next(iter)
         assert entries == ['UserOne']
         assert rights == ['read']
-        py.test.raises(StopIteration, iter.__next__)
+        pytest.raises(StopIteration, iter.__next__)
 
     def testEmptyNamesWithRight(self):
         """ security: empty names with rights

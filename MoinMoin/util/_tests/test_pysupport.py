@@ -9,8 +9,7 @@
 
 import os, errno
 
-import py
-
+import pytest
 from MoinMoin.util import pysupport, random_string
 from MoinMoin import wikiutil
 
@@ -24,12 +23,12 @@ class TestImportNameFromMoin(object):
 
     def testNonExistingModule(self):
         """ pysupport: import nonexistent module raises ImportError """
-        py.test.raises(ImportError, pysupport.importName,
+        pytest.raises(ImportError, pysupport.importName,
                        'MoinMoin.parser.abcdefghijkl', 'Parser')
 
     def testNonExistingAttribute(self):
         """ pysupport: import nonexistent attritbue raises AttributeError """
-        py.test.raises(AttributeError, pysupport.importName,
+        pytest.raises(AttributeError, pysupport.importName,
                        'MoinMoin.parser.text_moin_wiki', 'NoSuchParser')
 
     def testExisting(self):
@@ -52,7 +51,7 @@ class TestImportNameFromPlugin(object):
     def checkPackage(self, path):
         for item in (path, os.path.join(path, '__init__.py')):
             if not os.path.exists(item):
-                py.test.skip("Missing or wrong permissions: %s" % item)
+                pytest.skip("Missing or wrong permissions: %s" % item)
 
     def pluginExists(self):
         return (os.path.exists(self.pluginFilePath('.py')) or
@@ -69,8 +68,8 @@ class TestImportNonExisting(TestImportNameFromPlugin):
     def testNonExisting(self):
         """ pysupport: import nonexistent wiki plugin fail """
         if self.pluginExists():
-            py.test.skip('plugin exists: %s' % self.plugin)
-        py.test.raises(wikiutil.PluginMissingError,
+            pytest.skip('plugin exists: %s' % self.plugin)
+        pytest.raises(wikiutil.PluginMissingError,
                        wikiutil.importWikiPlugin,
                            self.request.cfg, 'parser',
                            self.plugin, 'Parser')
@@ -105,7 +104,7 @@ class TestImportExisting(TestImportNameFromPlugin):
         """ Create test plugin, skiping if plugin exists """
         if self.pluginExists():
             self.shouldDeleteTestPlugin = False
-            py.test.skip("Won't overwrite existing plugin: %s" % self.plugin)
+            pytest.skip("Won't overwrite existing plugin: %s" % self.plugin)
         self.key = random_string(32, 'abcdefg')
         data = '''
 # If you find this file in your wiki plugin directory, you can safely
@@ -118,7 +117,7 @@ class Parser:
         try:
             open(self.pluginFilePath('.py'), 'w').write(data)
         except Exception as err:
-            py.test.skip("Can't create test plugin: %s" % str(err))
+            pytest.skip("Can't create test plugin: %s" % str(err))
 
     def deleteTestPlugin(self):
         """ Delete plugin files ignoring missing files errors """

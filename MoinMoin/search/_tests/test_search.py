@@ -12,8 +12,7 @@
 
 import os, io, time
 
-import py
-
+import pytest
 from MoinMoin.search import QueryError, _get_searcher
 from MoinMoin.search.queryparser import QueryParser
 from MoinMoin.search.builtin import MoinSearch
@@ -25,7 +24,7 @@ PY_MIN_VERSION = '1.0.0'
 if Version(version=py.version) < Version(version=PY_MIN_VERSION):
     # There are some generative tests, which won't run on older versions!
     # XXX These tests should be refactored to be able to be run with older versions of py.
-    py.test.skip('Currently py version %s is needed' % PY_MIN_VERSION)
+    pytest.skip('Currently py version %s is needed' % PY_MIN_VERSION, allow_module_level=True)
 
 
 class TestQueryParsing(object):
@@ -76,7 +75,7 @@ class TestQueryParsing(object):
         parser = QueryParser()
 
         def _test(q):
-            py.test.raises(QueryError, parser.parse_query, q)
+            pytest.raises(QueryError, parser.parse_query, q)
 
         for query in ['""', '(', ')', '(a or b']:
             yield _test, query
@@ -462,7 +461,7 @@ class TestXapianSearch(BaseSearchTest):
         except ImportError as error:
             if not str(error).startswith('Xapian '):
                 raise
-            py.test.skip('xapian is not installed')
+            pytest.skip('xapian is not installed')
 
         nuke_xapian_index(self.request)
         index = XapianIndex(self.request)
@@ -529,7 +528,7 @@ class TestXapianSearchStemmed(TestXapianSearch):
         xapian_stemming = True
 
     def test_stemming(self):
-        py.test.skip("TODO fix TestXapianSearchStemmed - strange effects with stemming")
+        pytest.skip("TODO fix TestXapianSearchStemmed - strange effects with stemming")
 
         expected_pages = set(['TestEdit', 'TestOnEditing', ])
         result = self.search("title:edit")

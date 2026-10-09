@@ -6,8 +6,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
-
+import pytest
 from MoinMoin.Page import Page
 
 class TestPage:

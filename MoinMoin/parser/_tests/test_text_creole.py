@@ -12,8 +12,7 @@
 import re
 from io import StringIO
 
-import py
-
+import pytest
 from MoinMoin.Page import Page
 from MoinMoin.parser.text_creole import Parser as CreoleParser
 from MoinMoin.formatter.text_html import Formatter as HtmlFormatter

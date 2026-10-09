@@ -9,8 +9,7 @@
 import re
 from io import StringIO
 
-import py
-
+import pytest
 from MoinMoin.Page import Page
 from MoinMoin.parser.text_csv import Parser as CSV_Parser
 from MoinMoin.formatter.text_html import Formatter as HtmlFormatter

@@ -7,8 +7,8 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
-#py.test.skip("Many broken tests, much broken code, broken, broken, broken.")
+import pytest
+#pytest.skip("Many broken tests, much broken code, broken, broken, broken.")
 
 from io import StringIO
 from MoinMoin.converter import text_html_text_moin_wiki as converter
@@ -28,13 +28,13 @@ class TestBase(object):
             ret = convert(*func_args)
         except error as e:
             if successful:
-                py.test.fail("fails with parse error: %s" % e)
+                pytest.fail("fails with parse error: %s" % e)
             else:
                 return
         if successful:
             return ret
         else:
-            py.test.fail("doesn't fail with parse error")
+            pytest.fail("doesn't fail with parse error")
 
 
 class MinimalPage(object):
@@ -101,7 +101,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testHeading01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 = test1 =
 
@@ -112,7 +112,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testHeading02(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 = test1 =
 
@@ -254,7 +254,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess09(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  test:: test
 
@@ -276,7 +276,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess10(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  * test
   * test
@@ -295,7 +295,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess11(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  1. test
   1. test
@@ -314,7 +314,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess12(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  test:: test
   test:: test
@@ -401,7 +401,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess16(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  * test
 
@@ -421,7 +421,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess17(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  * test
 
@@ -442,7 +442,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess18(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  1. test
 
@@ -462,7 +462,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess19(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  1. test
 
@@ -483,7 +483,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess20(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  test:: test
 
@@ -504,7 +504,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess21(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  test:: test
 
@@ -525,7 +525,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess23(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  1. test
   * test
@@ -544,7 +544,7 @@ class TestConvertBlockRepeatable(TestBase):
         self.do(test, output)
 
     def testListSuccess26(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  * test
 
@@ -561,7 +561,7 @@ test
         self.do(test, output)
 
     def testListSuccess28(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  * test
 
@@ -578,7 +578,7 @@ test
         self.do(test, output)
 
     def testListSuccess29(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  * test
   * test
@@ -589,7 +589,7 @@ test
         self.do(test, output)
 
     def testListSuccess30(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  * test
   * test
@@ -600,7 +600,7 @@ test
         self.do(test, output)
 
     def testParagraph1(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 test
 
@@ -611,7 +611,7 @@ test
         self.do(test, output)
 
     def testParagraph2(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 test
 
@@ -625,7 +625,7 @@ test
         self.do(test, output)
 
     def testPreSuccess1(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 {{{
 test
@@ -640,7 +640,7 @@ test
         self.do(test, output)
 
     def testPreSuccess2(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 {{{
 test
@@ -657,7 +657,7 @@ test
         self.do(test, output)
 
     def testPreSuccess3(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 {{{
 test
@@ -676,7 +676,7 @@ test
         self.do(test, output)
 
     def testPreSuccess4(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 {{{
  * test
@@ -691,7 +691,7 @@ test
         self.do(test, output)
 
     def testPreSuccess5(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 {{{
   }}}
@@ -722,7 +722,7 @@ test
         self.do(test, output)
 
     def testPreSuccess7(self):
-        py.test.skip("Broken.")
+        pytest.skip("Broken.")
         test = r"""
  * {{{
    test
@@ -761,7 +761,7 @@ test
         self.do(test, output)
 
     def testPreSuccess9(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
  * test
 
@@ -844,7 +844,7 @@ test
         self.do(test, output)
 
     def testRule1(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 ----
 
@@ -855,7 +855,7 @@ test
         self.do(test, output)
 
     def testTable01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 || ||
 
@@ -874,7 +874,7 @@ test
         self.do(test, output)
 
     def testTable02(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 ||test||
 
@@ -893,7 +893,7 @@ test
         self.do(test, output)
 
     def testTable03(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 ||test||test||
 
@@ -914,7 +914,7 @@ test
         self.do(test, output)
 
     def testTable04(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 ||test||
 ||test||test||
@@ -942,7 +942,7 @@ test
         self.do(test, output)
 
     def testTable05(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 ||||test||
 ||test||test||
@@ -970,7 +970,7 @@ test
         self.do(test, output)
 
     def testTable06(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 ||||test||test||
 ||test||||test||
@@ -1000,115 +1000,115 @@ class TestConvertInlineFormatRepeatable(TestBase):
         assert text == out
 
     def testEmphasis01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"''test''"
         output = r"<em>test</em>"
         self.do(test, output)
 
     def testEmphasis02(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"'''test'''"
         output = r"<strong>test</strong>"
         self.do(test, output)
 
     def testEmphasis03(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"'''''test'''''"
         output = r"<em><strong>test</strong></em>"
         self.do(test, output)
 
     def testEmphasis04(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"''test'''test'''''"
         output = r"<em>test<strong>test</strong></em>"
         self.do(test, output)
 
     def testEmphasis05(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"'''test''test'''''"
         output = r"<strong>test<em>test</em></strong>"
         self.do(test, output)
 
     def testEmphasis06(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"''test'''test'''test''"
         output = r"<em>test<strong>test</strong>test</em>"
         self.do(test, output)
 
     def testEmphasis07(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"'''test''test''test'''"
         output = r"<strong>test<em>test</em>test</strong>"
         self.do(test, output)
 
     def testEmphasis08(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"''test'''''test'''"
         output = r"<em>test</em><strong>test</strong>"
         self.do(test, output)
 
     def testEmphasis09(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"'''test'''''test''"
         output = r"<strong>test</strong><em>test</em>"
         self.do(test, output)
 
     def testEmphasis10(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"'''''test''test'''"
         output = r"<strong><em>test</em>test</strong>"
         self.do(test, output)
 
     def testEmphasis11(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"'''''test'''test''"
         output = r"<em><strong>test</strong>test</em>"
         self.do(test, output)
 
     def testFormatBig01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"~+test+~"
         output = r"<big>test</big>"
         self.do(test, output)
 
     def testFormatSmall01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"~-test-~"
         output = r"<small>test</small>"
         self.do(test, output)
 
     def testFormatStrike01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"--(test)--"
         output = r"<strike>test</strike>"
         self.do(test, output)
 
     def testFormatSub01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r",,test,,"
         output = r"<sub>test</sub>"
         self.do(test, output)
 
     def testFormatSup01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"^test^"
         output = r"<sup>test</sup>"
         self.do(test, output)
 
     def testFormatUnderline01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"__test__"
         output = r"<u>test</u>"
         self.do(test, output)
 
     def testPre01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"{{{test}}}"
         output = r"<tt>test</tt>"
         self.do(test, output)
 
     def testWhitespace01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"''test '''test'''''"
         output = r"<em>test <strong>test</strong></em>"
         self.do(test, output)
@@ -1130,19 +1130,19 @@ class TestConvertInlineItemRepeatable(TestBase):
         assert text == out
 
     def testWikiWord01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"WikiWord"
         output = r"""<a class="nonexistent" href="./WikiWord">WikiWord</a>"""
         self.do(test, output)
 
     def testNoWikiWord01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"!WikiWord"
         output = r"WikiWord"
         self.do(test, output)
 
     def testSmiley01(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r":-)"
         output = r"""<img src="/wiki/modern/img/smile.png" alt=":-)" height="15" width="15">"""
         self.do(test, output)
@@ -1155,7 +1155,7 @@ class TestStrip(object):
         try:
             import xml.dom.ext
         except ImportError:
-            py.test.skip('xml.dom.ext module is not available')
+            pytest.skip('xml.dom.ext module is not available')
         xml.dom.ext.Print(tree, out)
         assert "<?xml version='1.0' encoding='UTF-8'?>%s" % output == out.getvalue().decode("utf-8")
 
@@ -1171,7 +1171,7 @@ class TestStripWhitespace(TestStrip):
         self.do(test, output)
 
     def test2(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 <t>
   <z/>
@@ -1181,7 +1181,7 @@ class TestStripWhitespace(TestStrip):
         self.do(test, output)
 
     def test3(self):
-        py.test.skip('broken test')
+        pytest.skip('broken test')
         test = r"""
 <t>
   <z>test</z>

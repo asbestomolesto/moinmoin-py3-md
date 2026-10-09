@@ -7,8 +7,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
-
+import pytest
 from MoinMoin import wikiutil
 from MoinMoin.Page import Page
 from MoinMoin.PageEditor import PageEditor
@@ -134,7 +133,7 @@ class TestExpandPrivateVariables(TestExpandUserName):
         path = self.dictPagePath()
         if os.path.exists(path):
             self.shouldDeleteTestPage = False
-            py.test.skip("%s exists. Won't overwrite exiting page" % self.dictPage)
+            pytest.skip("%s exists. Won't overwrite exiting page" % self.dictPage)
         try:
             os.mkdir(path)
             revisionsDir = os.path.join(path, 'revisions')
@@ -144,7 +143,7 @@ class TestExpandPrivateVariables(TestExpandUserName):
             text = ' ME:: %s\n' % self.name
             open(os.path.join(revisionsDir, current), 'w').write(text)
         except Exception as err:
-            py.test.skip("Can not be create test page: %s" % err)
+            pytest.skip("Can not be create test page: %s" % err)
 
     def deleteCaches(self):
         """ Force the wiki to scan the test page into the dicts """
@@ -231,7 +230,7 @@ foo
         assert not self.request.user.may.admin(p.page_name)
         newacl = parseACL(self.request, self.newtext).acl
         assert newacl != oldacl
-        py.test.raises(PageEditor.NoAdmin, p.saveText, self.newtext, 0)
+        pytest.raises(PageEditor.NoAdmin, p.saveText, self.newtext, 0)
 
 
 class TestDictPageDeletion(object):
@@ -280,7 +279,7 @@ class TestCopyPage(object):
 
         if os.path.exists(path) or os.path.exists(copy_path):
             self.shouldDeleteTestPage = False
-            py.test.skip("%s or %s exists. Won't overwrite exiting page" % (self.pagename, self.copy_pagename))
+            pytest.skip("%s or %s exists. Won't overwrite exiting page" % (self.pagename, self.copy_pagename))
         try:
             os.mkdir(path)
             revisionsDir = os.path.join(path, 'revisions')
@@ -290,7 +289,7 @@ class TestCopyPage(object):
 
             open(os.path.join(revisionsDir, current), 'w').write(self.text)
         except Exception as err:
-            py.test.skip("Can not be create test page: %s" % err)
+            pytest.skip("Can not be create test page: %s" % err)
 
     def deleteTestPage(self):
         """ Delete temporary page, bypass logs and notifications """

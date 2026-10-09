@@ -9,8 +9,7 @@
 """
 
 import os
-import py
-
+import pytest
 from MoinMoin import user, caching
 
 
@@ -160,7 +159,7 @@ class TestLoginWithPassword(object):
             theuser = user.User(self.request, name=name, password=password)
             assert theuser.enc_password.startswith(self.password_scheme)
         except ImportError:
-            py.test.skip("Platform does not provide crypt module!")
+            pytest.skip("Platform does not provide crypt module!")
 
     def test_auth_with_sha_stored_password(self):
         """
@@ -203,7 +202,7 @@ class TestLoginWithPassword(object):
         Create user with {PASSLIB} password and check that user can login.
         """
         if not self.passlib_support:
-            py.test.skip("test requires passlib, but passlib_support is False")
+            pytest.skip("test requires passlib, but passlib_support is False")
         # Create test user
         name = 'Test User'
         password = '12345'
@@ -296,7 +295,7 @@ class TestLoginWithPassword(object):
         # Validate that we are not modifying existing user data file!
         if self.user.exists():
             self.user = None
-            py.test.skip("Test user exists, will not override existing user data file!")
+            pytest.skip("Test user exists, will not override existing user data file!")
 
         # Save test user
         self.user.save()
@@ -304,7 +303,7 @@ class TestLoginWithPassword(object):
         # Validate user creation
         if not self.user.exists():
             self.user = None
-            py.test.skip("Can't create test user")
+            pytest.skip("Can't create test user")
 
 
 class TestGroupName(object):

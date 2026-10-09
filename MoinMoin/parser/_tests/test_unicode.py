@@ -11,7 +11,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
+import pytest
 import sys, traceback
 
 import MoinMoin.parser

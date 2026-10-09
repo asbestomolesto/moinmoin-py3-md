@@ -129,71 +129,10 @@ class TestAnonSession(AuthTest):
             trail = request.session['trail']
             assert trail == trail_expected
 
-class TestHttpAuthSession(AuthTest):
-    py.test.skip("We currently have no http auth code in moin. GivenAuth relies on the web server doing the http auth check.")
-    class Config(wikiconfig.Config):
-        from MoinMoin.auth.http import HttpAuth # does not exist (yet?)
-        auth = [HttpAuth(autocreate=True)]
-
-    def testHttpAuthSession(self):
-        """ run some requests with http auth, check whether session works """
-        username = 'HttpAuthTestUser'
-        auth_info = '%s:%s' % (username, 'testpass')
-        auth_header = 'Basic %s' % auth_info.encode('base64')
-        cookie = ''
-        trail_expected = []
-        first = True
-        for pagename in self.PAGES:
-            environ_overrides = {'HTTP_COOKIE': cookie,
-                                 'HTTP_AUTHORIZATION': auth_header}
-            request = self.run_request(path='/%s' % pagename,
-                                       environ_overrides=environ_overrides)
-
-            # Login worked?
-            assert request.user.valid
-            assert request.user.name == username
-
-            # Do we have a session?
-            assert request.session is not None
-
-            appiter, status, headers = evaluate_request(request.request)
-            # check if the request resulted in normal status, result headers and content
-            assert status[:3] == '200'
-            has_ct = has_v = has_cc = False
-            for k, v in request.headers:
-                if k == 'Content-Type':
-                    assert v.startswith('text/html')
-                    has_ct = True
-                elif k == 'Vary':
-                    assert 'Cookie' in v
-                    assert 'Accept-Language' in v
-                    has_v = True
-                elif k == 'Cache-Control':
-                    assert 'private' in v
-                    assert 'must-revalidate' in v
-                    has_cc = True
-                elif k == 'Set-Cookie':
-                    cookie = v
-            assert has_ct
-            assert has_v
-            assert has_cc # do not cache logged-in user's content
-            assert '</html>' in ''.join(appiter)
-
-            # The trail is only ever saved on the second page display
-            # because otherwise anonymous sessions would be created
-            # for every request, even if it never sent a cookie!
-            # Hence, skip over the first request and only verify
-            # the trail for the second and following.
-            if first:
-                first = False
-                continue
-
-            trail_expected.append(str(pagename))
-
-            # Requested pagenames get into trail?
-            assert 'trail' in request.session
-            trail = request.session['trail']
-            assert trail == trail_expected
+# TestHttpAuthSession was skipped unconditionally in the original suite:
+# "We currently have no http auth code in moin. GivenAuth relies on the web
+# server doing the http auth check." (it imports MoinMoin.auth.http.HttpAuth,
+# which does not exist), so it has been removed.
 
 class TestMoinAuthSession(AuthTest):
     class Config(wikiconfig.Config):

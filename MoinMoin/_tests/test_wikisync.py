@@ -6,8 +6,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
-
+import pytest
 from MoinMoin.PageEditor import PageEditor
 from MoinMoin.wikisync import TagStore, BOTH
 
@@ -19,7 +18,7 @@ class TestUnsafeSync(object):
 
     def setup_method(self, method):
         if not getattr(self.request.cfg, 'is_test_wiki', False):
-            py.test.skip('This test needs to be run using the test wiki.')
+            pytest.skip('This test needs to be run using the test wiki.')
         self.page = PageEditor(self.request, "FrontPage")
 
     def testBasicTagThings(self):

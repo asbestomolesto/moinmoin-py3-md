@@ -28,7 +28,7 @@ class TestMarshal(object):
         (1, '<data><prop>1</prop></data>'),
         (Data('value'), '<data><prop><data><ivar>value</ivar></data></prop></data>'),
         (array.array("i", [42]), "<data><prop>array('i', [42])</prop></data>"),
-        (buffer("0123456789", 2, 3), "<data><prop>234</prop></data>"),
+        (memoryview(b"0123456789")[2:5], "<data><prop>234</prop></data>"),
         )
 
     def setup_method(self, method):

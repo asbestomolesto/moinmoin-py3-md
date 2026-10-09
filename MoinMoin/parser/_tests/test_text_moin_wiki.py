@@ -12,8 +12,7 @@
 import re
 from io import StringIO
 
-import py
-
+import pytest
 from MoinMoin.Page import Page
 from MoinMoin.parser.text_moin_wiki import Parser as WikiParser
 from MoinMoin.formatter.text_html import Formatter as HtmlFormatter
@@ -210,7 +209,7 @@ class TestCloseInlineTestCase(ParserTestCase):
 
     def testCloseOneInline(self):
         """ parser.wiki: close open inline tag when block close """
-        py.test.skip("Broken")
+        pytest.skip("Broken")
         cases = (
             # test, expected
             ("text__text\n", r'<p[^>]*>text<span class="u">text\s*</span></p>'),

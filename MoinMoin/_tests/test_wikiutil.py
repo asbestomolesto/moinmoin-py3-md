@@ -7,8 +7,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
-
+import pytest
 from MoinMoin import config, wikiutil
 
 from werkzeug.datastructures import MultiDict
@@ -185,22 +184,22 @@ class TestParmeterParser:
     def testTooMuchWantedArguments(self):
         args = 'width=100, height=200, alt=Example'
         argParser = wikiutil.ParameterParser("%(width)s%(height)s")
-        py.test.raises(ValueError, argParser.parse_parameters, args)
+        pytest.raises(ValueError, argParser.parse_parameters, args)
 
     def testMalformedArguments(self):
         args = '='
         argParser = wikiutil.ParameterParser("%(width)s%(height)s")
-        py.test.raises(ValueError, argParser.parse_parameters, args)
+        pytest.raises(ValueError, argParser.parse_parameters, args)
 
     def testWrongTypeFixedPosArgument(self):
         args = '0.0'
         argParser = wikiutil.ParameterParser("%b")
-        py.test.raises(ValueError, argParser.parse_parameters, args)
+        pytest.raises(ValueError, argParser.parse_parameters, args)
 
     def testWrongTypeNamedArgument(self):
         args = 'flag=0.0'
         argParser = wikiutil.ParameterParser("%(flag)b")
-        py.test.raises(ValueError, argParser.parse_parameters, args)
+        pytest.raises(ValueError, argParser.parse_parameters, args)
 
 
 class TestParamParsing:
@@ -331,9 +330,9 @@ class TestParamParsing:
         result = wikiutil.UnitArgument('7mm', float, ['%', 'mm'])
         assert result.get_default() ==  (7.0, 'mm')
         assert result.parse_argument('8%') == (8.0, '%')
-        py.test.raises(ValueError, result.parse_argument,  '7m')
-        py.test.raises(ValueError, result.parse_argument,  '7')
-        py.test.raises(ValueError, result.parse_argument,  'mm')
+        pytest.raises(ValueError, result.parse_argument,  '7m')
+        pytest.raises(ValueError, result.parse_argument,  '7')
+        pytest.raises(ValueError, result.parse_argument,  'mm')
 
     def testExtendedParser(self):
         tests = [
@@ -504,7 +503,7 @@ class TestParamParsing:
         ]
 
         def _check(args, sep, kwsep, err):
-            py.test.raises(err,
+            pytest.raises(err,
                            wikiutil.parse_quoted_separated_ext,
                            args, sep, kwsep,
                            brackets=('<>', '()'))
@@ -537,22 +536,22 @@ class TestArgGetters:
 
     def testGetBooleanRaising(self):
         # wrong default type
-        py.test.raises(AssertionError, wikiutil.get_bool, self.request, None, None, 42)
+        pytest.raises(AssertionError, wikiutil.get_bool, self.request, None, None, 42)
 
         # anything except None or unicode raises TypeError
-        py.test.raises(TypeError, wikiutil.get_bool, self.request, True)
-        py.test.raises(TypeError, wikiutil.get_bool, self.request, 42)
-        py.test.raises(TypeError, wikiutil.get_bool, self.request, 42.0)
-        py.test.raises(TypeError, wikiutil.get_bool, self.request, '')
-        py.test.raises(TypeError, wikiutil.get_bool, self.request, tuple())
-        py.test.raises(TypeError, wikiutil.get_bool, self.request, [])
-        py.test.raises(TypeError, wikiutil.get_bool, self.request, {})
+        pytest.raises(TypeError, wikiutil.get_bool, self.request, True)
+        pytest.raises(TypeError, wikiutil.get_bool, self.request, 42)
+        pytest.raises(TypeError, wikiutil.get_bool, self.request, 42.0)
+        pytest.raises(TypeError, wikiutil.get_bool, self.request, '')
+        pytest.raises(TypeError, wikiutil.get_bool, self.request, tuple())
+        pytest.raises(TypeError, wikiutil.get_bool, self.request, [])
+        pytest.raises(TypeError, wikiutil.get_bool, self.request, {})
 
         # any value not convertable to boolean raises ValueError
-        py.test.raises(ValueError, wikiutil.get_bool, self.request, '')
-        py.test.raises(ValueError, wikiutil.get_bool, self.request, '42')
-        py.test.raises(ValueError, wikiutil.get_bool, self.request, 'wrong')
-        py.test.raises(ValueError, wikiutil.get_bool, self.request, '"True"') # must not be quoted!
+        pytest.raises(ValueError, wikiutil.get_bool, self.request, '')
+        pytest.raises(ValueError, wikiutil.get_bool, self.request, '42')
+        pytest.raises(ValueError, wikiutil.get_bool, self.request, 'wrong')
+        pytest.raises(ValueError, wikiutil.get_bool, self.request, '"True"') # must not be quoted!
 
     def testGetInt(self):
         tests = [
@@ -571,22 +570,22 @@ class TestArgGetters:
 
     def testGetIntRaising(self):
         # wrong default type
-        py.test.raises(AssertionError, wikiutil.get_int, self.request, None, None, 42.23)
+        pytest.raises(AssertionError, wikiutil.get_int, self.request, None, None, 42.23)
 
         # anything except None or unicode raises TypeError
-        py.test.raises(TypeError, wikiutil.get_int, self.request, True)
-        py.test.raises(TypeError, wikiutil.get_int, self.request, 42)
-        py.test.raises(TypeError, wikiutil.get_int, self.request, 42.0)
-        py.test.raises(TypeError, wikiutil.get_int, self.request, '')
-        py.test.raises(TypeError, wikiutil.get_int, self.request, tuple())
-        py.test.raises(TypeError, wikiutil.get_int, self.request, [])
-        py.test.raises(TypeError, wikiutil.get_int, self.request, {})
+        pytest.raises(TypeError, wikiutil.get_int, self.request, True)
+        pytest.raises(TypeError, wikiutil.get_int, self.request, 42)
+        pytest.raises(TypeError, wikiutil.get_int, self.request, 42.0)
+        pytest.raises(TypeError, wikiutil.get_int, self.request, '')
+        pytest.raises(TypeError, wikiutil.get_int, self.request, tuple())
+        pytest.raises(TypeError, wikiutil.get_int, self.request, [])
+        pytest.raises(TypeError, wikiutil.get_int, self.request, {})
 
         # any value not convertable to int raises ValueError
-        py.test.raises(ValueError, wikiutil.get_int, self.request, '')
-        py.test.raises(ValueError, wikiutil.get_int, self.request, '23.42')
-        py.test.raises(ValueError, wikiutil.get_int, self.request, 'wrong')
-        py.test.raises(ValueError, wikiutil.get_int, self.request, '"4711"') # must not be quoted!
+        pytest.raises(ValueError, wikiutil.get_int, self.request, '')
+        pytest.raises(ValueError, wikiutil.get_int, self.request, '23.42')
+        pytest.raises(ValueError, wikiutil.get_int, self.request, 'wrong')
+        pytest.raises(ValueError, wikiutil.get_int, self.request, '"4711"') # must not be quoted!
 
     def testGetFloat(self):
         tests = [
@@ -607,21 +606,21 @@ class TestArgGetters:
 
     def testGetFloatRaising(self):
         # wrong default type
-        py.test.raises(AssertionError, wikiutil.get_float, self.request, None, None, '42')
+        pytest.raises(AssertionError, wikiutil.get_float, self.request, None, None, '42')
 
         # anything except None or unicode raises TypeError
-        py.test.raises(TypeError, wikiutil.get_float, self.request, True)
-        py.test.raises(TypeError, wikiutil.get_float, self.request, 42)
-        py.test.raises(TypeError, wikiutil.get_float, self.request, 42.0)
-        py.test.raises(TypeError, wikiutil.get_float, self.request, '')
-        py.test.raises(TypeError, wikiutil.get_float, self.request, tuple())
-        py.test.raises(TypeError, wikiutil.get_float, self.request, [])
-        py.test.raises(TypeError, wikiutil.get_float, self.request, {})
+        pytest.raises(TypeError, wikiutil.get_float, self.request, True)
+        pytest.raises(TypeError, wikiutil.get_float, self.request, 42)
+        pytest.raises(TypeError, wikiutil.get_float, self.request, 42.0)
+        pytest.raises(TypeError, wikiutil.get_float, self.request, '')
+        pytest.raises(TypeError, wikiutil.get_float, self.request, tuple())
+        pytest.raises(TypeError, wikiutil.get_float, self.request, [])
+        pytest.raises(TypeError, wikiutil.get_float, self.request, {})
 
         # any value not convertable to int raises ValueError
-        py.test.raises(ValueError, wikiutil.get_float, self.request, '')
-        py.test.raises(ValueError, wikiutil.get_float, self.request, 'wrong')
-        py.test.raises(ValueError, wikiutil.get_float, self.request, '"47.11"') # must not be quoted!
+        pytest.raises(ValueError, wikiutil.get_float, self.request, '')
+        pytest.raises(ValueError, wikiutil.get_float, self.request, 'wrong')
+        pytest.raises(ValueError, wikiutil.get_float, self.request, '"47.11"') # must not be quoted!
 
     def testGetComplex(self):
         tests = [
@@ -650,25 +649,25 @@ class TestArgGetters:
 
     def testGetComplexRaising(self):
         # wrong default type
-        py.test.raises(AssertionError, wikiutil.get_complex, self.request, None, None, '42')
+        pytest.raises(AssertionError, wikiutil.get_complex, self.request, None, None, '42')
 
         # anything except None or unicode raises TypeError
-        py.test.raises(TypeError, wikiutil.get_complex, self.request, True)
-        py.test.raises(TypeError, wikiutil.get_complex, self.request, 42)
-        py.test.raises(TypeError, wikiutil.get_complex, self.request, 42.0)
-        py.test.raises(TypeError, wikiutil.get_complex, self.request, 3j)
-        py.test.raises(TypeError, wikiutil.get_complex, self.request, '')
-        py.test.raises(TypeError, wikiutil.get_complex, self.request, tuple())
-        py.test.raises(TypeError, wikiutil.get_complex, self.request, [])
-        py.test.raises(TypeError, wikiutil.get_complex, self.request, {})
+        pytest.raises(TypeError, wikiutil.get_complex, self.request, True)
+        pytest.raises(TypeError, wikiutil.get_complex, self.request, 42)
+        pytest.raises(TypeError, wikiutil.get_complex, self.request, 42.0)
+        pytest.raises(TypeError, wikiutil.get_complex, self.request, 3j)
+        pytest.raises(TypeError, wikiutil.get_complex, self.request, '')
+        pytest.raises(TypeError, wikiutil.get_complex, self.request, tuple())
+        pytest.raises(TypeError, wikiutil.get_complex, self.request, [])
+        pytest.raises(TypeError, wikiutil.get_complex, self.request, {})
 
         # any value not convertable to int raises ValueError
-        py.test.raises(ValueError, wikiutil.get_complex, self.request, '')
-        py.test.raises(ValueError, wikiutil.get_complex, self.request, '3jj')
-        py.test.raises(ValueError, wikiutil.get_complex, self.request, '3Ij')
-        py.test.raises(ValueError, wikiutil.get_complex, self.request, '3i-3i')
-        py.test.raises(ValueError, wikiutil.get_complex, self.request, 'wrong')
-        py.test.raises(ValueError, wikiutil.get_complex, self.request, '"47.11"') # must not be quoted!
+        pytest.raises(ValueError, wikiutil.get_complex, self.request, '')
+        pytest.raises(ValueError, wikiutil.get_complex, self.request, '3jj')
+        pytest.raises(ValueError, wikiutil.get_complex, self.request, '3Ij')
+        pytest.raises(ValueError, wikiutil.get_complex, self.request, '3i-3i')
+        pytest.raises(ValueError, wikiutil.get_complex, self.request, 'wrong')
+        pytest.raises(ValueError, wikiutil.get_complex, self.request, '"47.11"') # must not be quoted!
 
     def testGetUnicode(self):
         tests = [
@@ -687,16 +686,16 @@ class TestArgGetters:
 
     def testGetUnicodeRaising(self):
         # wrong default type
-        py.test.raises(AssertionError, wikiutil.get_unicode, self.request, None, None, 42)
+        pytest.raises(AssertionError, wikiutil.get_unicode, self.request, None, None, 42)
 
         # anything except None or unicode raises TypeError
-        py.test.raises(TypeError, wikiutil.get_unicode, self.request, True)
-        py.test.raises(TypeError, wikiutil.get_unicode, self.request, 42)
-        py.test.raises(TypeError, wikiutil.get_unicode, self.request, 42.0)
-        py.test.raises(TypeError, wikiutil.get_unicode, self.request, '')
-        py.test.raises(TypeError, wikiutil.get_unicode, self.request, tuple())
-        py.test.raises(TypeError, wikiutil.get_unicode, self.request, [])
-        py.test.raises(TypeError, wikiutil.get_unicode, self.request, {})
+        pytest.raises(TypeError, wikiutil.get_unicode, self.request, True)
+        pytest.raises(TypeError, wikiutil.get_unicode, self.request, 42)
+        pytest.raises(TypeError, wikiutil.get_unicode, self.request, 42.0)
+        pytest.raises(TypeError, wikiutil.get_unicode, self.request, '')
+        pytest.raises(TypeError, wikiutil.get_unicode, self.request, tuple())
+        pytest.raises(TypeError, wikiutil.get_unicode, self.request, [])
+        pytest.raises(TypeError, wikiutil.get_unicode, self.request, {})
 
 
 class TestExtensionInvoking:
@@ -754,16 +753,16 @@ class TestExtensionInvoking:
         ief(self.request, self._test_invoke_int_None, 'i=1')
         ief(self.request, self._test_invoke_int_None, 'i=')
         ief(self.request, self._test_invoke_int_None, '')
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        self._test_invoke_int_None, 'x')
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        self._test_invoke_int_None, '""')
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        self._test_invoke_int_None, 'i=""')
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        _test_invoke_int_fixed, 'a=7', [7, 8])
         ief(self.request, _test_invoke_int_fixed, 'i=1', [7, 8])
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        _test_invoke_int_fixed, 'i=""', [7, 8])
         ief(self.request, _test_invoke_int_fixed, 'i=', [7, 8])
 
@@ -772,20 +771,20 @@ class TestExtensionInvoking:
             ief(self.request, choicefn, 'choice=a', [7])
             ief(self.request, choicefn, 'choice=', [7])
             ief(self.request, choicefn, 'choice="a"', [7])
-            py.test.raises(ValueError, ief, self.request,
+            pytest.raises(ValueError, ief, self.request,
                            choicefn, 'x', [7])
-            py.test.raises(ValueError, ief, self.request,
+            pytest.raises(ValueError, ief, self.request,
                            choicefn, 'choice=x', [7])
 
         ief(self.request, self._test_invoke_float_None, 'i=1.4')
         ief(self.request, self._test_invoke_float_None, 'i=')
         ief(self.request, self._test_invoke_float_None, '')
         ief(self.request, self._test_invoke_float_None, '1.4')
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        self._test_invoke_float_None, 'x')
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        self._test_invoke_float_None, '""')
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        self._test_invoke_float_None, 'i=""')
         ief(self.request, self._test_trailing, 'a=7, a')
         ief(self.request, self._test_trailing, '7, a')
@@ -799,15 +798,15 @@ class TestExtensionInvoking:
             [{'7 \xc3': 'test', 'test': 'x'}])
         ief(self.request, self._test_arbitrary_kw, '7 \xc3=test, test= x ',
             [{'7 \xc3': 'test', 'test': 'x'}])
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        self._test_invoke_float_required, '')
         ief(self.request, self._test_invoke_float_required, '1.4')
         ief(self.request, self._test_invoke_float_required, 'i=1.4')
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        self._test_invoke_choice_required, '')
         ief(self.request, self._test_invoke_choice_required, 'a')
         ief(self.request, self._test_invoke_choice_required, 'i=a')
-        py.test.raises(ValueError, ief, self.request,
+        pytest.raises(ValueError, ief, self.request,
                        self._test_invoke_float_required, ',')
 
     def testConstructors(self):
@@ -825,13 +824,13 @@ class TestExtensionInvoking:
         obj = ief(self.request, TEST1, 'a=7')
         assert isinstance(obj, TEST1)
         assert obj.constructed
-        py.test.raises(ValueError, ief, self.request, TEST1, 'b')
+        pytest.raises(ValueError, ief, self.request, TEST1, 'b')
 
         obj = ief(self.request, TEST2, 'a=7')
         assert isinstance(obj, TEST1)
         assert isinstance(obj, TEST2)
         assert obj.constructed
-        py.test.raises(ValueError, ief, self.request, TEST2, 'b')
+        pytest.raises(ValueError, ief, self.request, TEST2, 'b')
 
         # old style class
         class TEST3:
@@ -845,20 +844,20 @@ class TestExtensionInvoking:
         obj = ief(self.request, TEST3, 'a=7')
         assert isinstance(obj, TEST3)
         assert obj.constructed
-        py.test.raises(ValueError, ief, self.request, TEST3, 'b')
+        pytest.raises(ValueError, ief, self.request, TEST3, 'b')
 
         obj = ief(self.request, TEST4, 'a=7')
         assert isinstance(obj, TEST3)
         assert isinstance(obj, TEST4)
         assert obj.constructed
-        py.test.raises(ValueError, ief, self.request, TEST4, 'b')
+        pytest.raises(ValueError, ief, self.request, TEST4, 'b')
 
     def testFailing(self):
         ief = wikiutil.invoke_extension_function
 
-        py.test.raises(TypeError, ief, self.request, hex, '15')
-        py.test.raises(TypeError, ief, self.request, cmp, '15')
-        py.test.raises(AttributeError, ief, self.request, str, '15')
+        pytest.raises(TypeError, ief, self.request, hex, '15')
+        pytest.raises(TypeError, ief, self.request, cmp, '15')
+        pytest.raises(AttributeError, ief, self.request, str, '15')
 
     def testAllDefault(self):
         ief = wikiutil.invoke_extension_function

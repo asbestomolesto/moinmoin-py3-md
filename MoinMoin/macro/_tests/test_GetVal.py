@@ -46,7 +46,7 @@ class TestGetVal:
 
     def testGetValACLs(self):
         """ macro GetVal test: 'cant read VAR on an ACL protected page' """
-        py.test.skip("user has no rights to create acl pages")
+        pytest.skip("user has no rights to create acl pages")
         page = create_page(self.request, self.pagename,
                            '#acl SomeUser:read,write All:delete\n VAR:: This is an example')
         result = self._test_macro('GetVal', "%s,%s" % (self.pagename, 'VAR'), page)

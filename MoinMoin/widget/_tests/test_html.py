@@ -6,8 +6,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
-
+import pytest
 from MoinMoin.widget import html
 
 class TestHTMLWidgets:
@@ -36,7 +35,7 @@ class TestHTMLWidgets:
 
         TO DO: add tests for all elements by HTML 4 spec.
         """
-        py.test.raises(AttributeError, html.BR, name='foo')
+        pytest.raises(AttributeError, html.BR, name='foo')
 
 
     def testCompositeElements(self):

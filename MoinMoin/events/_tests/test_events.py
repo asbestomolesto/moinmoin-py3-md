@@ -6,8 +6,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
-
+import pytest
 import MoinMoin.events as events
 import MoinMoin.events.notification as notification
 import MoinMoin.events.jabbernotify as jabbernotify
@@ -22,7 +21,7 @@ def test_get_handlers(request):
 def test_send_event(request):
     """Test if event handlers are called and if proper messages are returned"""
 
-    py.test.skip('broken test - global state is changed somehow that test_GetVal looks broken')
+    pytest.skip('broken test - global state is changed somehow that test_GetVal looks broken')
     return_string = "test_send_event"
 
     def event_handler(event):
@@ -45,11 +44,11 @@ def test_page_change_message(request):
     page = PageEditor(request, "FrontPage")
 
     print("Provided with a dumb change type argument, this should raise an exception!")
-    py.test.raises(notification.UnknownChangeType, notification.page_change_message,
+    pytest.raises(notification.UnknownChangeType, notification.page_change_message,
                    "StupidType", request, page, "en", revisions=page.getRevList())
 
 def test_user_created_event(request):
-    py.test.skip("Test is wrong, because it assumes send_notification will be called - but if there is no superuser subscribed to UserCreatedEvent, then no notification needs to be sent.")
+    pytest.skip("Test is wrong, because it assumes send_notification will be called - but if there is no superuser subscribed to UserCreatedEvent, then no notification needs to be sent.")
     class server_dummy:
         def __init__(self):
             self.sent = False

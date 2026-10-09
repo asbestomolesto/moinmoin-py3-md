@@ -6,15 +6,14 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import py
-
+import pytest
 from MoinMoin.Page import Page
 from MoinMoin import wikiutil
 
 
 class TestFormatter:
     def testSyntaxReferenceDomXml(self):
-        py.test.skip("domxml <p> generation is broken")
+        pytest.skip("domxml <p> generation is broken")
         f_name = 'dom_xml'
         try:
             formatter = wikiutil.importPlugin(self.request.cfg, "formatter", f_name, "Formatter")
@@ -26,7 +25,7 @@ class TestFormatter:
             print("Done.")
 
     def testSyntaxReferenceDocBook(self):
-        py.test.skip("docbook is broken")
+        pytest.skip("docbook is broken")
         f_name = 'text_docbook'
         try:
             formatter = wikiutil.importPlugin(self.request.cfg, "formatter", f_name, "Formatter")

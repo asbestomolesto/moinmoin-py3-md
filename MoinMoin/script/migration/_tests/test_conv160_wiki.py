@@ -18,8 +18,8 @@
     @copyright: 2007 MoinMoin:ThomasWaldmann
     @license: GNU GPL, see COPYING for details.
 """
-import py
-#py.test.skip("broken")
+import pytest
+#pytest.skip("broken")
 
 from MoinMoin import i18n
 i18n_wikiLanguages = i18n.wikiLanguages
@@ -163,7 +163,7 @@ class TestWikiConversion:
             assert convert_wiki(request, pagename, data, renames) == expected
 
     def test_parser(self):
-        #py.test.skip("not wanted right now")
+        #pytest.skip("not wanted right now")
         markup_15 = """\
 {{{#!html
 ...
@@ -183,7 +183,7 @@ class TestWikiConversion:
 
 
     def test_pre(self):
-        #py.test.skip("not wanted right now")
+        #pytest.skip("not wanted right now")
         markup_15 = """\
 {{{
 ...

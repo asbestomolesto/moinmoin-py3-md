@@ -19,7 +19,7 @@ from MoinMoin.auth import handle_login
 # first check if we have python 2.4, python-ldap and slapd:
 msg = check_environ()
 if msg:
-    py.test.skip(msg)
+    pytest.skip(msg, allow_module_level=True)
 del msg
 
 import ldap
@@ -151,7 +151,7 @@ class TestTwoLdapServers:
             ldap_env.create_env(slapd_config=self.slapd_config)
             started = ldap_env.start_slapd()
             if not started:
-                py.test.skip("Failed to start %s process, please see your syslog / log files"
+                pytest.skip("Failed to start %s process, please see your syslog / log files"
                              " (and check if stopping apparmor helps, in case you use it)." % SLAPD_EXECUTABLE)
             ldap_env.load_directory(ldif_content=self.ldif_content)
             self.ldap_envs.append(ldap_env)
@@ -192,7 +192,7 @@ class TestLdapFailover:
             ldap_env.create_env(slapd_config=self.slapd_config)
             started = ldap_env.start_slapd()
             if not started:
-                py.test.skip("Failed to start %s process, please see your syslog / log files"
+                pytest.skip("Failed to start %s process, please see your syslog / log files"
                              " (and check if stopping apparmor helps, in case you use it)." % SLAPD_EXECUTABLE)
             ldap_env.load_directory(ldif_content=self.ldif_content)
             self.ldap_envs.append(ldap_env)
