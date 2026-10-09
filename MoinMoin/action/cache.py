@@ -29,6 +29,7 @@
 
 from datetime import datetime
 import hmac, hashlib
+from MoinMoin.support.python_compatibility import hmac_new
 
 from MoinMoin import log
 logging = log.getLogger(__name__)
@@ -98,8 +99,7 @@ def key(request, wikiname=None, itemname=None, attachname=None, content=None, se
     else:
         raise AssertionError('cache_key called with unsupported parameters')
 
-    hmac_data = hmac_data.encode('utf-8')
-    key = hmac.new(secret, hmac_data, digestmod=hashlib.sha1).hexdigest()
+    key = hmac_new(secret, hmac_data, digestmod=hashlib.sha1).hexdigest()
     return key
 
 
@@ -166,10 +166,7 @@ def put(request, key, data,
                ('Content-Length', content_length),
               ]
     if content_disposition and filename:
-        # TODO: fix the encoding here, plain 8 bit is not allowed according to the RFCs
-        # There is no solution that is compatible to IE except stripping non-ascii chars
-        filename = filename.encode(config.charset)
-        headers.append(('Content-Disposition', '%s; filename="%s"' % (content_disposition, filename)))
+        headers.append(('Content-Disposition', AttachFile.content_disposition(content_disposition, filename)))
 
     meta_cache = caching.CacheEntry(request, cache_arena, key+'.meta', cache_scope, do_locking=do_locking, use_pickle=True)
     meta_cache.update({

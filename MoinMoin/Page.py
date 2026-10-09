@@ -1094,10 +1094,8 @@ class Page(object):
             text = self.encodeTextMimeType(self.body)
             #request.headers['Content-Length'] = len(text)  # XXX WRONG! text is unicode obj, but we send utf-8!
             if content_disposition:
-                # TODO: fix the encoding here, plain 8 bit is not allowed according to the RFCs
-                # There is no solution that is compatible to IE except stripping non-ascii chars
-                filename_enc = "%s.txt" % self.page_name.encode(config.charset)
-                dispo_string = '%s; filename="%s"' % (content_disposition, filename_enc)
+                from MoinMoin.action.AttachFile import content_disposition as make_dispo
+                dispo_string = make_dispo(content_disposition, "%s.txt" % self.page_name)
                 request.headers['Content-Disposition'] = dispo_string
         else:
             request.status_code = 404
@@ -1881,7 +1879,7 @@ class RootPage(Page):
             for name in cachedlist:
                 # First, custom filter - exists and acl check are very
                 # expensive!
-                if filter and not list(filter(name)):
+                if filter and not filter(name):
                     continue
 
                 page = Page(request, name)

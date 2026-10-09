@@ -22,6 +22,11 @@ import hashlib, hmac
 hash_new = hashlib.new
 
 def hmac_new(key, msg, digestmod=hashlib.sha1):
+    """ hmac.new, but key and msg may also be str (they get utf-8 encoded) """
+    if isinstance(key, str):
+        key = key.encode('utf-8')
+    if isinstance(msg, str):
+        msg = msg.encode('utf-8')
     return hmac.new(key, msg, digestmod)
 
 

@@ -33,6 +33,7 @@ logging = log.getLogger(__name__)
 from MoinMoin import config, caching, wikiutil, i18n, events
 from hmac import compare_digest as safe_str_equal
 from MoinMoin.util import timefuncs, random_string
+from MoinMoin.support.python_compatibility import hmac_new
 from MoinMoin.wikiutil import url_quote_plus
 
 # for efficient lookup <attr> -> userid, we keep an index of this in the cache.
@@ -1252,7 +1253,7 @@ class User:
     def generate_recovery_token(self):
         key = random_string(64, "abcdefghijklmnopqrstuvwxyz0123456789")
         msg = str(int(time.time()))
-        h = hmac.new(key, msg, digestmod=hashlib.sha1).hexdigest()
+        h = hmac_new(key, msg, digestmod=hashlib.sha1).hexdigest()
         self.recoverpass_key = key
         self.save()
         return msg + '-' + h
@@ -1270,7 +1271,7 @@ class User:
             return False
         # check hmac
         # key must be of type string
-        h = hmac.new(str(self.recoverpass_key), str(stamp), digestmod=hashlib.sha1).hexdigest()
+        h = hmac_new(str(self.recoverpass_key), str(stamp), digestmod=hashlib.sha1).hexdigest()
         if not safe_str_equal(h, parts[1]):
             return False
         self.recoverpass_key = ""

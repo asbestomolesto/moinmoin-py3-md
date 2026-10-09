@@ -443,8 +443,8 @@ class ScriptContext(AllContext):
 
     def write(self, *data):
         for d in data:
-            if isinstance(d, str):
-                d = d.encode(config.charset)
+            if isinstance(d, bytes):
+                sys.stdout.flush()
+                sys.stdout.buffer.write(d)
             else:
-                d = str(d)
-            sys.stdout.write(d)
+                sys.stdout.write(str(d))

@@ -12,6 +12,7 @@
 
 import codecs
 import hmac, hashlib
+from MoinMoin.support.python_compatibility import hmac_new
 import os
 import re
 import time
@@ -209,9 +210,9 @@ def clean_input(text, max_len=201):
     if length == 0 or length > max_len:
         return ''
     else:
-        if isinstance(text, str):
+        if isinstance(text, bytes):
             # the translate() below can ONLY process unicode, thus, if we get
-            # str, we try to decode it using the usual coding:
+            # bytes, we try to decode it using the usual coding:
             text = text.decode(config.charset)
         return text.translate(config.clean_input_translation_map)
 
@@ -2508,7 +2509,7 @@ def createTicket(request, tm=None, action=None, pagename=None):
     """
     if tm is None:
         # for age-check of ticket
-        tm = "%010x" % time.time()
+        tm = "%010x" % int(time.time())
 
     # make the ticket very specific:
     if pagename is None:
@@ -2538,8 +2539,8 @@ def createTicket(request, tm=None, action=None, pagename=None):
             value = value.encode('utf-8')
         hmac_data.append(value)
 
-    h = hmac.new(request.cfg.secrets['wikiutil/tickets'],
-                 ''.join(hmac_data), digestmod=hashlib.sha1)
+    h = hmac_new(request.cfg.secrets['wikiutil/tickets'],
+                 b''.join(hmac_data), digestmod=hashlib.sha1)
     return "%s.%s" % (tm, h.hexdigest())
 
 

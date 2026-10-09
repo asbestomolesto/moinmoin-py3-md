@@ -20,6 +20,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 import hmac, hashlib
+from MoinMoin.support.python_compatibility import hmac_new
 import re
 import random
 
@@ -84,7 +85,7 @@ class TextCha(object):
 
     def _compute_signature(self, question, timestamp):
         signature = "%s%d" % (question, timestamp)
-        return hmac.new(self.secret, signature.encode('utf-8'), digestmod=hashlib.sha1).hexdigest()
+        return hmac_new(self.secret, signature, digestmod=hashlib.sha1).hexdigest()
 
     def _init_qa(self, question=None):
         """ Initialize the question / answer.
