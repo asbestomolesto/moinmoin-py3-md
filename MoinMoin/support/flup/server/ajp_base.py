@@ -975,7 +975,7 @@ class BaseAJPServer(object):
         """
         if self.debug:
             request.startResponse(500, b'Internal Server Error', [(b'Content-Type', b'text/html')])
-            import cgitb
+            from . import _cgitb as cgitb
             request.write(cgitb.html(sys.exc_info()).encode('latin-1'))
         else:
             errorpage = b"""<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">

@@ -567,7 +567,7 @@ class BaseSCGIServer(object):
         all errors should be caught at the application level.
         """
         if self.debug:
-            import cgitb
+            from . import _cgitb as cgitb
             request.stdout.write(b'Status: 500 Internal Server Error\r\n' +
                                  b'Content-Type: text/html\r\n\r\n' +
                                  cgitb.html(sys.exc_info()).encode('latin-1'))

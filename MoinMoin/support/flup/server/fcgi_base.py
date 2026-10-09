@@ -1232,7 +1232,7 @@ class BaseFCGIServer(object):
         should be overridden.
         """
         if self.debug:
-            import cgitb
+            from . import _cgitb as cgitb
             req.stdout.write(b'Status: 500 Internal Server Error\r\n' +
                              b'Content-Type: text/html\r\n\r\n' +
                              cgitb.html(sys.exc_info()).encode('latin-1'))
