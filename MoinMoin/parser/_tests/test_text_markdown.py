@@ -160,6 +160,65 @@ class TestMacrosAndCode(ParserTestCase):
         assert '&lt;script&gt;' in result
 
 
+class TestPageCache(object):
+    """ the page cache stores the output as python code (text_python
+        formatter): it must give the same result as the direct rendering
+    """
+    text = """#format markdown
+# Title
+
+<<TableOfContents>>
+
+## Code
+
+```python
+print("hello")
+```
+
+```
+plain
+```
+
+```wiki
+'''bold''' [[FrontPage]]
+```
+
+## Macro
+
+Pages: <<PageCount>> and [[FrontPage|a link]] ![img](attachment:x.png)
+"""
+
+    def render(self, request, use_cache):
+        from MoinMoin.formatter.text_html import Formatter
+        request.reset()
+        request.cfg.cfg_mtime = 1 # allow the cached code to run
+        page = Page(request, PAGENAME)
+        page.set_raw_body(self.text)
+        page.hilite_re = None
+        formatter = Formatter(request)
+        formatter.setPage(page)
+        page.formatter = formatter
+        request.formatter = formatter
+        request.page = page
+        parser = MarkdownParser(page.data, request)
+        formatter.startContent('')
+        if use_cache:
+            code = page.makeCache(request, parser)
+            output = request.redirectedOutput(page.execute, request, parser, code)
+        else:
+            output = request.redirectedOutput(parser.format, formatter)
+        formatter.endContent('')
+        output = re.sub(r'ticket=[0-9a-f.]+|CA-[0-9a-f]+', 'X', output)
+        # ids are made unique per request, the second rendering gets other ones
+        return re.sub(r'(id="|href="#)[^"]*"', r'\1X"', output)
+
+    def test_cached_output_is_the_same(self):
+        direct = self.render(self.request, False)
+        cached = self.render(self.request, True)
+        assert 'Pages: ' in direct and '<strong>bold</strong>' in direct
+        assert direct == cached
+
+
 class TestProcessingInstructions(object):
 
     def test_markdown_heading_is_not_a_pi(self):

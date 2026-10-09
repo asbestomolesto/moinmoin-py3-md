@@ -340,8 +340,9 @@ class Parser:
                     f.rawHTML(postprocess(item['html'])) +
                     f.heading(0, level))
         elif kind == 'code':
-            self._code(item['lang'], item['lines'])
-            return ''
+            # formatter.parser() writes its output, but the caching formatter
+            # returns a marker for the code it generated: it must be written
+            return self._code(item['lang'], item['lines'])
         elif kind == 'text':
             return self._label(item, item['text'], postprocess)
         return ''
@@ -353,10 +354,8 @@ class Parser:
         f = self.formatter
         lang = (lang or '').strip()
         if not lang:
-            f.parser('text', lines)
-            return
+            return f.parser('text', lines) or ''
         markup = MARKUP_BLOCKS.get(lang.lower())
         if markup:
-            f.parser(markup, ['#!%s' % markup] + list(lines))
-            return
-        f.parser('highlight', ['#!highlight %s' % lang] + list(lines))
+            return f.parser(markup, ['#!%s' % markup] + list(lines)) or ''
+        return f.parser('highlight', ['#!highlight %s' % lang] + list(lines)) or ''
