@@ -86,9 +86,10 @@ if have_flup:
                     if self.debug == 'external':
                         raise
                     elif self.debug == 'web':
-                        import cgitb
+                        import traceback
+                        from MoinMoin.wikiutil import escape
                         req.stdout.write('Content-Type: text/html\r\n\r\n' +
-                                         cgitb.html(sys.exc_info()))
+                                         '<pre>%s</pre>' % escape(traceback.format_exc()))
                     else: # 'off'
                         errorpage = """<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html><head>

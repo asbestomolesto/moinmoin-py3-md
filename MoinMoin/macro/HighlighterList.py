@@ -33,6 +33,7 @@ from MoinMoin import wikiutil
 
 import pygments.lexers
 from functools import cmp_to_key
+from MoinMoin.support.python_compatibility import cmp
 
 available_columns = ['description', 'names', 'patterns', 'mimetypes']
 

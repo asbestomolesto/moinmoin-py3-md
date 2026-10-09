@@ -1,7 +1,7 @@
 # taken from Amos' XML-RPC HowTo:
 
 import xmlrpc.client, http.client
-from base64 import encodestring
+from base64 import b64encode
 
 class BasicAuthTransport(xmlrpc.client.Transport):
     def __init__(self, username=None, password=None):
@@ -24,7 +24,7 @@ class BasicAuthTransport(xmlrpc.client.Transport):
 
         # basic auth
         if self.username is not None and self.password is not None:
-            authhdr = "Basic %s" % encodestring("%s:%s" % (self.username, self.password)).replace("\012", "")
+            authhdr = "Basic %s" % b64encode(("%s:%s" % (self.username, self.password)).encode('utf-8')).decode('ascii')
             h.putheader("Authorization", authhdr)
         h.endheaders()
 

@@ -14,12 +14,12 @@
 # history and logs, available at http://projects.edgewall.com/trac/.
 
 import html.entities
-from html.parser import HTMLParser, HTMLParseError
+from html.parser import HTMLParser
 import re
-try:
-    frozenset
-except NameError:
-    from sets import ImmutableSet as frozenset
+
+
+class HTMLParseError(Exception):
+    """ was html.parser.HTMLParseError in Python 2 """
 from io import StringIO
 
 __all__ = ['escape', 'unescape', 'html']

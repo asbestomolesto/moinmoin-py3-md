@@ -10,7 +10,6 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import cgi
 import codecs
 import hmac, hashlib
 import os
@@ -23,7 +22,7 @@ from functools import cmp_to_key
 logging = log.getLogger(__name__)
 
 from MoinMoin import config
-from inspect import getargspec, isfunction, isclass, ismethod
+from inspect import getfullargspec, isfunction, isclass, ismethod
 
 from MoinMoin import web # needed so that next lines work:
 import werkzeug
@@ -189,7 +188,11 @@ def quoteWikinameURL(pagename, charset=config.charset):
 def escape(s, quote=None):
     if not isinstance(s, str):
         s = str(s)
-    return cgi.escape(s, quote)
+    # this is the cgi.escape function of Python 2 (only escapes " if quote is true)
+    s = s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    if quote:
+        s = s.replace('"', "&quot;")
+    return s
 
 
 def clean_input(text, max_len=201):
@@ -1889,10 +1892,10 @@ def invoke_extension_function(request, function, args, fixed_args=[]):
         positional = []
 
     if isfunction(function) or ismethod(function):
-        argnames, varargs, varkw, defaultlist = getargspec(function)
+        argnames, varargs, varkw, defaultlist = getfullargspec(function)[:4]
     elif isclass(function):
         (argnames, varargs,
-         varkw, defaultlist) = getargspec(function.__init__.__func__)
+         varkw, defaultlist) = getfullargspec(function.__init__)[:4]
     else:
         raise TypeError('function must be a function, method or class')
 

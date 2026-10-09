@@ -13,6 +13,7 @@ from MoinMoin.theme import load_theme_fallback
 from MoinMoin.widget import html
 from MoinMoin.userprefs import UserPrefBase
 from functools import cmp_to_key
+from MoinMoin.support.python_compatibility import cmp
 
 
 #################################################################

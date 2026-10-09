@@ -25,8 +25,8 @@ def log(msg, level=0):
 oidutil.log = log
 
 def strbase64(value):
-    from base64 import encodestring
-    return encodestring(str(value)).replace('\n', '')
+    from base64 import b64encode
+    return b64encode(str(value).encode('utf-8')).decode('ascii')
 
 
 def _cleanup_nonces(request):

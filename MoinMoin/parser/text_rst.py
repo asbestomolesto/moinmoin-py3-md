@@ -10,7 +10,7 @@
 """
 
 import re
-import new
+import types
 import io
 import builtins
 import sys
@@ -482,8 +482,8 @@ class MoinTranslator(html4css1.HTMLTranslator):
         }
         for rest_func, moin_func in list(handlers.items()):
             visit_func, depart_func = self.create_wiki_functor(moin_func)
-            visit_func = new.instancemethod(visit_func, self, MoinTranslator)
-            depart_func = new.instancemethod(depart_func, self, MoinTranslator)
+            visit_func = types.MethodType(visit_func, self)
+            depart_func = types.MethodType(depart_func, self)
             setattr(self, 'visit_%s' % (rest_func), visit_func)
             setattr(self, 'depart_%s' % (rest_func), depart_func)
 
@@ -531,8 +531,8 @@ class MoinTranslator(html4css1.HTMLTranslator):
         ]
         for adm in handled_admonitions:
             visit_func, depart_func = self.create_admonition_functor(adm)
-            visit_func = new.instancemethod(visit_func, self, MoinTranslator)
-            depart_func = new.instancemethod(depart_func, self, MoinTranslator)
+            visit_func = types.MethodType(visit_func, self)
+            depart_func = types.MethodType(depart_func, self)
             setattr(self, 'visit_%s' % (adm), visit_func)
             setattr(self, 'depart_%s' % (adm), depart_func)
 

@@ -39,11 +39,28 @@ class EditLogLine:
     def __init__(self, usercache):
         self._usercache = usercache
 
-    def __cmp__(self, other):
-        try:
-            return cmp(self.ed_time_usecs, other.ed_time_usecs)
-        except AttributeError:
-            return cmp(self.ed_time_usecs, other)
+    def _cmpkey(self, other):
+        return getattr(other, 'ed_time_usecs', other)
+
+    def __eq__(self, other):
+        return self.ed_time_usecs == self._cmpkey(other)
+
+    def __ne__(self, other):
+        return self.ed_time_usecs != self._cmpkey(other)
+
+    def __lt__(self, other):
+        return self.ed_time_usecs < self._cmpkey(other)
+
+    def __le__(self, other):
+        return self.ed_time_usecs <= self._cmpkey(other)
+
+    def __gt__(self, other):
+        return self.ed_time_usecs > self._cmpkey(other)
+
+    def __ge__(self, other):
+        return self.ed_time_usecs >= self._cmpkey(other)
+
+    __hash__ = object.__hash__
 
     def is_from_current_user(self, request):
         user = request.user
@@ -234,7 +251,7 @@ class EditLog(LogFile):
                 expr = "%s and x.%s == %s" % (expr, field, repr(kw[field]))
 
         if 'ed_time_usecs' in kw:
-            expr = "%s and long(x.ed_time_usecs) == %s" % (expr, int(kw['ed_time_usecs'])) # must be long for py 2.2.x
+            expr = "%s and int(x.ed_time_usecs) == %s" % (expr, int(kw['ed_time_usecs'])) # must be long for py 2.2.x
 
         self.filter = eval("lambda x: " + expr)
 

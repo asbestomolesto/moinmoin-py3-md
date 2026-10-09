@@ -32,14 +32,10 @@ blacklist = ('.iso', '.nrg', # CD/DVD images
 
 import os, string
 
-# builds a list of all characters:
-norm = string.maketrans('', '')
-
-# builds a list of all non-alphanumeric characters:
-non_alnum = string.translate(norm, norm, string.letters+string.digits)
+_alnum = (string.ascii_letters + string.digits).encode('ascii')
 
 # translate table that replaces all non-alphanumeric by blanks:
-trans_nontext = string.maketrans(non_alnum, ' '*len(non_alnum))
+trans_nontext = bytes([c if c in _alnum else ord(' ') for c in range(256)])
 
 def execute(indexobj, filename):
     fileext = os.path.splitext(filename)[1]
@@ -51,6 +47,6 @@ def execute(indexobj, filename):
     data = data.translate(trans_nontext) # replace non-ascii by blanks
     data = data.split() # removes lots of blanks
     data = [s for s in data if len(s) >= minwordlen] # throw away too short stuff
-    data = ' '.join(data)
+    data = b' '.join(data)
     return data.decode('ascii')
 

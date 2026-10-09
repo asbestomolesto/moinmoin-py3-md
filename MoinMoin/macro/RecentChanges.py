@@ -13,6 +13,7 @@ from MoinMoin import util, wikiutil
 from MoinMoin.Page import Page
 from MoinMoin.logfile import editlog
 from functools import cmp_to_key
+from MoinMoin.support.python_compatibility import cmp
 
 _DAYS_SELECTION = [1, 2, 3, 7, 14, 30, 60, 90]
 _MAX_DAYS = 7

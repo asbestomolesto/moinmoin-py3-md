@@ -24,6 +24,7 @@ import os, re, codecs
 from MoinMoin import config, wikiutil
 from MoinMoin.Page import Page
 from functools import cmp_to_key
+from MoinMoin.support.python_compatibility import cmp
 
 
 def _getWordsFiles(request):
