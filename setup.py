@@ -81,7 +81,7 @@ setup_args = {
     'author_email': "moin-user@python.org",
     # MoinMoin 1.10.0, the Python 3 port, made with the assistance of Claude (Anthropic AI)
     'maintainer': "Gabriele 'asbesto' Zaverio",
-    'maintainer_email': "aladarmrgradymezil@gmail.com",
+    'maintainer_email': "asbesto@freaknet.org",
     'url': "https://moinmo.in/",
     'license': "GNU GPL",
     'long_description': """

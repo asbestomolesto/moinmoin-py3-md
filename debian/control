@@ -3,7 +3,7 @@
 Source: moin
 Section: web
 Priority: optional
-Maintainer: Gabriele 'asbesto' Zaverio <aladarmrgradymezil@gmail.com>
+Maintainer: Gabriele 'asbesto' Zaverio <asbesto@freaknet.org>
 Build-Depends: debhelper-compat (= 13),
                dh-python,
                pybuild-plugin-pyproject,
