@@ -264,7 +264,7 @@ class ReplayLog(object):
             self._thread_ids[thread_id] = thread_num
             self._next_thread += 1
 
-        if thread_num is 0:
+        if thread_num == 0:
             return "%s" % call_num
         return "%dT%d" % (call_num, thread_num)
 

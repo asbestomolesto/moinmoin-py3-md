@@ -24,7 +24,7 @@ Connector for Python and Zope.
 
 This code was not tested at all.
 It just was ported from pre 2.5 release, so for further reference see
-\editor\filemanager\browser\default\connectors\py\connector.py in previous
+\\editor\filemanager\browser\\default\\connectors\\py\\connector.py in previous
 releases.
 
 """

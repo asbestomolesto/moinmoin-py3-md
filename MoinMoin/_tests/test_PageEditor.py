@@ -305,7 +305,7 @@ class TestCopyPage(object):
         self.createTestPage()
         result, msg = PageEditor(self.request, self.pagename).copyPage(self.copy_pagename)
         revision = Page(self.request, self.copy_pagename).current_rev()
-        assert result and revision is 2
+        assert result and revision == 2
 
     def test_copy_page_acl_read(self):
         """
@@ -315,7 +315,7 @@ class TestCopyPage(object):
         self.createTestPage()
         result, msg = PageEditor(self.request, self.pagename).copyPage(self.copy_pagename)
         revision = Page(self.request, self.copy_pagename).current_rev()
-        assert result and revision is 2
+        assert result and revision == 2
 
     def test_copy_page_acl_no_read(self):
         """
@@ -325,6 +325,6 @@ class TestCopyPage(object):
         self.createTestPage()
         result, msg = PageEditor(self.request, self.pagename).copyPage(self.copy_pagename)
         revision = Page(self.request, self.copy_pagename).current_rev()
-        assert result and revision is 2
+        assert result and revision == 2
 
 coverage_modules = ['MoinMoin.PageEditor']

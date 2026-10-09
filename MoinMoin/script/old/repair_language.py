@@ -70,7 +70,7 @@ def repairText(text):
     """ Repair page text
 
     We change only this type of lines that currently are in moinmaster
-    ##language:\s*xx
+    ##language:\\s*xx
 
     Warning: will not repair the language if there is more text on the
     same line, e.g. ##language:fr make it french!

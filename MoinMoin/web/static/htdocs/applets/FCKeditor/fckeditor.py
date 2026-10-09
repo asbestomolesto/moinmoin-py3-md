@@ -83,7 +83,7 @@ class FCKeditor(object):
                     )
 
             # Render the editor iframe
-            Html += "<iframe id=\"%s\__Frame\" src=\"%s\" width=\"%s\" height=\"%s\" frameborder=\"0\" scrolling=\"no\"></iframe>" % (
+            Html += "<iframe id=\"%s\\__Frame\" src=\"%s\" width=\"%s\" height=\"%s\" frameborder=\"0\" scrolling=\"no\"></iframe>" % (
                     self.InstanceName,
                     Link,
                     self.Width,
@@ -133,7 +133,7 @@ class FCKeditor(object):
                 return True
             return False
         elif (sAgent.find("AppleWebKit/") >= 0):
-            p = re.compile('AppleWebKit\/(\d+)', re.IGNORECASE)
+            p = re.compile('AppleWebKit\\/(\\d+)', re.IGNORECASE)
             m = p.search(sAgent)
             if (m.group(1) >= 522):
                 return True
