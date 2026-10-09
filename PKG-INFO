@@ -1,7 +1,7 @@
 Metadata-Version: 1.1
-Name: moin
-Version: 1.10.0
-Summary: MoinMoin 1.10.0 is an easy to use, full-featured and extensible wiki software package
+Name: moin-markdown
+Version: 1.11.0+md1
+Summary: MoinMoin 1.11.0+md1 is an easy to use, full-featured and extensible wiki software package
 Home-page: https://moinmo.in/
 Author: Juergen Hermann et al.
 Author-email: moin-user@python.org

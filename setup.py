@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
 # for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
+# MoinMoin 1.11.0+md1 (Markdown support): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin installer
 
@@ -74,9 +75,9 @@ def make_filelist(dir, strip_prefix=''):
 #############################################################################
 
 setup_args = {
-    'name': "moin",
+    'name': "moin-markdown",
     'version': release,
-    'description': "MoinMoin %s is an easy to use, full-featured and extensible wiki software package (Python 3 port)" % (release, ),
+    'description': "MoinMoin %s is an easy to use, full-featured and extensible wiki software package (Python 3, Markdown pages)" % (release, ),
     'author': "Juergen Hermann et al.",
     'author_email': "moin-user@python.org",
     # MoinMoin 1.10.0, the Python 3 port, made with the assistance of Claude (Anthropic AI)
@@ -91,7 +92,8 @@ setup_args = {
     a company knowledge base deployed on an intranet, or an Internet server
     open to individuals sharing the same interests, goals or projects.
 
-    This is MoinMoin 1.10.0: MoinMoin 1.9.11 ported to Python 3. Wiki data, configuration
+    This is MoinMoin 1.11.0+md1: MoinMoin 1.10.0 (MoinMoin 1.9.11 ported to
+    Python 3) with Markdown pages. Wiki data, configuration
     and plugins of the 1.9 series stay compatible (plugins have to be
     ported to Python 3, too).""",
     'keywords': "wiki web",
@@ -132,6 +134,7 @@ Topic :: Text Processing :: Markup""".splitlines(),
         'pygments',
         'passlib',
         'parsedatetime',
+        'markdown',
         # the cgi module was removed from the standard library in Python 3.13
         'legacy-cgi; python_version >= "3.13"',
     ],

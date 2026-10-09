@@ -1,0 +1,93 @@
+## Please edit system and help pages ONLY in the master wiki!
+## Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026 (MoinMoin 1.11.0+md1).
+#acl -All:write Default
+#format markdown
+#language en
+# Markdown pages
+
+This wiki can store pages in **Markdown** as well as in the native
+[[HelpOnMoinWikiSyntax|MoinMoin wiki syntax]]. Both kinds of pages can be
+used side by side: they link to each other, they appear in searches,
+RecentChanges and backlinks, and they have history, diffs and attachments.
+
+<<TableOfContents(2)>>
+
+## Writing a Markdown page
+
+Put this line at the very top of the page (it is not shown):
+
+```
+#format markdown
+```
+
+Or create the page from the [[MarkdownTemplate]]. If the wiki
+administrator sets `default_markup = 'markdown'` in the wiki
+configuration, pages without a `#format` line are Markdown.
+
+Lines like `# Title` and `## Section` after `#format markdown` are
+Markdown headings (the MoinMoin processing instructions, like `#acl`,
+have no blank after the `#`).
+
+## Text
+
+| Markdown | Result |
+|----------|--------|
+| `**bold**` | **bold** |
+| `*italic*` | *italic* |
+| `` `code` `` | `code` |
+| `~~~` / ```` ``` ```` blocks | code blocks |
+| `> quote` | quotation |
+| `* item` or `1. item` | lists |
+| `---` | horizontal rule |
+
+Tables, footnotes[^note], definition lists and abbreviations are
+supported, too.
+
+[^note]: Like this footnote.
+
+## Links
+
+* `[[PageName]]` and `[[PageName|text]]`, like in wiki markup: [[FrontPage]]
+* `[text](PageName)`: [the front page](FrontPage)
+* `[text](/SubPage)` and `[text](../SisterPage)`: relative page names
+* `[[PageName#anchor|text]]`: a section of a page
+* `[[MoinMoin:HelpOnMacros]]`: interwiki links
+* `[text](https://example.org)` and `<https://example.org>`: external links
+
+Link targets without a URL scheme are wiki pages. For security, only
+safe URL schemes (http, https, ftp, mailto, ...) are allowed.
+
+## Attachments and images
+
+* `[[attachment:file.pdf|text]]` or `[text](attachment:file.pdf)`
+* `![description](attachment:image.png)` shows an attached image
+* `![description](https://example.org/image.png)` shows an external image
+
+## Macros
+
+MoinMoin macros work like in wiki markup, e.g. `<<TableOfContents>>`,
+`<<RecentChanges>>`, `<<FullSearch(text)>>` or `<<Date(...)>>`.
+Inside `` `code` `` they are not executed.
+
+## Code and other markups
+
+A fenced block with a language name is highlighted:
+
+```python
+def hello(name):
+    return "Hello, %s!" % name
+```
+
+A fenced block called `wiki` (or `creole`, `rst`, `csv`) is rendered
+with that markup, so you can use MoinMoin wiki syntax inside a Markdown
+page:
+
+```wiki
+''MoinMoin'' '''wiki''' markup, with a <<Icon(smile.png)>> smiley icon.
+```
+
+## Not supported
+
+Raw HTML is shown as text, it is not rendered (the wiki stays safe from
+scripts). The graphical editor only works for wiki markup pages, Markdown
+pages are edited with the text editor.

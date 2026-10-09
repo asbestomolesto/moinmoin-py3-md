@@ -16,18 +16,18 @@ override_dh_auto_install:
 	dh_auto_install
 	# the moin command line tool is installed by setuptools
 	# the tests and the developer configuration are not shipped
-	find debian/python3-moinmoin -name '_tests' -type d -prune -exec rm -rf {} +
-	find debian/python3-moinmoin -name 'conftest.py' -delete
+	find debian/python3-moinmoin-markdown -name '_tests' -type d -prune -exec rm -rf {} +
+	find debian/python3-moinmoin-markdown -name 'conftest.py' -delete
 	# python helper scripts of the static FCKeditor files are not needed
-	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.py' -delete
-	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.pl' -delete
-	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.php' -delete
-	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.cfm' -delete
-	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.asp' -delete
-	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.aspx' -delete
-	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.lasso' -delete
-	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.cgi' -delete
-	install -D -m 0755 debian/moin-mkwiki debian/python3-moinmoin/usr/sbin/moin-mkwiki
+	find debian/python3-moinmoin-markdown -path '*FCKeditor*' -name '*.py' -delete
+	find debian/python3-moinmoin-markdown -path '*FCKeditor*' -name '*.pl' -delete
+	find debian/python3-moinmoin-markdown -path '*FCKeditor*' -name '*.php' -delete
+	find debian/python3-moinmoin-markdown -path '*FCKeditor*' -name '*.cfm' -delete
+	find debian/python3-moinmoin-markdown -path '*FCKeditor*' -name '*.asp' -delete
+	find debian/python3-moinmoin-markdown -path '*FCKeditor*' -name '*.aspx' -delete
+	find debian/python3-moinmoin-markdown -path '*FCKeditor*' -name '*.lasso' -delete
+	find debian/python3-moinmoin-markdown -path '*FCKeditor*' -name '*.cgi' -delete
+	install -D -m 0755 debian/moin-mkwiki debian/python3-moinmoin-markdown/usr/sbin/moin-mkwiki
 
 override_dh_installinit:
 	dh_installinit --name=moinmoin --no-start --no-stop-on-upgrade
@@ -35,5 +35,5 @@ override_dh_installinit:
 override_dh_fixperms:
 	dh_fixperms
 	# wiki templates are copied by moin-mkwiki, keep them read-only here
-	find debian/python3-moinmoin/usr/share/moin -type f -exec chmod 0644 {} +
-	cd debian/python3-moinmoin/usr/share/moin/server && chmod 0755 moin moin.ajp moin.cgi moin.fcgi moin.scgi test.wsgi
+	find debian/python3-moinmoin-markdown/usr/share/moin -type f -exec chmod 0644 {} +
+	cd debian/python3-moinmoin-markdown/usr/share/moin/server && chmod 0755 moin moin.ajp moin.cgi moin.fcgi moin.scgi test.wsgi

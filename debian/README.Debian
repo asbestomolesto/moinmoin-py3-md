@@ -1,8 +1,9 @@
-MoinMoin 1.10.0 (Python 3) - notes for Debian, Devuan and derivatives
-=====================================================================
+MoinMoin 1.11.0+md1 (Python 3, Markdown) - notes for Debian, Devuan and derivatives
+====================================================================================
 
-This package contains MoinMoin 1.10.0, that is MoinMoin 1.9.11 ported to
-Python 3. It does not
+This package contains MoinMoin 1.11.0+md1: MoinMoin 1.10.0 (MoinMoin 1.9.11
+ported to Python 3) with support for pages written in Markdown, next to
+the pages in MoinMoin wiki syntax. It does not
 need systemd: on Devuan the wikis run with sysvinit/OpenRC (init script
 /etc/init.d/moinmoin) or inside any web server.
 
@@ -13,9 +14,9 @@ Files
  /usr/bin/moin                             command line tool (accounts, maintenance, server)
  /usr/sbin/moin-mkwiki                     creates a new wiki instance
  /usr/share/moin/                          templates: config, data, underlay, server scripts
- /usr/share/moin/htdocs                    static files (alias /moin_static1100)
+ /usr/share/moin/htdocs                    static files (alias /moin_static1110)
  /etc/default/moinmoin, /etc/init.d/moinmoin   standalone servers (disabled by default)
- /usr/share/doc/python3-moinmoin/examples/ Apache, nginx, uWSGI, lighttpd, systemd examples
+ /usr/share/doc/python3-moinmoin-markdown/examples/ Apache, nginx, uWSGI, lighttpd, systemd examples
 
 Creating a wiki
 ---------------
@@ -53,6 +54,20 @@ Running the wiki
 
 The data directory must be writable by the user running the wiki
 (www-data by default, see moin-mkwiki -u/-g).
+
+Markdown pages
+--------------
+
+A page is written in Markdown if it starts with the line
+
+  #format markdown
+
+(or, for all pages without a #format line, with default_markup = 'markdown'
+in wikiconfig.py). Markdown and wiki syntax pages can be mixed freely. The
+help page HelpOnMarkdown (Italian: AiutoSuMarkdown) describes the syntax,
+the page MarkdownTemplate is a template for new Markdown pages. The
+Python-Markdown extensions can be chosen with markdown_extensions in
+wikiconfig.py. Raw HTML in Markdown pages is never rendered.
 
 Migrating a wiki from MoinMoin 1.9.x on Python 2
 ------------------------------------------------

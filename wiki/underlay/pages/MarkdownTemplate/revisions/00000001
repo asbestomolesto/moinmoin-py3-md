@@ -1,0 +1,14 @@
+## Template for new Markdown pages (MoinMoin 1.11.0+md1)
+## Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026.
+#format markdown
+# @PAGE@
+
+Write the text of the page here, in Markdown, see [[HelpOnMarkdown]].
+
+## Section
+
+* a list
+* of items
+
+----
+Created by @SIG@

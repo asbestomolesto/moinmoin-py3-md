@@ -10,6 +10,45 @@ trying to make a "perfect release" (as that release might NEVER get released),
 but to make progress and don't delay releases too much.
 
 
+Version 1.11.0+md1 (2026-10-09)
+
+  This is MoinMoin 1.10.0 (MoinMoin 1.9.11 ported to Python 3) with support
+  for pages written in Markdown.
+
+  HINT: the URL prefix of the static files changed to /moin_static1110.
+
+  New features:
+  * Pages can be written in Markdown: put "#format markdown" at the top of
+    the page, or set default_markup = 'markdown' in the wiki configuration
+    for all pages without a #format line. Markdown and wiki syntax pages
+    can be used side by side in the same wiki.
+    Markdown pages support:
+    - wiki links [[PageName]], [[PageName|text]], [text](PageName),
+      relative page names, anchors, interwiki links;
+    - attachments: [[attachment:file|text]], [text](attachment:file),
+      ![alt](attachment:image.png);
+    - MoinMoin macros <<MacroName(args)>> (not inside `code`);
+    - syntax highlighting of ```language fenced blocks; fenced blocks
+      called wiki, creole, rst or csv use that markup;
+    - headings that work with <<TableOfContents>>, backlinks, page cache;
+    - tables, footnotes, definition lists, abbreviations (configurable
+      with the new option markdown_extensions).
+    Raw HTML is not rendered and only safe URL schemes are allowed, so a
+    Markdown page cannot inject scripts.
+  * Markdown headings ("# Title", "## Section") at the top of a Markdown
+    page are not taken as processing instructions or comments.
+  * New pages: HelpOnMarkdown, AiutoSuMarkdown, MarkdownTemplate.
+  * Requires Python-Markdown (Debian: python3-markdown).
+
+  Fixes:
+  * TableOfContents used the page format stored on disk, not the one of
+    the rendered text (wrong result in previews of unsaved pages).
+
+  Credits:
+  * Markdown support by Gabriele 'asbesto' Zaverio, made with the
+    assistance of Claude (Anthropic AI).
+
+
 Version 1.10.0 (2026-10-09)
 
   HINT: Python 3 (3.9 or newer) is required, Python 2 is not supported any

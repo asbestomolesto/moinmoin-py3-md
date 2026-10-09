@@ -1,6 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 # MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
 # Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
+# MoinMoin 1.11.0+md1 (Markdown support): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin - TableOfContents Macro
 
@@ -159,7 +160,10 @@ Prints a table of contents.
 
     # this is so we get a correctly updated TOC if we just preview in the editor -
     # the new content is not stored on disk yet, but available as macro.parser.raw:
-    format = '#format %s\n' % p.pi['format']
+    # use the format of the page being rendered (it may be a preview of
+    # unsaved text, e.g. a new Markdown page), not the one stored on disk
+    # (MoinMoin 1.11.0+md1, Claude (Anthropic AI))
+    format = '#format %s\n' % macro.formatter.page.pi['format']
     p.set_raw_body(format + macro.parser.raw, modified=1)
 
     output = macro.request.redirectedOutput(p.send_page,

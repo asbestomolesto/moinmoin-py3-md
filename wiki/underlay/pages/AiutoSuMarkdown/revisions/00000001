@@ -1,0 +1,91 @@
+## Please edit system and help pages ONLY in the master wiki!
+## Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026 (MoinMoin 1.11.0+md1).
+#acl -All:write Default
+#format markdown
+#language it
+# Pagine in Markdown
+
+Questo wiki può salvare le pagine in **Markdown** oltre che nella
+[[AiutoSullaSintassiWiki|sintassi wiki di MoinMoin]]. I due tipi di pagina
+convivono: si collegano tra loro, compaiono nelle ricerche, nelle modifiche
+recenti e nei backlink, e hanno cronologia, differenze e allegati.
+
+<<TableOfContents(2)>>
+
+## Scrivere una pagina in Markdown
+
+Metti questa riga all'inizio della pagina (non viene mostrata):
+
+```
+#format markdown
+```
+
+oppure crea la pagina dal [[MarkdownTemplate]]. Se l'amministratore imposta
+`default_markup = 'markdown'` nella configurazione, le pagine senza riga
+`#format` sono in Markdown.
+
+Le righe `# Titolo` e `## Sezione` dopo `#format markdown` sono intestazioni
+Markdown (le istruzioni di MoinMoin, come `#acl`, non hanno uno spazio dopo
+il `#`).
+
+## Testo
+
+| Markdown | Risultato |
+|----------|-----------|
+| `**grassetto**` | **grassetto** |
+| `*corsivo*` | *corsivo* |
+| `` `codice` `` | `codice` |
+| `> citazione` | citazione |
+| `* voce` oppure `1. voce` | elenchi |
+| `---` | linea orizzontale |
+
+Sono supportate anche tabelle, note a piè di pagina[^nota], liste di
+definizioni e abbreviazioni.
+
+[^nota]: Come questa nota.
+
+## Collegamenti
+
+* `[[NomePagina]]` e `[[NomePagina|testo]]`, come nella sintassi wiki: [[FrontPage]]
+* `[testo](NomePagina)`: [la pagina principale](FrontPage)
+* `[testo](/SottoPagina)` e `[testo](../PaginaSorella)`: nomi relativi
+* `[[NomePagina#ancora|testo]]`: una sezione di una pagina
+* `[[MoinMoin:HelpOnMacros]]`: collegamenti interwiki
+* `[testo](https://example.org)` e `<https://example.org>`: collegamenti esterni
+
+Un indirizzo senza schema (`https:` ecc.) è una pagina del wiki. Per
+sicurezza sono ammessi solo schemi sicuri (http, https, ftp, mailto, ...).
+
+## Allegati e immagini
+
+* `[[attachment:file.pdf|testo]]` oppure `[testo](attachment:file.pdf)`
+* `![descrizione](attachment:immagine.png)` mostra un'immagine allegata
+* `![descrizione](https://example.org/immagine.png)` mostra un'immagine esterna
+
+## Macro
+
+Le macro di MoinMoin funzionano come nella sintassi wiki, per esempio
+`<<TableOfContents>>`, `<<RecentChanges>>`, `<<FullSearch(testo)>>` o
+`<<Date(...)>>`. Dentro `` `codice` `` non vengono eseguite.
+
+## Codice e altre sintassi
+
+Un blocco delimitato con il nome di un linguaggio viene evidenziato:
+
+```python
+def saluta(nome):
+    return "Ciao, %s!" % nome
+```
+
+Un blocco chiamato `wiki` (o `creole`, `rst`, `csv`) usa quella sintassi,
+quindi dentro una pagina Markdown si può scrivere in sintassi wiki:
+
+```wiki
+Sintassi ''wiki'' di '''MoinMoin''', con un'icona <<Icon(smile.png)>>.
+```
+
+## Cosa non è supportato
+
+L'HTML grezzo viene mostrato come testo e non interpretato (così nessuno può
+inserire script nel wiki). L'editor grafico funziona solo con le pagine in
+sintassi wiki: le pagine Markdown si modificano con l'editor di testo.

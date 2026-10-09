@@ -1,6 +1,6 @@
 # Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
 # as part of the Python 3 port of MoinMoin (version 1.10.0).
-Source: moin
+Source: moin-markdown
 Section: web
 Priority: optional
 Maintainer: Gabriele 'asbesto' Zaverio <asbesto@freaknet.org>
@@ -13,25 +13,31 @@ Standards-Version: 4.7.0
 Homepage: https://moinmo.in/
 Rules-Requires-Root: no
 
-Package: python3-moinmoin
+Package: python3-moinmoin-markdown
 Architecture: all
 Depends: ${misc:Depends},
          ${python3:Depends},
          python3-parsedatetime,
          python3-passlib,
          python3-pygments,
+Conflicts: python3-moinmoin,
+Replaces: python3-moinmoin,
+Provides: python3-moinmoin,
 Recommends: python3-docutils,
 Suggests: gunicorn | libapache2-mod-wsgi-py3 | uwsgi-plugin-python3,
           python3-ldap,
           python3-xapian,
-Description: easy to use, full-featured and extensible wiki (Python 3 port)
+Description: wiki with MoinMoin syntax and Markdown pages (Python 3)
  MoinMoin is a wiki engine written in Python. It supports many markups
  (its own wiki syntax, Creole, reStructuredText, HTML), page history and
  diffs, attachments, access control lists, user accounts, search,
  themes and plugins (actions, macros, parsers, formatters).
  .
- This is MoinMoin 1.10.0, MoinMoin 1.9.11 ported to Python 3. Existing
- 1.9 wikis can be used without converting the data. The wiki can be run
+ This is MoinMoin 1.11.0+md1: MoinMoin 1.10.0 (MoinMoin 1.9.11 ported to
+ Python 3) with pages written in Markdown, next to the pages in MoinMoin
+ wiki syntax ("#format markdown"). Markdown pages support wiki links,
+ attachments, macros, syntax highlighting and blocks in wiki syntax.
+ Existing 1.9 wikis can be used without converting the data. The wiki can be run
  with its own web server (an init script for sysvinit is included), with
  any WSGI server (Apache mod_wsgi, uWSGI, gunicorn), as CGI, FastCGI or
  SCGI.

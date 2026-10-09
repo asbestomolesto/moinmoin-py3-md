@@ -1,6 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 # MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
 # for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
+# MoinMoin 1.11.0+md1 (Markdown support): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin - Wiki Utility Functions
 
@@ -2582,26 +2583,44 @@ def renderText(request, Parser, text):
     del out
     return result
 
-def get_processing_instructions(body):
+# Markdown headings ("# Title", "## Section", ...) at the top of a Markdown
+# page are content, not processing instructions or comments, except for the
+# comments that MoinMoin itself puts there.
+# (MoinMoin 1.11.0+md1: Markdown support, written by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio)
+_markdown_heading_re = re.compile(r'^#{1,6}(\s|$)')
+_moin_comments = ('## page was renamed from', '## page was copied from', )
+
+
+def get_processing_instructions(body, default_format=None):
     """ Extract the processing instructions / acl / etc. at the beginning of a page's body.
 
         Hint: if you have a Page object p, you already have the result of this function in
               p.meta and (even better) parsed/processed stuff in p.pi.
 
+        @param default_format: the markup used if there is no #format line
+                               (cfg.default_markup), needed to recognize
+                               Markdown headings at the top of the page
         Returns a list of (pi, restofline) tuples and a string with the rest of the body.
     """
     pi = []
+    markdown = (default_format == 'markdown')
     while body.startswith('#'):
         try:
-            line, body = body.split('\n', 1) # extract first line
+            line, rest = body.split('\n', 1) # extract first line
         except ValueError:
             line = body
-            body = ''
+            rest = ''
 
         # end parsing on empty (invalid) PI
         if line == "#":
-            body = line + '\n' + body
             break
+
+        # in Markdown pages, "# Title" is a heading and ends the PIs
+        if (markdown and _markdown_heading_re.match(line) and
+            not line.startswith(_moin_comments)):
+            break
+        body = rest
 
         if line[1] == '#':# two hash marks are a comment
             comment = line[2:]
@@ -2612,6 +2631,8 @@ def get_processing_instructions(body):
 
         verb, args = (line[1:] + ' ').split(' ', 1) # split at the first blank
         pi.append((verb.lower(), args.strip()))
+        if verb.lower() == 'format':
+            markdown = args.strip().split(' ')[0].lower() == 'markdown'
 
     return pi, body
 

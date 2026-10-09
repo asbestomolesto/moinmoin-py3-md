@@ -123,8 +123,8 @@ Next steps:
           --name=$( [ -n "$SUPERUSER" ] && echo "$SUPERUSER" || echo NAME ) --email=EMAIL --password=PASSWORD
  * install the help and system pages: log in as superuser and visit the
    page LanguageSetup (or use "moin ... maint" / package installation).
- * run the wiki, see /usr/share/doc/python3-moinmoin/README.Debian:
+ * run the wiki, see /usr/share/doc/python3-moinmoin-markdown/README.Debian:
      standalone server : /etc/default/moinmoin + /etc/init.d/moinmoin
-     Apache mod_wsgi   : /usr/share/doc/python3-moinmoin/examples/apache-mod_wsgi.conf
-     nginx + uWSGI     : /usr/share/doc/python3-moinmoin/examples/nginx-uwsgi.conf
+     Apache mod_wsgi   : /usr/share/doc/python3-moinmoin-markdown/examples/apache-mod_wsgi.conf
+     nginx + uWSGI     : /usr/share/doc/python3-moinmoin-markdown/examples/nginx-uwsgi.conf
 DONE

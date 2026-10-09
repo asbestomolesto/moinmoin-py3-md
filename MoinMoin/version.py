@@ -2,6 +2,7 @@
 # -*- coding: iso-8859-1 -*-
 # MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
 # for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
+# MoinMoin 1.11.0+md1 (Markdown support): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin - Version Information
 
@@ -17,8 +18,8 @@ except:
     patchlevel = 'release'
 
 project = "MoinMoin"
-release = '1.10.0'
-release_short = '1100'  # used for url_prefix_static
+release = '1.11.0+md1'
+release_short = '1110'  # used for url_prefix_static
 revision = patchlevel
 
 def update():

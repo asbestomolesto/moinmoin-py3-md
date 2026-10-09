@@ -1,7 +1,7 @@
 # MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
 # for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 %define name moin
-%define version 1.10.0
+%define version 1.11.0+md1
 %define release 1
 #Upgrade Path Example:
 #     moin-1.3-0.1.beta1

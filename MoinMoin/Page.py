@@ -1,6 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 # MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
 # for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
+# MoinMoin 1.11.0+md1 (Markdown support): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin - Page class
 
@@ -240,13 +241,13 @@ class Page(object):
 
     def get_meta(self):
         if self.__meta is None:
-            self.__meta, self.__data = wikiutil.get_processing_instructions(self.body)
+            self.__meta, self.__data = wikiutil.get_processing_instructions(self.body, self.cfg.default_markup)
         return self.__meta
     meta = property(fget=get_meta) # processing instructions, ACLs (upper part of page text)
 
     def get_data(self):
         if self.__data is None:
-            self.__meta, self.__data = wikiutil.get_processing_instructions(self.body)
+            self.__meta, self.__data = wikiutil.get_processing_instructions(self.body, self.cfg.default_markup)
         return self.__data
     data = property(fget=get_data) # content (lower part of page text)
 

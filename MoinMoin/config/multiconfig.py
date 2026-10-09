@@ -1,6 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 # MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
 # for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
+# MoinMoin 1.11.0+md1 (Markdown support): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin - Multiple configuration handler and Configuration defaults class
 
@@ -1118,7 +1119,10 @@ options_no_group_name = {
 
     ('config_check_enabled', False, "if True, check configuration for unknown settings."),
 
-    ('default_markup', 'wiki', 'Default page parser / format (name of module in `MoinMoin.parser`)'),
+    ('default_markup', 'wiki', 'Default page parser / format (name of module in `MoinMoin.parser`), e.g. "wiki" or "markdown"'),
+    # MoinMoin 1.11.0+md1 (Markdown support), Claude (Anthropic AI):
+    ('markdown_extensions', ['tables', 'footnotes', 'def_list', 'abbr', 'sane_lists'],
+     'Python-Markdown extensions used for Markdown pages (#format markdown). Raw HTML is never rendered.'),
 
     ('html_head', '', "Additional <HEAD> tags, see HelpOnThemes."),
     ('html_head_queries', '<meta name="robots" content="noindex,nofollow">\n',

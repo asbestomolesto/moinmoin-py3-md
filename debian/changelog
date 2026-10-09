@@ -1,27 +1,22 @@
-moin (1.10.0-1) unstable; urgency=medium
+moin-markdown (1.11.0+md1-1) unstable; urgency=medium
 
-  * New version number 1.10.0 for the Python 3 port of MoinMoin 1.9.11
-    (the static files are now served under /moin_static1100).
-  * XML-RPC v2 sends strings as <string> again (not as base64).
-  * moin-mkwiki: with -s the superuser also gets all ACL rights.
-  * The compiled page cache is tied to the Python version that wrote it.
-  * The Python 3 port and this packaging were made with the assistance of
-    Claude (Anthropic AI); the files written or modified by Claude are
-    marked with a comment at their top.
+  * New project, based on moin 1.10.0-1 (MoinMoin 1.9.11 ported to
+    Python 3): pages can be written in Markdown ("#format markdown" or
+    default_markup = 'markdown'), next to the pages in MoinMoin wiki syntax.
+    - new parser MoinMoin/parser/text_markdown.py (Python-Markdown) with
+      wiki links, interwiki links, attachments, MoinMoin macros, syntax
+      highlighting, blocks in wiki/creole/rst/csv syntax, headings used by
+      TableOfContents, backlinks and page cache; raw HTML is not rendered
+      and only safe URL schemes are allowed;
+    - Markdown headings at the top of a page are not processing
+      instructions;
+    - TableOfContents also works in the preview of unsaved pages;
+    - new pages HelpOnMarkdown, AiutoSuMarkdown and MarkdownTemplate;
+    - new configuration option markdown_extensions.
+  * Binary package python3-moinmoin-markdown, it replaces python3-moinmoin.
+  * Static files are served under /moin_static1110.
+  * Made by Gabriele 'asbesto' Zaverio with the assistance of Claude
+    (Anthropic AI); the files written or modified by Claude are marked
+    with a comment at their top.
 
- -- Gabriele 'asbesto' Zaverio <asbesto@freaknet.org>  Fri, 09 Oct 2026 16:30:00 +0200
-
-moin (1.9.11+py3-1) unstable; urgency=medium
-
-  * MoinMoin 1.9.11 ported to Python 3 (tested with Python 3.13).
-    - Wiki data (pages, users, edit-log, attachments) stay compatible
-      with MoinMoin 1.9.x on Python 2, in both directions.
-    - Uses the system pygments, passlib and parsedatetime; ships
-      werkzeug 1.0.1, flup 1.0.3 and secure_cookie (needed versions).
-  * Works without systemd: optional sysvinit script for standalone
-    wiki servers; WSGI (Apache mod_wsgi, uWSGI, gunicorn), CGI,
-    FastCGI and SCGI are supported, too.
-  * moin-mkwiki creates new wiki instances; with -s the superuser also
-    gets all ACL rights (acl_rights_before).
-
- -- Gabriele 'asbesto' Zaverio <asbesto@freaknet.org>  Fri, 09 Oct 2026 15:00:00 +0200
+ -- Gabriele 'asbesto' Zaverio <asbesto@freaknet.org>  Fri, 09 Oct 2026 18:00:00 +0200
