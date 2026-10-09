@@ -39,7 +39,12 @@ def copyData():
 
 
 def untarUnderlay():
-    tarname = os.path.join(SHARE, 'underlay.tar')
+    # the full underlay (all help and system pages) is in tests/underlay.tar,
+    # taken from the moin-1.9 repository (the release only ships the
+    # LanguageSetup page with the language packs)
+    tarname = os.path.join(moinpath, 'tests', 'underlay.tar')
+    if not os.path.exists(tarname):
+        tarname = os.path.join(SHARE, 'underlay.tar')
     if not os.path.exists(tarname):
         # released tarballs ship the underlay as a directory
         print('copying underlay ...')
