@@ -30,7 +30,9 @@ Version 1.11.0+md1 (2026-10-09)
     FrontPage, HelpContents, HelpOnEditing, HelpOnFormatting,
     HelpOnMoinWikiSyntax, HelpOnParsers, HelpOnProcessingInstructions, ...
     and their Italian translations) mention Markdown and link to
-    HelpOnMarkdown / AiutoSuMarkdown.
+    HelpOnMarkdown / AiutoSuMarkdown. The translations of these pages in the
+    other language packs (30 more languages) got a short note in their
+    language with a link to HelpOnMarkdown.
     Markdown pages support:
     - wiki links [[PageName]], [[PageName|text]], [text](PageName),
       relative page names, anchors, interwiki links;
