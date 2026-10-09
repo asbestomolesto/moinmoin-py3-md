@@ -48,8 +48,9 @@ def getPackageModules(packagefile):
 
     moinmodule = __import__('MoinMoin')
 
-    # Is it in a .zip file?
-    if not in_plugin_dir(packagedir) and hasattr(moinmodule, '__loader__'):
+    # Is it in a .zip file? (in Python 3, every module has a __loader__,
+    # only the zipimporter has the _files index)
+    if not in_plugin_dir(packagedir) and hasattr(getattr(moinmodule, '__loader__', None), '_files'):
         pyre = re.compile(r"^([^_].*)\.py(?:c|o)$")
         zipfiles = moinmodule.__loader__._files
         dirlist = [entry[0].replace(r'/', '\\').split('\\')[-1]

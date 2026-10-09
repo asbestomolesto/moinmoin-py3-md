@@ -51,7 +51,7 @@ def _loadWords(lines, dict):
     for line in lines:
         words = line.split()
         for word in words:
-            dict[word.encode(config.charset)] = ''
+            dict[word] = ''
 
 def _loadWordsFile(request, dict, filename):
     request.clock.start('spellread')
@@ -74,29 +74,13 @@ def _loadWordsPage(request, dict, page):
 
 def _loadDict(request):
     """ Load words from words files or cached dict """
-    # check for "dbhash" module
-    try:
-        import dbm.bsd
-    except ImportError:
-        dbhash = None
-
-    # load the words
-    cachename = os.path.join(request.cfg.data_dir, 'cache', 'spellchecker.dict')
-    if dbhash and os.path.exists(cachename):
-        wordsdict = dbm.bsd.open(cachename, "r")
-    else:
-        wordsfiles = _getWordsFiles(request)
-        if dbhash:
-            wordsdict = dbm.bsd.open(cachename, 'n')
-        else:
-            wordsdict = {}
-
-        for wordsfile in wordsfiles:
-            _loadWordsFile(request, wordsdict, wordsfile)
-
-        if dbhash:
-            wordsdict.sync()
-
+    # Note: Python 2 used the "dbhash" module (Berkeley DB) to cache the
+    # words dict on disk. It does not exist any more in Python 3, so the
+    # words are always loaded into a dict in memory.
+    wordsfiles = _getWordsFiles(request)
+    wordsdict = {}
+    for wordsfile in wordsfiles:
+        _loadWordsFile(request, wordsdict, wordsfile)
     return wordsdict
 
 
@@ -151,8 +135,8 @@ def checkSpelling(page, request, own_form=1):
         word = match.group(1)
         if len(word) == 1:
             return ""
-        w_enc = word.encode(config.charset)
-        wl_enc = word.lower().encode(config.charset)
+        w_enc = word
+        wl_enc = word.lower()
         if not (w_enc in wordsdict or wl_enc in wordsdict or
                 w_enc in localwords or wl_enc in localwords):
             if not num_re.match(word):

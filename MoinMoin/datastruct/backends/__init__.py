@@ -6,7 +6,6 @@ MoinMoin - base classes for datastructs.
 @license: GPL, see COPYING for details
 """
 
-from UserDict import DictMixin
 
 
 class GroupDoesNotExistError(Exception):
