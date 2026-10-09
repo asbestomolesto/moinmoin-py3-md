@@ -37,20 +37,17 @@ def encodeAddress(address, charset):
     match = composite.match(address)
     if match:
         phrase = match.group('phrase')
-        try:
-            str(phrase)  # is it pure ascii?
-        except UnicodeEncodeError:
-            phrase = phrase.encode(config.charset)
-            phrase = Header(phrase, charset)
+        if not phrase.isascii():
+            phrase = Header(phrase, charset).encode()
         blanks = match.group('blanks')
         addr = match.group('addr')
         if phrase:
-            return "%s%s<%s>" % (str(phrase), str(blanks), str(addr))
+            return "%s%s<%s>" % (phrase, blanks, addr)
         else:
-            return str(addr)
+            return addr
     else:
         # a pure email address, should encode to ascii without problem
-        return str(address)
+        return address
 
 
 def sendmail(request, to, subject, text, mail_from=None):
@@ -82,27 +79,14 @@ def sendmail(request, to, subject, text, mail_from=None):
     if not to:
         return (1, _("No recipients, nothing to do"))
 
-    subject = subject.encode(config.charset)
-
-    # Create a text/plain body using CRLF (see RFC2822)
-    text = text.replace('\n', '\r\n')
-    text = text.encode(config.charset)
-
     # Create a message using config.charset and quoted printable
     # encoding, which should be supported better by mail clients.
-    # TODO: check if its really works better for major mail clients
+    # Note: line endings get converted to CRLF (see RFC2822) by smtplib.
     msg = Message()
     charset = Charset(config.charset)
     charset.header_encoding = QP
     charset.body_encoding = QP
-    msg.set_charset(charset)
-
-    # work around a bug in python 2.4.3 and above:
-    msg.set_payload('=')
-    if msg.as_string().endswith('='):
-        text = charset.body_encode(text)
-
-    msg.set_payload(text)
+    msg.set_payload(text, charset)
 
     # Create message headers
     # Don't expose emails addreses of the other subscribers, instead we

@@ -6,8 +6,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-from MoinMoin.support.htmlmarkup import Markup
-from html.parser import HTMLParseError
+from MoinMoin.support.htmlmarkup import Markup, HTMLParseError
 
 Dependencies = []
 

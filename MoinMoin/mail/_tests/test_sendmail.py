@@ -83,7 +83,7 @@ class TestEncodeAddress:
     def testSimpleAddress(self):
         """ mail.sendmail: encode simple address: local@domain """
         address = 'local@domain'
-        expected = address.encode(config.charset)
+        expected = address
         assert sendmail.encodeAddress(address, self.charset) == expected
 
     def testComposite(self):
@@ -95,7 +95,7 @@ class TestEncodeAddress:
     def testCompositeUnicode(self):
         """ mail.sendmail: encode Uncode address: 'ויקי <local@domain>' """
         address = 'ויקי <local@domain>'
-        phrase = str(Header('ויקי'.encode('utf-8'), self.charset))
+        phrase = Header('ויקי', self.charset).encode()
         expected = phrase + ' ' + '<local@domain>'
         assert sendmail.encodeAddress(address, self.charset) == expected
 

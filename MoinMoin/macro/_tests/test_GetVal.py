@@ -5,7 +5,7 @@
     @copyright: 2007 MoinMoin:ReimarBauer
     @license: GNU GPL, see COPYING for details.
 """
-import os, py
+import os, pytest
 
 from MoinMoin import macro
 from MoinMoin.Page import Page

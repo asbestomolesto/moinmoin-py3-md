@@ -45,7 +45,7 @@ AddRevision|foofile|FooPage
         if filename == MOIN_PACKAGE_FILE:
             return self.script.encode("utf-8")
         else:
-            return "Hello world, I am the file " + filename.encode("utf-8")
+            return ("Hello world, I am the file " + filename).encode("utf-8")
 
     def filelist(self):
         return [MOIN_PACKAGE_FILE, "foo"]

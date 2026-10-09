@@ -514,7 +514,7 @@ class ZipPackage(Package, ScriptEngine):
         """ Returns the contents of a file in the package. """
         _ = self.request.getText
         try:
-            return self.zipfile.read(filename.encode("cp437"))
+            return self.zipfile.read(filename)
         except KeyError:
             raise RuntimeScriptException(_(
                 "The file %s was not found in the package.") % filename)

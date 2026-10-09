@@ -59,7 +59,7 @@ class TestSendCached:
         """Test if put_cache() works"""
         request = self.request
         key = 'nooneknowsit'
-        data = "dontcare"
+        data = b"dontcare"
         cache.put(request, key, data)
         url = cache.url(request, key)
 
@@ -78,7 +78,7 @@ class TestSendCached:
         request = self.request
         key = 'nooneknowsit'
         filename = "test.png"
-        data = "dontcare"
+        data = b"dontcare"
         cache.put(request, key, data, filename=filename, last_modified=1)
         url = cache.url(request, key)
         assert key in url
@@ -97,8 +97,8 @@ class TestSendCached:
         request = self.request
         key = 'nooneknowsit'
         filename = "test.png"
-        data = "dontcareatall"
-        data_file = io.StringIO(data)
+        data = b"dontcareatall"
+        data_file = io.BytesIO(data)
         cache.put(request, key, data_file)
         url = cache.url(request, key)
 
@@ -138,7 +138,7 @@ class TestSendCached:
         """
         import random
         request = self.request
-        render = lambda data: "spam" * data
+        render = lambda data: b"spam" * data
         secret = 4223
         keycalc = lambda data: str(data * secret)
 

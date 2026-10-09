@@ -64,7 +64,7 @@ class TestNoAuth(AuthTest):
         assert has_v
         # XXX BROKEN?:
         #assert has_cc # cache anon user's content
-        assert '</html>' in ''.join(appiter)
+        assert '</html>' in b''.join(appiter).decode('utf-8')
 
 class TestAnonSession(AuthTest):
     class Config(wikiconfig.Config):
@@ -108,7 +108,7 @@ class TestAnonSession(AuthTest):
             assert has_v
             # XX BROKEN
             #assert not has_cc # do not cache anon user's (with session!) content
-            assert '</html>' in ''.join(appiter)
+            assert '</html>' in b''.join(appiter).decode('utf-8')
 
             # The trail is only ever saved on the second page display
             # because otherwise anonymous sessions would be created
@@ -189,7 +189,7 @@ class TestMoinAuthSession(AuthTest):
             assert has_ct
             assert has_v
             assert has_cc # do not cache logged-in user's content
-            assert '</html>' in ''.join(appiter)
+            assert '</html>' in b''.join(appiter).decode('utf-8')
 
             # The trail is only ever saved on the second page display
             # because otherwise anonymous sessions would be created

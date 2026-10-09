@@ -7,6 +7,7 @@
 """
 import sys, os, time
 import shutil, tempfile
+import pytest
 
 
 from MoinMoin.util import filesys

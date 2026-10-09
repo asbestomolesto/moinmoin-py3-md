@@ -23,7 +23,7 @@ class TestApplication:
         for page in self.PAGES:
             def _test_(page=page):
                 appiter, status, headers = self.client.get('/%s' % page)
-                output = ''.join(appiter)
+                output = b''.join(appiter).decode('utf-8')
                 print(output)
                 assert status[:3] == '200'
                 assert ('Content-Type', 'text/html; charset=utf-8') in list(headers)
@@ -36,7 +36,7 @@ class TestApplication:
             def _test_(page=page):
                 appiter, status, headers = self.client.get('/%s' % page)
                 assert status[:3] == '404'
-                output = ''.join(appiter)
+                output = b''.join(appiter).decode('utf-8')
                 for needle in ('new empty page', 'page template'):
                     assert needle in output
             yield _test_

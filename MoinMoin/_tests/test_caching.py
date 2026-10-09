@@ -18,7 +18,7 @@ class TestCaching(object):
 
     def test_persistence_simple(self):
         """ test if cache persists (on disk) """
-        test_data = '12345abcde'
+        test_data = b'12345abcde'
         cache = caching.CacheEntry(self.request, 'test_arena', 'test_key', 'wiki')
         cache.update(test_data)
         del cache
@@ -47,7 +47,7 @@ class TestCaching(object):
 
     def test_mtime(self):
         """ test if cache mtime yields correct values """
-        test_data = '12345abcde'
+        test_data = b'12345abcde'
         now = time.time()
         cache = caching.CacheEntry(self.request, 'test_arena', 'test_key', 'wiki')
         cache.update(test_data)
@@ -79,7 +79,7 @@ class TestCaching(object):
         request = self.request
         key = 'nooneknowsit'
         arena = 'somethingfunny'
-        data = "dontcare"
+        data = b"dontcare"
         cacheentry = caching.CacheEntry(request, arena, key, scope='wiki', do_locking=True,
                  use_pickle=False, use_encode=True)
         cacheentry.open(mode='w')

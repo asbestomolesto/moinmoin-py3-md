@@ -15,6 +15,8 @@ class TestFilters:
         import tempfile
         fname = tempfile.mktemp()
         f = open(fname, 'wb')
+        if isinstance(data, str):
+            data = data.encode('latin-1')
         f.write(data)
         f.close()
         return fname

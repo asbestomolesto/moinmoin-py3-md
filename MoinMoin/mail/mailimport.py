@@ -47,8 +47,11 @@ def decode_2044(header):
     """ Decodes header field. See RFC 2044. """
     chunks = decode_header(header)
     chunks_decoded = []
-    for i in chunks:
-        chunks_decoded.append(i[0].decode(i[1] or 'ascii'))
+    for text, charset in chunks:
+        # Python 3 gives str if there are no encoded words, bytes otherwise
+        if isinstance(text, bytes):
+            text = text.decode(charset or 'ascii', 'replace')
+        chunks_decoded.append(text)
     return ''.join(chunks_decoded).strip()
 
 def email_to_markup(request, email):
