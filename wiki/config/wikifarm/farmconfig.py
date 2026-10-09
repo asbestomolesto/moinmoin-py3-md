@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 # IMPORTANT! This encoding (charset) setting MUST be correct! If you live in a
 # western country and you don't know that you use utf-8, you probably want to
 # use iso-8859-1 (or some other iso charset). If you use utf-8 (a Unicode
@@ -120,7 +120,7 @@ class FarmConfig(multiconfig.DefaultConfig):
     # SMTP server, e.g. "mail.provider.com" (empty or None to disable mail)
     #mail_smarthost = ""
 
-    # The return address, e.g u"Jürgen Wiki <noreply@mywiki.org>" [Unicode]
+    # The return address, e.g u"JÃ¼rgen Wiki <noreply@mywiki.org>" [Unicode]
     #mail_from = u""
 
     # "user pwd" if you need to use SMTP AUTH
