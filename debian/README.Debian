@@ -1,7 +1,8 @@
-MoinMoin 1.9.11 for Python 3 - notes for Debian, Devuan and derivatives
-=======================================================================
+MoinMoin 1.10.0 (Python 3) - notes for Debian, Devuan and derivatives
+=====================================================================
 
-This package contains MoinMoin 1.9.11 ported to Python 3. It does not
+This package contains MoinMoin 1.10.0, that is MoinMoin 1.9.11 ported to
+Python 3. It does not
 need systemd: on Devuan the wikis run with sysvinit/OpenRC (init script
 /etc/init.d/moinmoin) or inside any web server.
 
@@ -12,7 +13,7 @@ Files
  /usr/bin/moin                             command line tool (accounts, maintenance, server)
  /usr/sbin/moin-mkwiki                     creates a new wiki instance
  /usr/share/moin/                          templates: config, data, underlay, server scripts
- /usr/share/moin/htdocs                    static files (alias /moin_static1911)
+ /usr/share/moin/htdocs                    static files (alias /moin_static1100)
  /etc/default/moinmoin, /etc/init.d/moinmoin   standalone servers (disabled by default)
  /usr/share/doc/python3-moinmoin/examples/ Apache, nginx, uWSGI, lighttpd, systemd examples
 

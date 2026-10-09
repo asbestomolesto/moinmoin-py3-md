@@ -1,3 +1,13 @@
+moin (1.10.0-1) unstable; urgency=medium
+
+  * New version number 1.10.0 for the Python 3 port of MoinMoin 1.9.11
+    (the static files are now served under /moin_static1100).
+  * XML-RPC v2 sends strings as <string> again (not as base64).
+  * moin-mkwiki: with -s the superuser also gets all ACL rights.
+  * The compiled page cache is tied to the Python version that wrote it.
+
+ -- asbesto <aladarmrgradymezil@gmail.com>  Fri, 09 Oct 2026 16:30:00 +0200
+
 moin (1.9.11+py3-1) unstable; urgency=medium
 
   * MoinMoin 1.9.11 ported to Python 3 (tested with Python 3.13).

@@ -2,7 +2,7 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: MoinMoin
 Upstream-Contact: https://moinmo.in/
 Source: https://static.moinmo.in/files/moin-1.9.11.tar.gz
-Comment: MoinMoin 1.9.11, ported to Python 3. The bundled copies of
+Comment: MoinMoin 1.10.0 is MoinMoin 1.9.11 ported to Python 3. The bundled copies of
  pygments, passlib and parsedatetime were removed (the Debian packages
  are used); flup was replaced by flup 1.0.3 (Python 3 version).
  More license texts are in docs/licenses/ of the source.

@@ -86,7 +86,7 @@ setup_args = {
     a company knowledge base deployed on an intranet, or an Internet server
     open to individuals sharing the same interests, goals or projects.
 
-    This is MoinMoin 1.9.11 ported to Python 3. Wiki data, configuration
+    This is MoinMoin 1.10.0: MoinMoin 1.9.11 ported to Python 3. Wiki data, configuration
     and plugins of the 1.9 series stay compatible (plugins have to be
     ported to Python 3, too).""",
     'keywords': "wiki web",

@@ -10,6 +10,37 @@ trying to make a "perfect release" (as that release might NEVER get released),
 but to make progress and don't delay releases too much.
 
 
+Version 1.10.0 (2026-10-09)
+
+  HINT: Python 3 (3.9 or newer) is required, Python 2 is not supported any
+        more. This version is MoinMoin 1.9.11 ported to Python 3, the wiki
+        data format did not change: 1.9 wikis can be used without converting
+        them (remove the old caches, they are recreated anyway).
+
+  HINT: the URL prefix of the static files changed to /moin_static1100,
+        update your web server configuration (e.g. Apache Alias) if it
+        serves them directly.
+
+  HINT: third party plugins must be ported to Python 3.
+
+  Changes:
+  * Python 3 port (tested with Python 3.11 and 3.13).
+  * The bundled pygments, passlib and parsedatetime were removed, the
+    installed packages are used. flup was updated to 1.0.3, werkzeug 1.0.1
+    and secure_cookie stay bundled.
+  * setup.py uses setuptools, the "moin" command is a console script.
+  * The order in which the parsers dispatch regex matches is the same as on
+    Python 2 (MoinMoin/util/py2order.py).
+  * The compiled page cache is tied to the Python version that wrote it.
+  * Downloads send a RFC 6266 Content-Disposition header (non-ASCII file
+    names work in all browsers).
+  * Debian packaging (debian/) with moin-mkwiki and a sysvinit script.
+
+  Not supported any more:
+  * the Jabber bot (needs pyxmpp, Python 2 only) and the DocBook/XSLT
+    parsers (need 4Suite, Python 2 only).
+
+
 Version 1.9.11 (2020-11-08)
 
   SECURITY HINT: make sure you have allow_xslt = False (or just do not use

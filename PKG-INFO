@@ -1,12 +1,11 @@
 Metadata-Version: 1.1
 Name: moin
-Version: 1.9.11
-Summary: MoinMoin 1.9.11 is an easy to use, full-featured and extensible wiki software package
+Version: 1.10.0
+Summary: MoinMoin 1.10.0 is an easy to use, full-featured and extensible wiki software package
 Home-page: https://moinmo.in/
 Author: Juergen Hermann et al.
 Author-email: moin-user@python.org
 License: GNU GPL
-Download-URL: https://static.moinmo.in/files/moin-1.9.11.tar.gz
 Description: 
             MoinMoin is an easy to use, full-featured and extensible wiki software
             package written in Python. It can fulfill a wide range of roles, such as
