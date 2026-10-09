@@ -319,7 +319,17 @@ class HTTPContext(BaseContext):
         @param do_flush: call flush after writing?
         """
         def simple_wrapper(fileobj, bufsize):
-            return iter(lambda: fileobj.read(bufsize), '')
+            # Note: binary files return b'' at EOF (Python 2 returned '')
+            try:
+                while True:
+                    data = fileobj.read(bufsize)
+                    if not data:
+                        break
+                    if isinstance(data, str):
+                        data = data.encode(config.charset)
+                    yield data
+            finally:
+                fileobj.close()
         file_wrapper = self.environ.get('wsgi.file_wrapper', simple_wrapper)
         self.request.direct_passthrough = True
         self.request.response = file_wrapper(fileobj, bufsize)
