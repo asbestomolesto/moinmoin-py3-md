@@ -15,7 +15,6 @@ Package: python3-moinmoin
 Architecture: all
 Depends: ${misc:Depends},
          ${python3:Depends},
-         python3-legacy-cgi | python3 (<< 3.13),
          python3-parsedatetime,
          python3-passlib,
          python3-pygments,

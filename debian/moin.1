@@ -1,0 +1,61 @@
+.TH MOIN 1 "October 2026" "MoinMoin 1.9.11" "MoinMoin"
+.SH NAME
+moin \- MoinMoin wiki command line tool
+.SH SYNOPSIS
+.B moin
+[\fIgeneral options\fR] \fIcommand\fR \fIsubcommand\fR [\fIspecific options\fR]
+.SH DESCRIPTION
+.B moin
+runs maintenance and administration commands on a MoinMoin wiki, and
+can run the wiki with its standalone web server.
+.SH GENERAL OPTIONS
+.TP
+.BI \-\-config\-dir= DIR
+directory containing the wiki configuration (wikiconfig.py or farmconfig.py)
+.TP
+.BI \-\-wiki\-url= URL
+URL of the wiki (needed to select a wiki of a wiki farm), e.g. http://localhost/
+.TP
+.B \-q, \-\-quiet
+be quiet (no informational messages)
+.SH COMMANDS
+.TP
+.B account create|check|disable|homepage|inactive|resetpw
+manage user accounts, e.g.
+\fBaccount create \-\-name=NAME \-\-email=EMAIL \-\-password=PASSWORD\fR
+.TP
+.B cli show
+render a page to standard output
+.TP
+.B export dump|package
+export the wiki as static HTML pages or as a page package
+.TP
+.B import irclog|wikipage
+import pages
+.TP
+.B index build
+build the xapian search index (needs python3\-xapian)
+.TP
+.B maint cleancache|cleanpage|cleansessions|globaledit|makecache|mkpagepacks|reducewiki
+maintenance of the wiki data
+.TP
+.B migration data
+convert the data of old MoinMoin versions
+.TP
+.B server standalone
+run the standalone web server
+(\fB\-\-port\fR, \fB\-\-interface\fR, \fB\-\-user\fR, \fB\-\-group\fR)
+.TP
+.B xmlrpc mailimport|remote|retrieve|write
+remote operations over XML\-RPC
+.PP
+Each subcommand shows its options with \fB\-\-help\fR, e.g.
+\fBmoin account create \-\-help\fR.
+.SH EXAMPLES
+.nf
+moin \-\-config\-dir=/srv/moin/mywiki \-\-wiki\-url=http://localhost/ account check
+moin \-\-config\-dir=/srv/moin/mywiki server standalone \-\-port=8080
+.fi
+.SH SEE ALSO
+.BR moin\-mkwiki (8),
+/usr/share/doc/python3\-moinmoin/README.Debian

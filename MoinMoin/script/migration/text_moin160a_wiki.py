@@ -1,8 +1,8 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 """
     MoinMoin - MoinMoin Wiki Markup Parser
 
-    @copyright: 2000, 2001, 2002 by Jürgen Hermann <jh@web.de>,
+    @copyright: 2000, 2001, 2002 by JÃ¼rgen Hermann <jh@web.de>,
                 2006 by MoinMoin:ThomasWaldmann
     @license: GNU GPL, see COPYING for details.
 """

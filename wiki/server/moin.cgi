@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: iso-8859-1 -*-
 """
     MoinMoin - CGI/FCGI Driver script

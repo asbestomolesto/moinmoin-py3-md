@@ -34,4 +34,4 @@ override_dh_fixperms:
 	dh_fixperms
 	# wiki templates are copied by moin-mkwiki, keep them read-only here
 	find debian/python3-moinmoin/usr/share/moin -type f -exec chmod 0644 {} +
-	find debian/python3-moinmoin/usr/share/moin/server -type f -exec chmod 0755 {} +
+	cd debian/python3-moinmoin/usr/share/moin/server && chmod 0755 moin moin.ajp moin.cgi moin.fcgi moin.scgi

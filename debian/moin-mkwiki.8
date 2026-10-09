@@ -1,0 +1,30 @@
+.TH MOIN-MKWIKI 8 "October 2026" "MoinMoin 1.9.11" "MoinMoin"
+.SH NAME
+moin\-mkwiki \- create a new MoinMoin wiki instance
+.SH SYNOPSIS
+.B moin\-mkwiki
+[\fB\-n\fR \fINAME\fR] [\fB\-l\fR \fILANG\fR] [\fB\-s\fR \fISUPERUSER\fR]
+[\fB\-u\fR \fIUSER\fR] [\fB\-g\fR \fIGROUP\fR] \fIDIRECTORY\fR
+.SH DESCRIPTION
+.B moin\-mkwiki
+copies the wiki templates of /usr/share/moin into the new directory
+\fIDIRECTORY\fR: the wiki data (data/, underlay/), a wikiconfig.py with a
+random secret, and the server scripts moin.wsgi, moin.cgi, moin.fcgi,
+moin.scgi and wikiserverconfig.py, adapted to the instance directory.
+.SH OPTIONS
+.TP
+.BI \-n " NAME"
+name of the wiki (default: the directory name)
+.TP
+.BI \-l " LANG"
+default language (default: en)
+.TP
+.BI \-s " SUPERUSER"
+name of the superuser (the account is created later with
+\fBmoin account create\fR)
+.TP
+.BI \-u " USER" ", \-g " GROUP
+owner of the files when run as root (default: www\-data)
+.SH SEE ALSO
+.BR moin (1),
+/usr/share/doc/python3\-moinmoin/README.Debian
