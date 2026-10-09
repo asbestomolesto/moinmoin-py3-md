@@ -1171,26 +1171,25 @@ class XmlRpc2(XmlRpcBase):
         """
         Convert string we get from xmlrpc into internal representation
 
-        @param text: unicode or utf-8 string
-        @rtype: unicode
+        @param text: str or utf-8 encoded bytes
+        @rtype: str
         @return: text
         """
-        if not isinstance(text, str):
-            text = str(text, 'utf-8')
+        if isinstance(text, bytes):
+            text = text.decode('utf-8')
         return text
 
     def _outstr(self, text):
         """
         Convert string from internal representation to xmlrpc
 
-        @param text: unicode or string in config.charset
+        @param text: str or bytes in config.charset
         @rtype: str
-        @return: text encoded in utf-8
+        @return: text (xmlrpc.client sends str as <string>, utf-8 encoded;
+                 bytes would be sent as base64 <base64>)
         """
-        if isinstance(text, str):
-            text = text.encode('utf-8')
-        elif config.charset != 'utf-8':
-            text = str(text, config.charset).encode('utf-8')
+        if isinstance(text, bytes):
+            text = text.decode(config.charset)
         return text
 
 
