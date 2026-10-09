@@ -1,6 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 # MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
 # Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
+# MoinMoin 1.11.0+md1 (Markdown support): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
 MoinMoin - creates user homepage for existing accounts
 
@@ -92,7 +93,7 @@ acl rights for the user. @EMAIL@ becomes expanded to the users obfuscated mail a
             homepage_default_text = homepage_default_text.replace('@EMAIL@', "<<MailTo(%(obfuscated_mail)s)>>")
         else:
             homepage_default_text = '''#acl %(username)s:read,write,delete,revert Default
-#format wiki
+#format moin
 
 == %(username)s ==
 

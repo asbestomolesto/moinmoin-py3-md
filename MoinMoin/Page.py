@@ -1036,6 +1036,9 @@ class Page(object):
             if verb == "format": # markup format
                 format, formatargs = (args + ' ').split(' ', 1)
                 pi['format'] = format.lower()
+                if pi['format'] == 'moin':
+                    # "#format moin" is the same as "#format wiki" (MoinMoin 1.11.0+md1)
+                    pi['format'] = 'wiki'
                 pi['formatargs'] = formatargs.strip()
 
             elif verb == "acl":

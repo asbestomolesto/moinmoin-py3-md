@@ -29,8 +29,8 @@ pagina (non viene mostrata):
 ```
 
 oppure crea la pagina dal [[MarkdownTemplate]]. Una riga `#format` vale
-sempre più del riconoscimento automatico (`#format wiki` impone la sintassi
-wiki). L'amministratore può disattivare il riconoscimento con
+sempre più del riconoscimento automatico (`#format moin` impone la sintassi
+wiki di MoinMoin; vale anche il vecchio `#format wiki`). L'amministratore può disattivare il riconoscimento con
 `markup_autodetect = False`, e rendere Markdown il formato delle pagine
 senza riga `#format` con `default_markup = 'markdown'`.
 

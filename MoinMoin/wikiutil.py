@@ -974,6 +974,7 @@ class MimeType(object):
         else:
             mapping = {
                 'wiki': ('text', 'moin-wiki'),
+                'moin': ('text', 'moin-wiki'), # MoinMoin 1.11.0+md1: "#format moin"
                 'irc': ('text', 'irssi'),
             }
             try:

@@ -301,4 +301,31 @@ class TestDetectMarkup(object):
             self.request.cfg.markup_autodetect = True
 
 
+class TestFormatMoin(object):
+    """ "#format moin" is the same as "#format wiki" """
+
+    def test_format_moin(self):
+        for name in ('moin', 'wiki', 'MOIN'):
+            page = Page(self.request, PAGENAME)
+            page.set_raw_body('#format %s\n# not a title\n**x** [y](z)\n' % name)
+            assert page.pi['format'] == 'wiki'
+            assert list(wikiutil.MimeType(name).module_name())[0] == 'text_moin_wiki'
+
+    def test_moin_block_in_wiki_page(self):
+        from MoinMoin.parser.text_moin_wiki import Parser as WikiParser
+        request = self.request
+        request.reset()
+        page = Page(request, PAGENAME)
+        page.set_raw_body('')
+        page.hilite_re = None
+        formatter = HtmlFormatter(request)
+        formatter.setPage(page)
+        page.formatter = request.formatter = formatter
+        request.page = page
+        parser = WikiParser("{{{#!moin\n" + "'" * 3 + "bold" + "'" * 3 + "\n}}}\n", request)
+        formatter.startContent('')
+        output = request.redirectedOutput(parser.format, formatter)
+        assert '<strong>bold</strong>' in output
+
+
 coverage_modules = ['MoinMoin.parser.text_markdown']

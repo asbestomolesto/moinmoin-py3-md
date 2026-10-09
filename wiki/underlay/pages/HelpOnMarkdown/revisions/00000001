@@ -28,7 +28,8 @@ wiki markup), put this line at the very top of the page (it is not shown):
 ```
 
 or create the page from the [[MarkdownTemplate]]. A `#format` line always
-wins over the automatic recognition (`#format wiki` forces wiki markup).
+wins over the automatic recognition (`#format moin` forces MoinMoin wiki markup;
+the old `#format wiki` works too).
 The wiki administrator can turn the recognition off with
 `markup_autodetect = False`, and make Markdown the format of the pages
 without a `#format` line with `default_markup = 'markdown'`.
