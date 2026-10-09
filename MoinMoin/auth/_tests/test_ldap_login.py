@@ -8,8 +8,6 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-
-
 import pytest
 from MoinMoin._tests.ldap_testbase import LDAPTstBase, LdapEnvironment, check_environ, SLAPD_EXECUTABLE
 from MoinMoin._tests.ldap_testdata import *

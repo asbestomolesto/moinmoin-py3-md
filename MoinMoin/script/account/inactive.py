@@ -6,8 +6,6 @@ MoinMoin - find inactive users (and disable / remove them)
 @license: GNU GPL, see COPYING for details.
 """
 
-
-
 import sys, os
 
 from MoinMoin.script import MoinScript, log

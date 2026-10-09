@@ -120,6 +120,9 @@ def _run_generator(func, request):
     for case in gen:
         if callable(case):
             case = (case, )
+        if isinstance(case[0], str):
+            # py.test 1.x also allowed yielding (name, check, args...)
+            case = case[1:]
         check, args = case[0], case[1:]
         check(*args)
 

@@ -17,8 +17,8 @@ class TestQueryStringSupport:
     tests = [
         ('', {}, {}),
         ('key1=value1', {'key1': 'value1'}, {'key1': 'value1'}),
-        ('key1=value1&key2=value2', {'key1': 'value1', 'key2': 'value2'}, {'key1': 'value1', 'key2': 'value2'}),
-        ('rc_de=Aktuelle%C3%84nderungen', {'rc_de': 'Aktuelle\xc3\x84nderungen'}, {'rc_de': 'Aktuelle\xc4nderungen'}),
+        ('key1=value1&key2=value2', {'key1': b'value1', 'key2': b'value2'}, {'key1': 'value1', 'key2': 'value2'}),
+        ('rc_de=Aktuelle%C3%84nderungen', {'rc_de': b'Aktuelle\xc3\x84nderungen'}, {'rc_de': 'Aktuelle\xc4nderungen'}),
     ]
     def testParseQueryString(self):
         for qstr, expected_str, expected_unicode in self.tests:
@@ -542,7 +542,7 @@ class TestArgGetters:
         pytest.raises(TypeError, wikiutil.get_bool, self.request, True)
         pytest.raises(TypeError, wikiutil.get_bool, self.request, 42)
         pytest.raises(TypeError, wikiutil.get_bool, self.request, 42.0)
-        pytest.raises(TypeError, wikiutil.get_bool, self.request, '')
+        pytest.raises(TypeError, wikiutil.get_bool, self.request, b'')
         pytest.raises(TypeError, wikiutil.get_bool, self.request, tuple())
         pytest.raises(TypeError, wikiutil.get_bool, self.request, [])
         pytest.raises(TypeError, wikiutil.get_bool, self.request, {})
@@ -576,7 +576,7 @@ class TestArgGetters:
         pytest.raises(TypeError, wikiutil.get_int, self.request, True)
         pytest.raises(TypeError, wikiutil.get_int, self.request, 42)
         pytest.raises(TypeError, wikiutil.get_int, self.request, 42.0)
-        pytest.raises(TypeError, wikiutil.get_int, self.request, '')
+        pytest.raises(TypeError, wikiutil.get_int, self.request, b'')
         pytest.raises(TypeError, wikiutil.get_int, self.request, tuple())
         pytest.raises(TypeError, wikiutil.get_int, self.request, [])
         pytest.raises(TypeError, wikiutil.get_int, self.request, {})
@@ -612,7 +612,7 @@ class TestArgGetters:
         pytest.raises(TypeError, wikiutil.get_float, self.request, True)
         pytest.raises(TypeError, wikiutil.get_float, self.request, 42)
         pytest.raises(TypeError, wikiutil.get_float, self.request, 42.0)
-        pytest.raises(TypeError, wikiutil.get_float, self.request, '')
+        pytest.raises(TypeError, wikiutil.get_float, self.request, b'')
         pytest.raises(TypeError, wikiutil.get_float, self.request, tuple())
         pytest.raises(TypeError, wikiutil.get_float, self.request, [])
         pytest.raises(TypeError, wikiutil.get_float, self.request, {})
@@ -656,7 +656,7 @@ class TestArgGetters:
         pytest.raises(TypeError, wikiutil.get_complex, self.request, 42)
         pytest.raises(TypeError, wikiutil.get_complex, self.request, 42.0)
         pytest.raises(TypeError, wikiutil.get_complex, self.request, 3j)
-        pytest.raises(TypeError, wikiutil.get_complex, self.request, '')
+        pytest.raises(TypeError, wikiutil.get_complex, self.request, b'')
         pytest.raises(TypeError, wikiutil.get_complex, self.request, tuple())
         pytest.raises(TypeError, wikiutil.get_complex, self.request, [])
         pytest.raises(TypeError, wikiutil.get_complex, self.request, {})
@@ -692,7 +692,7 @@ class TestArgGetters:
         pytest.raises(TypeError, wikiutil.get_unicode, self.request, True)
         pytest.raises(TypeError, wikiutil.get_unicode, self.request, 42)
         pytest.raises(TypeError, wikiutil.get_unicode, self.request, 42.0)
-        pytest.raises(TypeError, wikiutil.get_unicode, self.request, '')
+        pytest.raises(TypeError, wikiutil.get_unicode, self.request, b'')
         pytest.raises(TypeError, wikiutil.get_unicode, self.request, tuple())
         pytest.raises(TypeError, wikiutil.get_unicode, self.request, [])
         pytest.raises(TypeError, wikiutil.get_unicode, self.request, {})
@@ -856,8 +856,10 @@ class TestExtensionInvoking:
         ief = wikiutil.invoke_extension_function
 
         pytest.raises(TypeError, ief, self.request, hex, '15')
-        pytest.raises(TypeError, ief, self.request, cmp, '15')
-        pytest.raises(AttributeError, ief, self.request, str, '15')
+        pytest.raises(TypeError, ief, self.request, len, '15')
+        # Python 2 raised AttributeError (there is no str.__init__.__func__),
+        # in Python 3 str.__init__ can be inspected, but takes no arguments
+        pytest.raises((AttributeError, TypeError, ValueError), ief, self.request, str, '15')
 
     def testAllDefault(self):
         ief = wikiutil.invoke_extension_function

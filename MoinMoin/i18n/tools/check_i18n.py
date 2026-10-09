@@ -34,14 +34,13 @@ output_encoding = 'utf-8'
 blacklist_files = []
 blacklist_langs = []
 
-import sys, os, compiler
-from compiler.ast import Name, Const, CallFunc, Getattr
+import sys, os, ast
 
 class TextFinder:
     """ Walk through AST tree and collect text from gettext calls
 
     Find all calls to gettext function in the source tree and collect
-    the texts in a dict. Use compiler to create an abstract syntax tree
+    the texts in a dict. Use ast to create an abstract syntax tree
     from each source file, then find the nodes for gettext function
     call, and get the text from the call.
 
@@ -77,8 +76,8 @@ class TextFinder:
     def visitModule(self, node):
         """ Start the search from the top node of a module
 
-        This is the entry point into the search. When compiler.walk is
-        called it calls this method with the module node.
+        This is the entry point into the search, visit() calls this
+        method with the module node.
 
         This is the place to initialize module specific data.
         """
@@ -96,7 +95,7 @@ class TextFinder:
 
         self._visited[node] = 1
         if not self.parseNode(node):
-            for child in node.getChildNodes():
+            for child in ast.iter_child_nodes(node):
                 self.walk(child)
 
     def parseNode(self, node):
@@ -104,17 +103,16 @@ class TextFinder:
 
         # Get the current line number. Since not all nodes have a line number
         # we save the last line number - it should be close to the gettext call
-        if node.lineno is not None:
+        if getattr(node, 'lineno', None) is not None:
             self._lineno = node.lineno
 
-        if node.__class__ == CallFunc and node.args:
-            child = node.node
-            klass = child.__class__
+        if isinstance(node, ast.Call) and node.args:
+            child = node.func
             if (# Standard call _('text')
-                (klass == Name and child.name == self._name) or
+                (isinstance(child, ast.Name) and child.id == self._name) or
                 # A call to an object attribute: object._('text')
-                (klass == Getattr and child.attrname == self._name)):
-                if node.args[0].__class__ == Const:
+                (isinstance(child, ast.Attribute) and child.attr == self._name)):
+                if isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
                     # Good call with a constant _('text')
                     self.addText(node.args[0].value)
                 else:
@@ -172,8 +170,9 @@ class TextFinder:
 
 def visit(path, visitor):
     visitor.setFilename(path)
-    tree = compiler.parseFile(path)
-    compiler.walk(tree, visitor)
+    with open(path, 'rb') as f:
+        tree = ast.parse(f.read(), path)
+    visitor.visitModule(tree)
 
 
 # MoinMoin specific stuff follows
@@ -329,8 +328,8 @@ if __name__ == '__main__':
         report[lang] = Report(lang, textFinder.dictionary())
 
     # Print summary for all languages
-    print ("||<:>'''Language'''||<:>'''Texts'''||<:>'''Missing'''"
-           "||<:>'''Unused'''||")
+    print("||<:>'''Language'''||<:>'''Texts'''||<:>'''Missing'''"
+          "||<:>'''Unused'''||")
     for lang in languages:
         print(("||%(name)s||<)>%(total)s||<)>%(missing)s||<)>%(unused)s||"
                ) % report[lang].summary())

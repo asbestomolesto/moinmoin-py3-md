@@ -509,7 +509,7 @@ def find_checks(argument_name):
     function_type = type(find_checks)
     for name, function in globals().items():
         if type(function) is function_type:
-            args = inspect.getargspec(function)[0]
+            args = inspect.getfullargspec(function)[0]
             if len(args) >= 1 and args[0].startswith(argument_name):
                 checks.append((name, function, args))
     checks.sort()
@@ -548,7 +548,7 @@ class Checker:
 
     def __init__(self, filename):
         self.filename = filename
-        self.lines = open(filename, 'rb').readlines()
+        self.lines = tokenize.open(filename).readlines()
         self.physical_checks = find_checks('physical_line')
         self.logical_checks = find_checks('logical_line')
         options.counters['physical lines'] = \

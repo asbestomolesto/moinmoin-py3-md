@@ -62,7 +62,9 @@ class Marshal:
         if data is None:
             content = "<none/>"
 
-        elif isinstance(data, str):
+        elif isinstance(data, (str, bytes, bytearray, memoryview)):
+            if not isinstance(data, str):
+                data = bytes(data).decode('utf-8', 'replace')
             content = (data.replace("&", "&amp;") # Must be done first!
                            .replace("<", "&lt;")
                            .replace(">", "&gt;"))

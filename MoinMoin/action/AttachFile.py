@@ -207,8 +207,13 @@ def content_disposition(dispo, filename):
 
 def _write_stream(content, stream, bufsize=8192):
     if hasattr(content, 'read'): # looks file-like
-        import shutil
-        shutil.copyfileobj(content, stream, bufsize)
+        while True:
+            chunk = content.read(bufsize)
+            if not chunk:
+                break
+            if isinstance(chunk, str): # file opened in text mode
+                chunk = chunk.encode(config.charset)
+            stream.write(chunk)
     elif isinstance(content, bytes):
         stream.write(content)
     elif isinstance(content, str):
