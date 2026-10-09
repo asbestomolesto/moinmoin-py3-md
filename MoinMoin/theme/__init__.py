@@ -8,6 +8,7 @@
 
 import io
 
+from MoinMoin.util.py2order import py2_dict_order
 from MoinMoin import log
 logging = log.getLogger(__name__)
 
@@ -548,7 +549,10 @@ class ThemeBase:
             # cache in class for next calls.
             if not getattr(self.__class__, 'iconsByFile', None):
                 d = {}
-                for data in list(self.icons.values()):
+                # several icons use the same file, the last one wins: visit
+                # them in the dict order of Python 2, like MoinMoin 1.9 did
+                for key in py2_dict_order(list(self.icons)):
+                    data = self.icons[key]
                     d[data[1]] = data
                 self.__class__.iconsByFile = d
 

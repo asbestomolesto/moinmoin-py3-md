@@ -249,13 +249,15 @@ class Macro:
             if letter not in index_letters:
                 index_letters.append(letter)
             links = wordmap[word]
+            # Note: sort before checking links[0], the unsorted order came from
+            # the (arbitrary) Python 2 dict order of the page list
+            links.sort()
             if len(links) and links[0] != word: # show word fragment as on WordIndex
                 output.append(fmt.strong(1))
                 output.append(word)
                 output.append(fmt.strong(0))
 
             output.append(fmt.bullet_list(1))
-            links.sort()
             last_page = None
             for name in links:
                 if name == last_page:

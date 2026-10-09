@@ -9,7 +9,7 @@
 from MoinMoin import wikiutil
 
 # sort attributes or not? (set to 1 by unit tests)
-_SORT_ATTRS = 0
+_SORT_ATTRS = 1 # sorted like the (mostly alphabetical) Python 2 dict order, deterministic
 
 
 #############################################################################
