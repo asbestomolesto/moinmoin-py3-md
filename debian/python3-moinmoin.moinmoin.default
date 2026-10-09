@@ -1,0 +1,18 @@
+# Configuration of /etc/init.d/moinmoin
+#
+# The init script runs MoinMoin wikis with the standalone server of
+# MoinMoin (no web server needed, or behind a reverse proxy). It is not
+# needed if the wikis run with Apache mod_wsgi, uWSGI, gunicorn, CGI or
+# FastCGI.
+#
+# INSTANCES is a space separated list of wikis, each one written as
+#     NAME:DIRECTORY:PORT[:INTERFACE[:USER]]
+# NAME       a short name (used for the pid file)
+# DIRECTORY  the wiki instance directory (contains wikiconfig.py), see moin-mkwiki
+# PORT       TCP port of the wiki server
+# INTERFACE  address to listen on, default 127.0.0.1 (use 0.0.0.0 for all)
+# USER       user running the wiki (owner of the data), default www-data
+#
+# Example:
+#INSTANCES="mywiki:/srv/moin/mywiki:8080 docs:/srv/moin/docs:8081:0.0.0.0:moin"
+INSTANCES=""

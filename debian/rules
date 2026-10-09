@@ -1,0 +1,37 @@
+#!/usr/bin/make -f
+
+export PYBUILD_NAME=moinmoin
+export PYBUILD_SYSTEM=pyproject
+
+%:
+	dh $@ --with python3 --buildsystem=pybuild
+
+# The test suite needs a full test wiki (tests/underlay.tar) and runs
+# against the source tree, see README.Debian; it is not run at build time.
+override_dh_auto_test:
+
+override_dh_auto_install:
+	dh_auto_install
+	# the moin command line tool is installed by setuptools
+	# the tests and the developer configuration are not shipped
+	find debian/python3-moinmoin -name '_tests' -type d -prune -exec rm -rf {} +
+	find debian/python3-moinmoin -name 'conftest.py' -delete
+	# python helper scripts of the static FCKeditor files are not needed
+	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.py' -delete
+	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.pl' -delete
+	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.php' -delete
+	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.cfm' -delete
+	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.asp' -delete
+	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.aspx' -delete
+	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.lasso' -delete
+	find debian/python3-moinmoin -path '*FCKeditor*' -name '*.cgi' -delete
+	install -D -m 0755 debian/moin-mkwiki debian/python3-moinmoin/usr/sbin/moin-mkwiki
+
+override_dh_installinit:
+	dh_installinit --name=moinmoin --no-start --no-stop-on-upgrade
+
+override_dh_fixperms:
+	dh_fixperms
+	# wiki templates are copied by moin-mkwiki, keep them read-only here
+	find debian/python3-moinmoin/usr/share/moin -type f -exec chmod 0644 {} +
+	find debian/python3-moinmoin/usr/share/moin/server -type f -exec chmod 0755 {} +

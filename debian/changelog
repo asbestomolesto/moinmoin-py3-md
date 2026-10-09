@@ -1,0 +1,12 @@
+moin (1.9.11+py3-1) unstable; urgency=medium
+
+  * MoinMoin 1.9.11 ported to Python 3 (tested with Python 3.13).
+    - Wiki data (pages, users, edit-log, attachments) stay compatible
+      with MoinMoin 1.9.x on Python 2, in both directions.
+    - Uses the system pygments, passlib and parsedatetime; ships
+      werkzeug 1.0.1, flup 1.0.3 and secure_cookie (needed versions).
+  * Works without systemd: optional sysvinit script for standalone
+    wiki servers; WSGI (Apache mod_wsgi, uWSGI, gunicorn), CGI,
+    FastCGI and SCGI are supported, too.
+
+ -- asbesto <aladarmrgradymezil@gmail.com>  Fri, 09 Oct 2026 15:00:00 +0200

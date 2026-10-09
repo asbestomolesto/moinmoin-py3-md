@@ -1,0 +1,16 @@
+# For systems WITH systemd only (Devuan does not need it, it uses
+# /etc/init.d/moinmoin): standalone server of one wiki instance.
+# Copy to /etc/systemd/system/moinmoin-mywiki.service and adapt.
+[Unit]
+Description=MoinMoin wiki mywiki
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/srv/moin/mywiki
+ExecStart=/usr/bin/moin --config-dir=/srv/moin/mywiki server standalone --port=8080 --interface=127.0.0.1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

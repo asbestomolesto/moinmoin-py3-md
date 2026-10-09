@@ -1,0 +1,92 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          moinmoin
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: MoinMoin wiki standalone servers
+# Description:       Runs the MoinMoin wikis listed in /etc/default/moinmoin
+#                    with the standalone server of MoinMoin.
+### END INIT INFO
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+NAME=moinmoin
+DESC="MoinMoin wiki"
+MOIN=/usr/bin/moin
+RUNDIR=/run/moinmoin
+INSTANCES=""
+
+[ -x "$MOIN" ] || exit 0
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+. /lib/lsb/init-functions
+
+# split NAME:DIRECTORY:PORT[:INTERFACE[:USER]]
+parse() {
+    WNAME=$(echo "$1" | cut -d: -f1)
+    WDIR=$(echo "$1" | cut -d: -f2)
+    WPORT=$(echo "$1" | cut -d: -f3)
+    WIFACE=$(echo "$1" | cut -d: -f4)
+    WUSER=$(echo "$1" | cut -d: -f5)
+    [ -n "$WIFACE" ] || WIFACE=127.0.0.1
+    [ -n "$WUSER" ] || WUSER=www-data
+    PIDFILE=$RUNDIR/$WNAME.pid
+}
+
+start_one() {
+    parse "$1"
+    if [ -z "$WNAME" ] || [ ! -r "$WDIR/wikiconfig.py" ] || [ -z "$WPORT" ]; then
+        log_warning_msg "$DESC: bad instance \"$1\" (no wikiconfig.py in $WDIR?)"
+        return 1
+    fi
+    log_daemon_msg "Starting $DESC" "$WNAME"
+    install -d -m 0755 "$RUNDIR"
+    start-stop-daemon --start --quiet --background --make-pidfile \
+        --pidfile "$PIDFILE" --chuid "$WUSER" --chdir "$WDIR" \
+        --startas "$MOIN" -- --config-dir="$WDIR" server standalone \
+        --port="$WPORT" --interface="$WIFACE"
+    log_end_msg $?
+}
+
+stop_one() {
+    parse "$1"
+    log_daemon_msg "Stopping $DESC" "$WNAME"
+    start-stop-daemon --stop --quiet --retry=TERM/10/KILL/5 --pidfile "$PIDFILE" \
+        --remove-pidfile
+    RET=$?
+    [ $RET = 1 ] && RET=0   # was not running
+    log_end_msg $RET
+}
+
+status_one() {
+    parse "$1"
+    status_of_proc -p "$PIDFILE" "$MOIN" "$DESC $WNAME"
+}
+
+if [ -z "$INSTANCES" ] && [ "$1" != status ]; then
+    log_action_msg "$DESC: no wiki instances configured in /etc/default/$NAME"
+    exit 0
+fi
+
+RET=0
+case "$1" in
+    start)
+        for i in $INSTANCES; do start_one "$i" || RET=1; done
+        ;;
+    stop)
+        for i in $INSTANCES; do stop_one "$i" || RET=1; done
+        ;;
+    restart|force-reload)
+        for i in $INSTANCES; do stop_one "$i"; done
+        for i in $INSTANCES; do start_one "$i" || RET=1; done
+        ;;
+    status)
+        for i in $INSTANCES; do status_one "$i" || RET=$?; done
+        ;;
+    *)
+        echo "Usage: /etc/init.d/$NAME {start|stop|restart|force-reload|status}" >&2
+        exit 3
+        ;;
+esac
+exit $RET

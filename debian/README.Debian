@@ -1,0 +1,81 @@
+MoinMoin 1.9.11 for Python 3 - notes for Debian, Devuan and derivatives
+=======================================================================
+
+This package contains MoinMoin 1.9.11 ported to Python 3. It does not
+need systemd: on Devuan the wikis run with sysvinit/OpenRC (init script
+/etc/init.d/moinmoin) or inside any web server.
+
+Files
+-----
+
+ /usr/lib/python3/dist-packages/MoinMoin   the wiki engine
+ /usr/bin/moin                             command line tool (accounts, maintenance, server)
+ /usr/sbin/moin-mkwiki                     creates a new wiki instance
+ /usr/share/moin/                          templates: config, data, underlay, server scripts
+ /usr/share/moin/htdocs                    static files (alias /moin_static1911)
+ /etc/default/moinmoin, /etc/init.d/moinmoin   standalone servers (disabled by default)
+ /usr/share/doc/python3-moinmoin/examples/ Apache, nginx, uWSGI, lighttpd, systemd examples
+
+Creating a wiki
+---------------
+
+  moin-mkwiki -n "My Wiki" -s AdminUser /srv/moin/mywiki
+  moin --config-dir=/srv/moin/mywiki --wiki-url=http://localhost/ \
+       account create --name=AdminUser --email=admin@example.org --password=...
+
+Log in as AdminUser and install the help and system pages from the page
+LanguageSetup (e.g. "English--all_pages.zip"). The pages appear after
+the wiki is restarted (this is the same with the original MoinMoin).
+
+Running the wiki
+----------------
+
+ * Standalone server (simplest, also behind a reverse proxy):
+   set INSTANCES in /etc/default/moinmoin, then
+     /etc/init.d/moinmoin start      (Devuan: service moinmoin start)
+   update-rc.d already enabled the script at boot; it does nothing while
+   INSTANCES is empty.
+
+ * Apache + mod_wsgi:  apt install libapache2-mod-wsgi-py3
+   examples/apache-mod_wsgi.conf
+
+ * nginx + uWSGI:      apt install uwsgi uwsgi-plugin-python3 nginx
+   examples/uwsgi-mywiki.ini, examples/nginx-uwsgi.conf
+
+ * gunicorn:           apt install gunicorn
+   cp /srv/moin/mywiki/moin.wsgi /srv/moin/mywiki/moin_wsgi.py
+   gunicorn -b 127.0.0.1:8080 --chdir /srv/moin/mywiki moin_wsgi:application
+   and examples/nginx-proxy.conf
+
+ * CGI / FastCGI / SCGI: the scripts moin.cgi, moin.fcgi, moin.scgi of the
+   instance, examples/apache-cgi.conf, apache-fcgid.conf, lighttpd-fastcgi.conf
+
+The data directory must be writable by the user running the wiki
+(www-data by default, see moin-mkwiki -u/-g).
+
+Migrating a wiki from MoinMoin 1.9.x on Python 2
+------------------------------------------------
+
+The data format did not change: copy data/ (and underlay/ if it was
+modified) of the old wiki into the instance, keep your wikiconfig.py
+(check it with Python 3: e.g. no "print x" statements, string literals
+are already unicode), then remove the old caches:
+
+  moin --config-dir=/srv/moin/mywiki --wiki-url=http://localhost/ maint cleancache
+
+Old cache files written by Python 2 are ignored anyway and recreated.
+Third party plugins (data/plugin/*) must be ported to Python 3.
+
+Not supported
+-------------
+
+ * the Jabber/XMPP notification bot (needs pyxmpp, which only exists for
+   Python 2);
+ * the DocBook and XSLT parsers (need 4Suite, Python 2 only);
+ * the OpenID support has not been tested;
+ * xapian indexed search needs python3-xapian (optional).
+
+Running the test suite (source package)
+---------------------------------------
+
+  python3 -m pytest MoinMoin

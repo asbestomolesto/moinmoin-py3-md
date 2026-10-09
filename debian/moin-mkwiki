@@ -1,0 +1,120 @@
+#!/bin/sh
+# moin-mkwiki - create a new MoinMoin wiki instance
+#
+# Copies the wiki templates of /usr/share/moin (data, underlay, sample
+# configuration and server adapter scripts) into a new directory and
+# adapts them. Works on any system, it does not need systemd.
+
+set -e
+
+SHARE=/usr/share/moin
+OWNER=www-data
+GROUP=www-data
+SITENAME=
+LANGUAGE=en
+SUPERUSER=
+
+usage() {
+    cat <<USAGE
+Usage: moin-mkwiki [options] DIRECTORY
+
+Create a new MoinMoin wiki instance in DIRECTORY (it must not exist yet).
+
+Options:
+  -n NAME     name of the wiki (sitename), default: the directory name
+  -l LANG     default language of the wiki, default: en
+  -s USER     name of the wiki superuser (create the account later with
+              "moin ... account create"), default: none
+  -u USER     owner of the wiki files (the user running the wiki), default: www-data
+  -g GROUP    group of the wiki files, default: www-data
+  -h          show this help
+
+After creation, the files of the instance are:
+  DIRECTORY/wikiconfig.py        wiki configuration
+  DIRECTORY/data/, underlay/     wiki data (pages, users, ...)
+  DIRECTORY/moin.wsgi            WSGI script (Apache mod_wsgi, uWSGI, gunicorn)
+  DIRECTORY/moin.cgi, moin.fcgi  CGI and FastCGI scripts
+  DIRECTORY/wikiserverconfig.py  configuration of the standalone server
+USAGE
+}
+
+while getopts n:l:s:u:g:h opt; do
+    case "$opt" in
+        n) SITENAME="$OPTARG" ;;
+        l) LANGUAGE="$OPTARG" ;;
+        s) SUPERUSER="$OPTARG" ;;
+        u) OWNER="$OPTARG" ;;
+        g) GROUP="$OPTARG" ;;
+        h) usage; exit 0 ;;
+        *) usage >&2; exit 2 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+if [ $# -ne 1 ]; then
+    usage >&2
+    exit 2
+fi
+DIR=$1
+if [ -e "$DIR" ]; then
+    echo "moin-mkwiki: $DIR already exists" >&2
+    exit 1
+fi
+[ -n "$SITENAME" ] || SITENAME=$(basename "$DIR")
+
+mkdir -p "$DIR"
+DIR=$(cd "$DIR" && pwd)
+cp -r "$SHARE/data" "$SHARE/underlay" "$DIR/"
+for f in moin.wsgi moin.cgi moin.fcgi moin.scgi wikiserverconfig.py; do
+    cp "$SHARE/server/$f" "$DIR/"
+done
+chmod 0755 "$DIR/moin.cgi" "$DIR/moin.fcgi" "$DIR/moin.scgi"
+
+# the server adapter scripts must find wikiconfig.py in the instance directory
+for f in moin.wsgi moin.cgi moin.fcgi moin.scgi; do
+    python3 - "$DIR/$f" "$DIR" <<'PY'
+import sys
+fn, instance = sys.argv[1], sys.argv[2]
+s = open(fn, encoding='utf-8').read()
+line = "sys.path.insert(0, %r)\n" % instance
+if line not in s:
+    s = s.replace("import sys, os\n", "import sys, os\n" + line, 1)
+open(fn, 'w', encoding='utf-8').write(s)
+PY
+done
+
+SECRET=$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')
+python3 - "$SHARE/config/wikiconfig.py" "$DIR/wikiconfig.py" "$SITENAME" "$LANGUAGE" "$SUPERUSER" "$SECRET" <<'PY'
+import sys
+src, dst, sitename, language, superuser, secret = sys.argv[1:]
+s = open(src, encoding='utf-8').read()
+s = s.replace("    sitename = 'Untitled Wiki'", "    sitename = %r" % sitename, 1)
+s = s.replace("    language_default = 'en'", "    language_default = %r" % language, 1)
+extra = "\n    # created by moin-mkwiki\n    secrets = %r\n" % secret
+if superuser:
+    extra += "    superuser = [%r, ]\n" % superuser
+# put the extra settings at the end of the Config class
+s = s.rstrip('\n') + '\n' + extra
+open(dst, 'w', encoding='utf-8').write(s)
+PY
+chmod 0640 "$DIR/wikiconfig.py"
+
+if [ "$(id -u)" = 0 ]; then
+    chown -R "$OWNER:$GROUP" "$DIR"
+fi
+chmod -R u+rwX,g+rwX,o-rwx "$DIR/data" "$DIR/underlay"
+
+cat <<DONE
+New wiki "$SITENAME" created in $DIR
+
+Next steps:
+ * create the superuser account (if you used -s), e.g.:
+     moin --config-dir=$DIR --wiki-url=http://localhost/ account create \\
+          --name=$( [ -n "$SUPERUSER" ] && echo "$SUPERUSER" || echo NAME ) --email=EMAIL --password=PASSWORD
+ * install the help and system pages: log in as superuser and visit the
+   page LanguageSetup (or use "moin ... maint" / package installation).
+ * run the wiki, see /usr/share/doc/python3-moinmoin/README.Debian:
+     standalone server : /etc/default/moinmoin + /etc/init.d/moinmoin
+     Apache mod_wsgi   : /usr/share/doc/python3-moinmoin/examples/apache-mod_wsgi.conf
+     nginx + uWSGI     : /usr/share/doc/python3-moinmoin/examples/nginx-uwsgi.conf
+DONE
