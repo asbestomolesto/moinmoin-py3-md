@@ -13,7 +13,7 @@
 # individuals. For exact contribution history, see the revision
 # history and logs, available at http://projects.edgewall.com/trac/.
 
-import html.entities
+import html.entities as htmlentitydefs
 from html.parser import HTMLParser
 import re
 
@@ -81,7 +81,7 @@ class Markup(str):
                 if keepxmlentities and ref in ('amp', 'apos', 'gt', 'lt', 'quot'):
                     return '&%s;' % ref
                 try:
-                    codepoint = html.entities.name2codepoint[ref]
+                    codepoint = htmlentitydefs.name2codepoint[ref]
                     return chr(codepoint)
                 except KeyError:
                     if keepxmlentities:

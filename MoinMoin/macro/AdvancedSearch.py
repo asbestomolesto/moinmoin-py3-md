@@ -120,7 +120,7 @@ def advanced_ui(macro):
     coding = sys.getdefaultencoding() # same call used by stdlib mimetypes.py on win32
     if coding == 'ascii':  # we might get 'ascii'
         coding = 'utf-8'  # but we upgrade to utf-8, which is sometimes used for /etc/mime.types
-    decode = lambda s: s.decode(coding, 'replace') # use 'replace' -> never crash
+    decode = lambda s: s if isinstance(s, str) else s.decode(coding, 'replace') # use 'replace' -> never crash
     mimetype = form_get(request, 'mimetype')
     mt_select = makeSelection('mimetype',
             [('', _('any mimetype'))] +

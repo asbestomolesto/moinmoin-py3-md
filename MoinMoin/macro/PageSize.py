@@ -19,7 +19,9 @@ def macro_PageSize(macro):
     sizes = []
     for name, page in list(pages.items()):
         sizes.append((page.size(), page))
-    sizes.sort()
+    # Python 2 compared the Page objects for equal sizes (arbitrary order),
+    # we use the page name for these
+    sizes.sort(key=lambda item: (item[0], item[1].page_name))
     sizes.reverse()
 
     # format list
