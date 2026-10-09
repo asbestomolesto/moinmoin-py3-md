@@ -225,8 +225,10 @@ class CacheEntry:
     def write(self, data):
         """ write data to cache file
 
-        @param data: write data (str)
+        @param data: write data (bytes, str will be encoded using config.charset)
         """
+        if isinstance(data, str):
+            data = data.encode(config.charset)
         self._fileobj.write(data)
 
     def close(self):
@@ -259,7 +261,7 @@ class CacheEntry:
                 # content is a string
                 if self.use_pickle:
                     content = pickle.dumps(content, PICKLE_PROTOCOL)
-                elif self.use_encode:
+                elif self.use_encode or isinstance(content, str):
                     content = content.encode(config.charset)
 
                 try:
@@ -283,7 +285,10 @@ class CacheEntry:
             elif self.use_encode:
                 data = data.decode(config.charset)
             return data
-        except (pickle.UnpicklingError, IOError, EOFError, ValueError) as err:
+        except (pickle.UnpicklingError, IOError, EOFError, ValueError,
+                UnicodeDecodeError, AttributeError, ImportError) as err:
+            # note: cache files written by MoinMoin running on Python 2 may
+            # not be loadable, we just treat them like a missing cache entry.
             raise CacheError(str(err))
 
     def remove(self):

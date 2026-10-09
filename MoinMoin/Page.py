@@ -1451,12 +1451,9 @@ class Page(object):
             macro_obj = Macro(parser)
             # Fix __file__ when running from a zip package
             import MoinMoin
-            if hasattr(MoinMoin, '__loader__'):
+            if hasattr(getattr(MoinMoin, '__loader__', None), 'archive'):
                 __file__ = os.path.join(MoinMoin.__loader__.archive, 'dummy')
-            try:
-                exec(code)
-            except "CacheNeedsUpdate": # convert the exception
-                raise Exception("CacheNeedsUpdate")
+            exec(code)
         finally:
             request.clock.stop("Page.execute")
 
@@ -1493,8 +1490,7 @@ class Page(object):
             request.current_lang = saved_current_lang
 
         src = formatter.assemble_code(text)
-        code = compile(src.encode(config.charset),
-                       self.page_name.encode(config.charset), 'exec')
+        code = compile(src, self.page_name, 'exec')
         cache = caching.CacheEntry(request, self, self.getFormatterName(), scope='item')
         cache.update(marshal.dumps(code))
         return code

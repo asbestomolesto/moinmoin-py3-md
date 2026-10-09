@@ -153,7 +153,7 @@ class QueryParser(object):
 
     def parse_query(self, query):
         """ transform an string into a tree of Query objects """
-        if isinstance(query, str):
+        if isinstance(query, bytes):
             query = query.decode(config.charset)
         try:
             items = wikiutil.parse_quoted_separated_ext(query,

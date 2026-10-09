@@ -77,7 +77,7 @@ class LineBuffer:
         self.offsets = offsets
         self.len = linecount
         # Decode lines after offset in file is calculated
-        self.lines = [str(line.rstrip('\n'), config.charset) for line in lines]
+        self.lines = [line.rstrip(b'\n').decode(config.charset) for line in lines]
 
 
 class LogFile:
@@ -151,7 +151,7 @@ class LogFile:
                     # if this workaround raises another error, we don't catch
                     # it, so the admin will see it.
                     f = open(self.__filename, "ab")
-                    f.write('')
+                    f.write(b'')
                     f.close()
                     self._input = open(self.__filename, "rb", )
                 else:
@@ -190,7 +190,7 @@ class LogFile:
         @rtype: Int
         """
         try:
-            f = open(self.__filename, 'r')
+            f = open(self.__filename, 'rb')
             try:
                 count = 0
                 for line in f:

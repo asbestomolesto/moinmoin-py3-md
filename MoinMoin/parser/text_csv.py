@@ -53,9 +53,8 @@ class Parser:
         self._first_row = None
         formatter = request.formatter
 
-        # workaround csv.reader deficiency by encoding to utf-8
         # removes empty lines in front of the csv table
-        data = raw.encode('utf-8').lstrip('\n').split('\n')
+        data = raw.lstrip('\n').split('\n')
 
         delimiter = ';'
         # Previous versions of this parser have used only the delimiter ";" (by default).
@@ -81,11 +80,10 @@ class Parser:
         quotechar = '\x00' # can't be entered
         quoting = QUOTE_NONE
         name = None
-        hdr = reader([kw.get('format_args', '').strip().encode('utf-8')], delimiter=" ")
+        hdr = reader([kw.get('format_args', '').strip()], delimiter=" ")
         args = next(hdr)
 
         for arg in args:
-            arg = arg.decode('utf-8')
             try:
                 key, val = arg.split('=', 1)
             except:
@@ -96,13 +94,13 @@ class Parser:
                     except ValueError:
                         pass
                 else:
-                    delimiter = arg.encode('utf-8')
+                    delimiter = arg
                 continue
             if key == 'separator' or key == 'delimiter':
-                delimiter = val.encode('utf-8')
+                delimiter = val
             if key == 'quotechar':
-                if val == val.encode('utf-8'):
-                    quotechar = val.encode('utf-8')
+                if val.isascii():
+                    quotechar = val
                     quoting = QUOTE_MINIMAL
             elif key == 'show':
                 visible = val.split(',')
@@ -125,13 +123,13 @@ class Parser:
             staticvals = staticvals[:len(staticcols)]
 
         r = reader(data, delimiter=delimiter, quotechar=quotechar, quoting=quoting)
-        cols = [x.decode('utf-8') for x in next(r)] + staticcols
+        cols = list(next(r)) + staticcols
 
         self._show_header = True
 
         if cols == staticcols:
             try:
-                self._first_row = [x.decode('utf-8') for x in next(r)]
+                self._first_row = list(next(r))
                 cols = [None] * len(self._first_row) + staticcols
                 self._show_header = False
             except StopIteration:
@@ -156,7 +154,6 @@ class Parser:
             linkparse[colidx] = col in linkcols
 
         for row in self._read_rows(r):
-            row = [x.decode('utf-8') for x in row]
             if len(row) > num_entry_cols:
                 row = row[:num_entry_cols]
             elif len(row) < num_entry_cols:
