@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 build/
 *.egg-info/
+wiki/data/cache/*
+!wiki/data/cache/README
+wiki/underlay/pages/*/cache/

@@ -1463,8 +1463,15 @@ class Page(object):
             raise Exception('CacheNeedsUpdate')
 
         import marshal
+        from importlib.util import MAGIC_NUMBER
         try:
-            return marshal.loads(cache.content())
+            data = cache.content()
+            # the cache contains compiled code: only load it if it was
+            # written by the same Python version (marshal data of another
+            # version can crash the interpreter, e.g. after an upgrade)
+            if not data.startswith(MAGIC_NUMBER):
+                raise Exception('CacheNeedsUpdate')
+            return marshal.loads(data[len(MAGIC_NUMBER):])
         except (EOFError, ValueError, TypeError):
             # Bad marshal data, must update the cache.
             # See http://docs.python.org/lib/module-marshal.html
@@ -1490,7 +1497,8 @@ class Page(object):
         src = formatter.assemble_code(text)
         code = compile(src, self.page_name, 'exec')
         cache = caching.CacheEntry(request, self, self.getFormatterName(), scope='item')
-        cache.update(marshal.dumps(code))
+        from importlib.util import MAGIC_NUMBER
+        cache.update(MAGIC_NUMBER + marshal.dumps(code))
         return code
 
     def _specialPageText(self, request, special_type):
