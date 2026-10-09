@@ -8,7 +8,7 @@ master_url = "https://master19.moinmo.in/?action=xmlrpc2"
 DOMAIN = "MoinMoin"
 
 def run():
-    import sys, xmlrpc.client
+    import sys, xmlrpc.client as xmlrpclib
     sys.path.insert(0, '../..')
 
     excluded = ["en", ] # languages managed in repository, not in wiki
@@ -16,7 +16,7 @@ def run():
     lang = sys.argv[1]
 
     if not lang in excluded:
-        wiki = xmlrpc.client.ServerProxy(master_url)
+        wiki = xmlrpclib.ServerProxy(master_url)
 
         pagename = "MoinI18n/%s" % lang
         print(pagename)

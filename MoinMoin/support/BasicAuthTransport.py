@@ -1,9 +1,9 @@
 # taken from Amos' XML-RPC HowTo:
 
-import xmlrpc.client, http.client
+import xmlrpc.client as xmlrpclib, http.client
 from base64 import b64encode
 
-class BasicAuthTransport(xmlrpc.client.Transport):
+class BasicAuthTransport(xmlrpclib.Transport):
     def __init__(self, username=None, password=None):
         self.username = username
         self.password = password
@@ -34,7 +34,7 @@ class BasicAuthTransport(xmlrpc.client.Transport):
         errcode, errmsg, headers = h.getreply()
 
         if errcode != 200:
-            raise xmlrpc.client.ProtocolError(
+            raise xmlrpclib.ProtocolError(
                 host + handler,
                 errcode, errmsg,
                 headers

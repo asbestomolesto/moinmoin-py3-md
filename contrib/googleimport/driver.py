@@ -13,7 +13,7 @@ import sys
 import re
 import urllib.request, urllib.error, urllib.parse
 from urllib.parse import quote
-import xmlrpc.client
+import xmlrpc.client as xmlrpclib
 import csv
 
 from MoinMoin.web.contexts import ScriptContext
@@ -95,7 +95,7 @@ class Collector(object):
 
     def __init__(self, url):
         self.url = url
-        self.server = xmlrpc.client.ServerProxy(url + "?action=xmlrpc2")
+        self.server = xmlrpclib.ServerProxy(url + "?action=xmlrpc2")
 
     def collect_tasks(self):
         tasks = []

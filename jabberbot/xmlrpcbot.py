@@ -6,7 +6,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import logging, xmlrpc.client, queue
+import logging, xmlrpc.client as xmlrpclib, queue
 from xmlrpc.server import SimpleXMLRPCServer
 from threading import Thread
 
@@ -32,7 +32,7 @@ def _xmlrpc_decorator(function):
         _ = lambda x: x
 
         self.token = None
-        self.multicall = xmlrpc.client.MultiCall(self.connection)
+        self.multicall = xmlrpclib.MultiCall(self.connection)
         jid = command.jid
         if type(jid) is not list:
             jid = [jid]
@@ -46,11 +46,11 @@ def _xmlrpc_decorator(function):
                 function(self, command)
                 self.commands_out.put_nowait(command)
 
-            except xmlrpc.client.Fault as fault:
+            except xmlrpclib.Fault as fault:
                 msg = _("Your request has failed. The reason is:\n%(error)s")
                 self.log.error(str(fault))
                 self.report_error(jid, msg, {'error': fault.faultString})
-            except xmlrpc.client.Error as err:
+            except xmlrpclib.Error as err:
                 msg = _("A serious error occurred while processing your request:\n%(error)s")
                 self.log.error(str(err))
                 self.report_error(jid, msg, {'error': str(err)})
@@ -121,7 +121,7 @@ class XMLRPCClient(Thread):
         self.stopping = True
 
     def create_connection(self):
-        return xmlrpc.client.ServerProxy(self.url, allow_none=True, verbose=self.config.verbose)
+        return xmlrpclib.ServerProxy(self.url, allow_none=True, verbose=self.config.verbose)
 
     def execute_command(self, command):
         """Execute commands coming from the XMPP component"""
@@ -279,14 +279,14 @@ class XMLRPCClient(Thread):
     def get_language_by_jid(self, command):
         """Returns language of the a user identified by the given JID"""
 
-        server = xmlrpc.client.ServerProxy(self.config.wiki_url + "?action=xmlrpc2")
+        server = xmlrpclib.ServerProxy(self.config.wiki_url + "?action=xmlrpc2")
         language = "en"
 
         try:
             language = server.getUserLanguageByJID(command.jid)
-        except xmlrpc.client.Fault as fault:
+        except xmlrpclib.Fault as fault:
             self.log.error(str(fault))
-        except xmlrpc.client.Error as err:
+        except xmlrpclib.Error as err:
             self.log.error(str(err))
         except Exception as exc:
             self.log.critical(str(exc))
@@ -345,7 +345,7 @@ class XMLRPCServer(Thread):
         """
         def protected_func(secret, *args):
             if secret != self.secret:
-                raise xmlrpc.client.Fault(1, "You are not allowed to use this bot!")
+                raise xmlrpclib.Fault(1, "You are not allowed to use this bot!")
             else:
                 return function(self, *args)
 

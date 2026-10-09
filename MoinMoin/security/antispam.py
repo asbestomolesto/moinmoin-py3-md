@@ -66,7 +66,7 @@ def getblacklist(request, pagename, do_update):
         fail_time = failure.mtime() # only update if no failure in last hour
         if (mymtime < tooold) and (fail_time < tooold):
             logging.info("%d *BadContent too old, have to check for an update..." % tooold)
-            import xmlrpc.client
+            import xmlrpc.client as xmlrpclib
             import socket
 
             timeout = 15 # time out for reaching the master server via xmlrpc
@@ -74,7 +74,7 @@ def getblacklist(request, pagename, do_update):
             socket.setdefaulttimeout(timeout)
 
             master_url = request.cfg.antispam_master_url
-            master = xmlrpc.client.ServerProxy(master_url)
+            master = xmlrpclib.ServerProxy(master_url)
             try:
                 # Get BadContent info
                 master.putClientInfo('ANTISPAM-CHECK', request.url)
@@ -93,7 +93,7 @@ def getblacklist(request, pagename, do_update):
                     mydate = datetime.datetime(*tuple(time.gmtime(mymtime))[0:6])
                 else:
                     # for python <= 2.4.x
-                    mydate = xmlrpc.client.DateTime(tuple(time.gmtime(mymtime)))
+                    mydate = xmlrpclib.DateTime(tuple(time.gmtime(mymtime)))
 
                 logging.debug("master: %s mine: %s" % (masterdate, mydate))
                 if mydate < masterdate:
@@ -110,12 +110,12 @@ def getblacklist(request, pagename, do_update):
                                        # permanent polling for every save when there
                                        # is no updated master page
 
-            except (socket.error, xmlrpc.client.ProtocolError) as err:
+            except (socket.error, xmlrpclib.ProtocolError) as err:
                 logging.error('Timeout / socket / protocol error when accessing %s: %s' % (master_url, str(err)))
                 # update cache to wait before the next try
                 failure.update("")
 
-            except (xmlrpc.client.Fault, ) as err:
+            except (xmlrpclib.Fault, ) as err:
                 logging.error('Fault on %s: %s' % (master_url, str(err)))
                 # update cache to wait before the next try
                 failure.update("")

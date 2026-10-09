@@ -14,7 +14,7 @@
 import sys
 sys.path.insert(0, '../../../..')
 
-import xmlrpc.client
+import xmlrpc.client as xmlrpclib
 
 
 def updateGroup(server_url, username, password, groupname, groupdesc, groupmembers, acl=''):
@@ -31,7 +31,7 @@ def updateGroup(server_url, username, password, groupname, groupdesc, groupmembe
     @param groupmembers: group member names (list of unicode)
     @param acl: Access Control List value (optional, unicode)
     """
-    wiki = xmlrpc.client.ServerProxy(server_url)
+    wiki = xmlrpclib.ServerProxy(server_url)
     auth_token = wiki.getAuthToken(username, password)
     assert auth_token, 'Invalid username/password'
 
@@ -42,7 +42,7 @@ def updateGroup(server_url, username, password, groupname, groupdesc, groupmembe
 
     try:
         # build a multicall object that
-        mcall = xmlrpc.client.MultiCall(wiki)
+        mcall = xmlrpclib.MultiCall(wiki)
         # first applies the token and
         mcall.applyAuthToken(auth_token)
         # then creates/updates the group page

@@ -5,7 +5,7 @@
     @copyright: 2007 by Karol Nowak <grywacz@gmail.com>
     @license: GNU GPL, see COPYING for details.
 """
-import logging, xmlrpc.client
+import logging, xmlrpc.client as xmlrpclib
 from jabberbot.config import BotConfig
 
 TRANSLATIONS = None
@@ -46,16 +46,16 @@ def request_translations(config):
 
     """
 
-    wiki = xmlrpc.client.Server(config.wiki_url + "?action=xmlrpc2")
+    wiki = xmlrpclib.Server(config.wiki_url + "?action=xmlrpc2")
     log = logging.getLogger(__name__)
     log.debug("Initialising i18n...")
 
     try:
         translations =  wiki.getBotTranslations()
         return translations
-    except xmlrpc.client.Fault as fault:
+    except xmlrpclib.Fault as fault:
         log.error("XML RPC fault occurred while getting translations: %s" % (str(fault), ))
-    except xmlrpc.client.Error as error:
+    except xmlrpclib.Error as error:
         log.error("XML RPC error occurred while getting translations: %s" % (str(error), ))
     except Exception as exc:
         log.error("Unexpected exception occurred while getting translations: %s" % (str(exc), ))

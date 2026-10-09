@@ -8,7 +8,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
-import xmlrpc.client
+import xmlrpc.client as xmlrpclib
 
 from MoinMoin import log
 logging = log.getLogger(__name__)
@@ -58,7 +58,7 @@ def handle_jid_changed(event):
             server.addJIDToRoster(secret, event.jid)
         else:
             server.removeJIDFromRoster(secret, event.jid)
-    except xmlrpc.client.Error as err:
+    except xmlrpclib.Error as err:
         logging.error("XML RPC error: %s" % str(err))
     except Exception as err:
         logging.error("Low-level communication error: %s" % str(err))
@@ -201,7 +201,7 @@ def send_notification(request, jids, notification):
     try:
         server.send_notification(request.cfg.secrets['jabberbot'], jids, notification)
         return True
-    except xmlrpc.client.Error as err:
+    except xmlrpclib.Error as err:
         logging.error("XML RPC error: %s" % str(err))
     except Exception as err:
         logging.error("Low-level communication error: %s" % str(err))
