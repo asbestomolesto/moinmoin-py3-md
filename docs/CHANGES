@@ -26,6 +26,11 @@ Version 1.11.0+md1 (2026-10-09)
     the top of the page force the markup. Existing pages are not changed.
   * "#format moin" is a new name for the MoinMoin wiki markup, the same as
     "#format wiki" (that still works); also {{{#!moin ...}}} blocks.
+  * The English and Italian help pages (language packs in LanguageSetup:
+    FrontPage, HelpContents, HelpOnEditing, HelpOnFormatting,
+    HelpOnMoinWikiSyntax, HelpOnParsers, HelpOnProcessingInstructions, ...
+    and their Italian translations) mention Markdown and link to
+    HelpOnMarkdown / AiutoSuMarkdown.
     Markdown pages support:
     - wiki links [[PageName]], [[PageName|text]], [text](PageName),
       relative page names, anchors, interwiki links;
