@@ -1,3 +1,15 @@
+moin-markdown (1.11.0+md2-1) unstable; urgency=medium
+
+  * New upstream version 1.11.0+md2:
+    - the markup of pages without a #format line (Markdown or MoinMoin
+      wiki markup) is recognized from their text; new option
+      markup_autodetect;
+    - "#format moin" is the same as "#format wiki";
+    - the help pages of all the language packs mention Markdown and link
+      to HelpOnMarkdown / AiutoSuMarkdown.
+
+ -- Gabriele 'asbesto' Zaverio <asbesto@freaknet.org>  Fri, 09 Oct 2026 20:00:00 +0200
+
 moin-markdown (1.11.0+md1-1) unstable; urgency=medium
 
   * New project, based on moin 1.10.0-1 (MoinMoin 1.9.11 ported to

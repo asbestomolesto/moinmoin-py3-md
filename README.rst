@@ -3,12 +3,12 @@ MoinMoin
 
 MoinMoin is a wiki engine - a software you can use to run your own wiki site.
 
-This is MoinMoin 1.11.0+md1: MoinMoin 1.10.0 with support for pages written
+This is MoinMoin 1.11.0+md2: MoinMoin 1.10.0 with support for pages written
 in Markdown. MoinMoin 1.10.0 is MoinMoin 1.9.11 ported to Python 3 by Gabriele
 'asbesto' Zaverio, with the assistance of Claude (Anthropic AI). The files
 written or modified by Claude are marked with a comment at their top.
 
-MoinMoin is written in Python (Python 2.7 is required).
+MoinMoin is written in Python (Python 3.9 or newer is required).
 
 Documentation
 =============

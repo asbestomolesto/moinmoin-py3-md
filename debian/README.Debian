@@ -1,7 +1,7 @@
-MoinMoin 1.11.0+md1 (Python 3, Markdown) - notes for Debian, Devuan and derivatives
+MoinMoin 1.11.0+md2 (Python 3, Markdown) - notes for Debian, Devuan and derivatives
 ====================================================================================
 
-This package contains MoinMoin 1.11.0+md1: MoinMoin 1.10.0 (MoinMoin 1.9.11
+This package contains MoinMoin 1.11.0+md2: MoinMoin 1.10.0 (MoinMoin 1.9.11
 ported to Python 3) with support for pages written in Markdown, next to
 the pages in MoinMoin wiki syntax. It does not
 need systemd: on Devuan the wikis run with sysvinit/OpenRC (init script

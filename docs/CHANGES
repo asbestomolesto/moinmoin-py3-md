@@ -10,6 +10,32 @@ trying to make a "perfect release" (as that release might NEVER get released),
 but to make progress and don't delay releases too much.
 
 
+Version 1.11.0+md2 (2026-10-09)
+
+  New features:
+  * Automatic recognition of the page markup: a page without a #format line
+    is recognized as Markdown or as MoinMoin wiki markup from its text
+    (wikiutil.detect_markup; new option markup_autodetect, default True).
+    When the text is not clearly one of them (e.g. plain text) default_markup
+    is used. A #format line always wins. Existing pages are not changed: the
+    recognition was checked on all the system and help pages, none is taken
+    for Markdown.
+  * "#format moin" is a new name for the MoinMoin wiki markup, the same as
+    "#format wiki" (that still works); also {{{#!moin ...}}} blocks.
+  * The help pages mention Markdown and link to HelpOnMarkdown /
+    AiutoSuMarkdown: in English and Italian FrontPage, HelpContents,
+    HelpOnEditing, HelpOnFormatting, HelpOnMoinWikiSyntax,
+    HelpOnPageCreation, HelpOnParsers, HelpOnProcessingInstructions,
+    HelpForBeginners, HelpOnTemplates (and their Italian translations);
+    the translations of these pages in the other 30 language packs got a
+    short note in their language.
+  * Packages: .deb (Debian, Devuan, Ubuntu and derivatives), .rpm and
+    Python wheel / source archive.
+
+  Credits:
+  * Gabriele 'asbesto' Zaverio, with the assistance of Claude (Anthropic AI).
+
+
 Version 1.11.0+md1 (2026-10-09)
 
   This is MoinMoin 1.10.0 (MoinMoin 1.9.11 ported to Python 3) with support
@@ -18,21 +44,10 @@ Version 1.11.0+md1 (2026-10-09)
   HINT: the URL prefix of the static files changed to /moin_static1110.
 
   New features:
-  * Pages can be written in Markdown. Markdown and wiki syntax pages can be
-    used side by side in the same wiki. A page without a #format line is
-    recognized as Markdown or wiki markup from its text (new option
-    markup_autodetect, default True; when the text is not clearly one of
-    them, default_markup is used). "#format markdown" / "#format moin" at
-    the top of the page force the markup. Existing pages are not changed.
-  * "#format moin" is a new name for the MoinMoin wiki markup, the same as
-    "#format wiki" (that still works); also {{{#!moin ...}}} blocks.
-  * The English and Italian help pages (language packs in LanguageSetup:
-    FrontPage, HelpContents, HelpOnEditing, HelpOnFormatting,
-    HelpOnMoinWikiSyntax, HelpOnParsers, HelpOnProcessingInstructions, ...
-    and their Italian translations) mention Markdown and link to
-    HelpOnMarkdown / AiutoSuMarkdown. The translations of these pages in the
-    other language packs (30 more languages) got a short note in their
-    language with a link to HelpOnMarkdown.
+  * Pages can be written in Markdown ("#format markdown" at the top of the
+    page, or default_markup = 'markdown' for all pages without a #format
+    line). Markdown and wiki syntax pages can be used side by side in the
+    same wiki.
     Markdown pages support:
     - wiki links [[PageName]], [[PageName|text]], [text](PageName),
       relative page names, anchors, interwiki links;
