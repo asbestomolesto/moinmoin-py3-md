@@ -60,7 +60,7 @@ def py2_dict_order(keys):
             minused = (2 if used > 50000 else 4) * used
             newsize = 8
             while newsize <= minused:
-                newsize <<= 1
+                newsize = newsize << 1
             old = table
             table = [None] * newsize
             for e in old:

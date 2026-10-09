@@ -1,1 +1,0 @@
-MoinMoin/support/flup: flup 1.0.3, cgitb (removed in Python 3.13) replaced by server/_cgitb.py

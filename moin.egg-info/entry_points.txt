@@ -1,2 +1,0 @@
-[console_scripts]
-moin = MoinMoin.script.moin:run
