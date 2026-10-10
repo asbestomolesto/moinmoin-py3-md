@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
-# as part of MoinMoin 1.11.0+md1 (Markdown support).
+# as part of MoinMoin 1.11.0+md1 (Markdown support), tests of hostile pages
+# and form limits added for 1.11.0+md3.
 """
     MoinMoin - MoinMoin.parser.text_markdown Tests
 
@@ -326,6 +327,102 @@ class TestFormatMoin(object):
         formatter.startContent('')
         output = request.redirectedOutput(parser.format, formatter)
         assert '<strong>bold</strong>' in output
+
+
+class TestHostilePages(ParserTestCase):
+    """ pages made to crash the parser or to keep it busy (MoinMoin 1.11.0+md3) """
+
+    def timed(self, body, limit=5.0):
+        import time
+        t = time.time()
+        result = self.parse(body)
+        assert time.time() - t < limit, 'too slow'
+        return result
+
+    def test_forged_placeholders(self):
+        # these characters are used internally for the parts rendered later
+        result = self.parse('a 0 b 999 c  ')
+        assert 'a �0� b' in result
+        assert '' not in result and '' not in result
+
+    def test_unclosed_brackets(self):
+        result = self.timed('[' * 20000 + ' [x](FrontPage) ' + '(' * 20000)
+        assert result.count('[') >= 20000 and result.count('(') >= 20000
+        assert re.search(r'<a href="[^"]*/FrontPage">x</a>', result)
+        assert '' not in result and '' not in result
+
+    def test_unclosed_wikilinks(self):
+        self.timed('[[' * 20000)
+
+    def test_many_code_spans(self):
+        few = self.parse('text `<b>x</b>` and ``a`b``')
+        many = self.timed('text `<b>x</b>` and ``a`b`` ' + '`c` ' * 20000)
+        for result in (few, many):
+            assert '<code>&lt;b&gt;x&lt;/b&gt;</code>' in result
+            assert '<code>a`b</code>' in result
+        assert many.count('<code>c</code>') == 20000
+
+    def test_many_links(self):
+        body = ('[ext](https://example.org "t") ![e](https://example.org/x.png) '
+                '[js](javascript:alert(1)) [p](HelpContents) [[FrontPage|w]] ')
+        for result in (self.parse(body), self.timed(body + '[f](FrontPage) [[FrontPage]] ' * 5000)):
+            assert '<a href="https://example.org" title="t">ext</a>' in result
+            assert '<img alt="e" src="https://example.org/x.png">' in result
+            assert 'href="javascript' not in result
+            assert re.search(r'<a href="[^"]*/HelpContents">p</a>', result)
+            assert re.search(r'<a href="[^"]*/FrontPage">w</a>', result)
+
+    def test_many_headings(self):
+        result = self.timed('# Title\n' * 10000)
+        assert result.count('</h1>') == 10000
+
+
+class TestDetectMarkupSpeed(object):
+    """ the recognition of the markup reads every page that is shown: no
+        text can make it slow (MoinMoin 1.11.0+md3)
+    """
+    def test_hostile_texts(self):
+        import time
+        for text in ('--(' * 100000, '{{{\n' * 100000, '{{{' * 100000, '```\nx\n' * 50000,
+                     ",,a" * 100000, "''a" * 100000, '**a' * 100000, '[a](' * 50000,
+                     '~-' * 100000, '|' + '---|' * 50000, 'Lorem ipsum. ' * 400000):
+            t = time.time()
+            wikiutil.detect_markup(text)
+            assert time.time() - t < 1.0, text[:10]
+
+
+class TestFormLimits(object):
+    """ form data limits: number of multipart parts (CVE-2023-25577) and memory
+        (MoinMoin 1.11.0+md3)
+    """
+    def parse(self, body, **limits):
+        from io import BytesIO
+        from MoinMoin.support.werkzeug.formparser import FormDataParser
+        parser = FormDataParser(silent=False, **limits)
+        return parser.parse(BytesIO(body), 'multipart/form-data', len(body), {'boundary': 'XX'})
+
+    def body(self, parts, size=1):
+        data = b''.join(b'--XX\r\nContent-Disposition: form-data; name="f%d"\r\n\r\n%s\r\n' % (i, b'x' * size)
+                        for i in range(parts))
+        return data + b'--XX--\r\n'
+
+    def test_parts_limit(self):
+        from MoinMoin.support.werkzeug.exceptions import RequestEntityTooLarge
+        stream, form, files = self.parse(self.body(10), max_form_parts=10)
+        assert len(form) == 10
+        pytest.raises(RequestEntityTooLarge, self.parse, self.body(11), max_form_parts=10)
+
+    def test_memory_limit(self):
+        from MoinMoin.support.werkzeug.exceptions import RequestEntityTooLarge
+        pytest.raises(RequestEntityTooLarge, self.parse, self.body(2, 1000), max_form_memory_size=1500)
+
+    def test_moin_request_defaults(self):
+        from MoinMoin.web.request import Request
+        assert Request.max_form_parts == 1000
+        assert Request.max_form_memory_size == 16 * 1024 * 1024
+        from MoinMoin.config import multiconfig
+        assert multiconfig.DefaultConfig.max_form_parts == 1000
+        assert multiconfig.DefaultConfig.cookie_httponly is True
 
 
 coverage_modules = ['MoinMoin.parser.text_markdown']

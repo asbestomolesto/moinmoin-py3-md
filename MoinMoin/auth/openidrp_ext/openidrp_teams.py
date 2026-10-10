@@ -1,6 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 # MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
 # Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
+# MoinMoin 1.11.0+md3: user names escaped in regular expressions, by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin - Launchpad Teams Extension for OpenID authorization
 
@@ -94,7 +95,7 @@ def _add_user_to_team(u, team, cfg):
     if not acl_text or acl_text == "" or acl_text[0] != "#":
         acl_text = "#acl Known:read All:\n" + acl_text
     # does ACL want uid, name, username, auth_username?
-    p = re.compile(r"^ \* %s" % u.name, re.MULTILINE)
+    p = re.compile(r"^ \* %s" % re.escape(u.name), re.MULTILINE)
     if not p.search(acl_text):
         logging.log(logging.INFO, "did not find user %s in acl, adding..." % u.name)
         acl_text += " * %s\n" % u.name
@@ -107,7 +108,7 @@ def _remove_user_from_team(u, team, cfg):
     acl_text = pe.get_raw_body()
     logging.log(logging.INFO, "ACL Page content: " + acl_text)
     # does ACL want uid, name, username, auth_username?
-    p = re.compile(r"^ \* %s" % u.name, re.MULTILINE)
+    p = re.compile(r"^ \* %s" % re.escape(u.name), re.MULTILINE)
     if p.search(acl_text):
         logging.log(logging.INFO, "found user %s in acl, removing..." % u.name)
         acl_text = acl_text.replace(" * %s\n" % u.name, "")

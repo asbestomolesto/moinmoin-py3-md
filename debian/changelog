@@ -1,3 +1,18 @@
+moin-markdown (1.11.0+md3-1) unstable; urgency=high
+
+  * New upstream version 1.11.0+md3, security fixes:
+    - limits for the form data (memory, number of multipart parts, size):
+      denial of service without login (CVE-2023-25577 of the bundled
+      Werkzeug); new options max_form_memory_size, max_form_parts,
+      max_content_length;
+    - Markdown pages and the recognition of the page markup cannot keep
+      the server busy any more (quadratic time cases);
+    - Markdown pages with U+E000/U+E001 characters can be shown;
+    - httponly session cookie by default.
+  * README.Debian: security notes.
+
+ -- Gabriele 'asbesto' Zaverio <asbesto@freaknet.org>  Sat, 10 Oct 2026 12:00:00 +0200
+
 moin-markdown (1.11.0+md2-1) unstable; urgency=medium
 
   * New upstream version 1.11.0+md2:

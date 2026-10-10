@@ -33,7 +33,7 @@ Description: wiki with MoinMoin syntax and Markdown pages (Python 3)
  diffs, attachments, access control lists, user accounts, search,
  themes and plugins (actions, macros, parsers, formatters).
  .
- This is MoinMoin 1.11.0+md2: MoinMoin 1.10.0 (MoinMoin 1.9.11 ported to
+ This is MoinMoin 1.11.0+md3: MoinMoin 1.10.0 (MoinMoin 1.9.11 ported to
  Python 3) with pages written in Markdown, next to the pages in MoinMoin
  wiki syntax ("#format markdown"). Markdown pages support wiki links,
  attachments, macros, syntax highlighting and blocks in wiki syntax.

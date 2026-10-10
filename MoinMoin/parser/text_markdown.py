@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
 # as part of MoinMoin 1.11.0+md1 (Markdown support).
+# MoinMoin 1.11.0+md3: protection against pages made to crash the parser or
+# keep it busy (forged placeholders, unclosed brackets), by Claude.
 """
     MoinMoin - Markdown parser
 
@@ -31,6 +33,7 @@
     @license: GNU GPL, see COPYING for details.
 """
 
+import bisect
 import copy
 import re
 import xml.etree.ElementTree as etree
@@ -56,6 +59,18 @@ PH_START, PH_END = '', ''
 PH_RE = re.compile(PH_START + r'(\d+)' + PH_END)
 BLOCK_PH_RE = re.compile(r'<p>\s*(' + PH_START + r'\d+' + PH_END + r')\s*</p>')
 PH_TAG = 'moinph'
+# stand-ins for unclosed "[" and "(" (see UnclosedBracketsPreprocessor)
+OPEN_BRACKET, OPEN_PAREN = '\ue002', '\ue003'
+RESTORE_BRACKETS = {ord(OPEN_BRACKET): '[', ord(OPEN_PAREN): '('}
+# characters of the page text that would be taken for placeholders or
+# stand-ins
+FORGED_PH = {ord(PH_START): '\ufffd', ord(PH_END): '\ufffd',
+             ord(OPEN_BRACKET): '\ufffd', ord(OPEN_PAREN): '\ufffd'}
+
+# more unclosed "[" or "(" than this: they are escaped, because
+# Python-Markdown needs a time that grows with the square of their number
+# to find out that they do not start a link
+UNCLOSED_MAX = 100
 
 # URL schemes allowed in links and images (javascript:, data:, vbscript:, ...
 # are not)
@@ -113,6 +128,150 @@ class FencedCodePreprocessor(Preprocessor):
             out.extend(['', ph, ''])
             i = j + 1
         return out
+
+
+class UnclosedBracketsPreprocessor(Preprocessor):
+    """ the "[" and "(" that are never closed, when there are a lot of them
+        (only pages made on purpose have hundreds of them), are replaced by
+        stand-in characters that markdown does not look at, and put back
+        after the conversion: they cannot start a link anyway, and markdown
+        would need a lot of time for them (also when escaped with "\\")
+    """
+    def run(self, lines):
+        text = '\n'.join(lines)
+        escape = {}
+        for opening, closing, stand_in in (('[', ']', OPEN_BRACKET), ('(', ')', OPEN_PAREN)):
+            if text.count(opening) - text.count(closing) <= UNCLOSED_MAX and \
+               text.count(opening) <= 10 * UNCLOSED_MAX:
+                continue
+            stack = []
+            for i, c in enumerate(text):
+                if c == opening and (i == 0 or text[i - 1] != '\\'):
+                    stack.append(i)
+                elif c == closing and stack:
+                    stack.pop()
+            if len(stack) > UNCLOSED_MAX:
+                escape.update(dict.fromkeys(stack, stand_in))
+        if not escape:
+            return lines
+        chars = list(text)
+        for i, stand_in in escape.items():
+            chars[i] = stand_in
+        return ''.join(chars).split('\n')
+
+
+class ManyCodeSpansPreprocessor(Preprocessor):
+    """ `code spans`: Python-Markdown needs a time that grows with the square
+        of their number in a paragraph (10000 of them: about a minute). When
+        a page has a lot of them (only pages made on purpose), they are taken
+        out here, in linear time, and rendered by the MoinMoin formatter.
+        The other pages are not changed.
+    """
+    BACKTICKS_RE = re.compile(r'`+')
+
+    def __init__(self, md, store):
+        Preprocessor.__init__(self, md)
+        self.store = store
+
+    def run(self, lines):
+        if sum(line.count('`') for line in lines) <= 4 * UNCLOSED_MAX:
+            return lines
+        return [line if line.startswith(('    ', '\t')) else self._spans(line)
+                for line in lines]
+
+    def _spans(self, line):
+        runs = [(m.start(), m.end()) for m in self.BACKTICKS_RE.finditer(line)]
+        by_length = {}
+        for i, (start, end) in enumerate(runs):
+            by_length.setdefault(end - start, []).append(i)
+        out = []
+        pos = i = 0
+        while i < len(runs):
+            start, end = runs[i]
+            same = by_length[end - start]
+            k = bisect.bisect_right(same, i)
+            if k == len(same) or (start and line[start - 1] == '\\'):
+                i += 1
+                continue
+            j = same[k] # the closing run of backticks of the same length
+            code = line[end:runs[j][0]]
+            if code.strip():
+                code = code.strip()
+            out.append(line[pos:start])
+            out.append(self.store.add('inline_code', text=code))
+            pos = runs[j][1]
+            i = j + 1
+        out.append(line[pos:])
+        return ''.join(out)
+
+
+class ManyHeadingsPreprocessor(Preprocessor):
+    """ a blank line after each "# heading" when a page has a lot of them
+        right after each other: the tables extension of Python-Markdown looks
+        at the whole rest of the block for each of them (time growing with the
+        square of their number). The result is the same.
+    """
+    HEADING_RE = re.compile(r'^ {0,3}#{1,6}(\s|$)')
+
+    def run(self, lines):
+        if sum(1 for line in lines if line[:4].lstrip(' ')[:1] == '#') <= UNCLOSED_MAX:
+            return lines
+        out = []
+        for line in lines:
+            out.append(line)
+            if self.HEADING_RE.match(line):
+                out.append('')
+        return out
+
+
+class ManyLinksPreprocessor(Preprocessor):
+    """ [text](url) links and ![alt](src) images: like for the code spans,
+        Python-Markdown needs a time that grows with the square of their number
+        in a paragraph. When a page has a lot of them (only pages made on
+        purpose), the simple ones are taken out here, in linear time (their
+        text is shown as it is, without markup). The other pages are not
+        changed.
+    """
+    LINK_RE = re.compile(r'(!?)\[([^\[\]\n]{0,500})\]\(([^()\s]{0,1000})(?:[ \t]+"([^"\n]{0,500})")?\)')
+    WIKILINK_RE = re.compile(r'\[\[([^\[\]|\n]{1,500}?)(?:\|([^\]\n]{0,500}))?\]\]')
+
+    def __init__(self, md, parser):
+        Preprocessor.__init__(self, md)
+        self.parser = parser
+
+    def run(self, lines):
+        many_links = sum(line.count('](') for line in lines) > 4 * UNCLOSED_MAX
+        many_wikilinks = sum(line.count('[[') for line in lines) > 4 * UNCLOSED_MAX
+        if not (many_links or many_wikilinks):
+            return lines
+        out = []
+        for line in lines:
+            if not line.startswith(('    ', '\t')):
+                if many_wikilinks and '[[' in line:
+                    line = self.WIKILINK_RE.sub(self._wikilink, line)
+                if many_links and '](' in line:
+                    line = self.LINK_RE.sub(self._link, line)
+            out.append(line)
+        return out
+
+    def _wikilink(self, m):
+        label = m.group(2)
+        return self.parser.link_placeholder(m.group(1).strip(),
+                                            wikiutil.escape(label.strip()) if label is not None else None) or m.group(0)
+
+    def _link(self, m):
+        image, text, url, title = m.group(1), m.group(2), m.group(3), m.group(4)
+        store = self.parser.store
+        if image:
+            ph = self.parser.image_placeholder(url, text, title)
+            if ph is None: # external image
+                ph = store.add('ext_image', src=url, alt=text, title=title)
+            return ph
+        label = wikiutil.escape(text) if text else None
+        ph = self.parser.link_placeholder(url, label)
+        if ph is None: # external link or anchor
+            ph = store.add('ext_link', url=url, label=label, title=title)
+        return ph
 
 
 class WikiLinkProcessor(InlineProcessor):
@@ -194,11 +353,17 @@ class MoinExtension(Extension):
         md.preprocessors.deregister('html_block')
         md.inlinePatterns.deregister('html')
         md.preprocessors.register(FencedCodePreprocessor(md, store), 'moin_fenced_code', 28)
+        md.preprocessors.register(UnclosedBracketsPreprocessor(md), 'moin_unclosed', 27)
+        md.preprocessors.register(ManyCodeSpansPreprocessor(md, store), 'moin_code_spans', 26)
+        md.preprocessors.register(ManyLinksPreprocessor(md, self.parser), 'moin_links', 25)
+        md.preprocessors.register(ManyHeadingsPreprocessor(md), 'moin_headings', 24)
         # higher priority than links, lower than `code spans` (190)
         md.inlinePatterns.register(
-            WikiLinkProcessor(r'\[\[([^\]|]+?)(?:\|([^\]]*))?\]\]', md, self.parser), 'moin_wikilink', 175)
+            WikiLinkProcessor(r'\[\[([^\[\]|\n]{1,500}?)(?:\|([^\]\n]{0,500}))?\]\]', md, self.parser),
+            'moin_wikilink', 175)
         md.inlinePatterns.register(
-            MacroProcessor(r'<<([A-Za-z_][A-Za-z0-9_]*)(?:\((.*?)\))?>>', md, store), 'moin_macro', 174)
+            MacroProcessor(r'<<([A-Za-z_][A-Za-z0-9_]{0,100})(?:\(([^\n]{0,1000}?)\))?>>', md, store),
+            'moin_macro', 174)
         # runs after all markdown tree processors (also after "unescape")
         md.treeprocessors.register(MoinTreeprocessor(md, self.parser), 'moin_tree', -10)
 
@@ -278,22 +443,28 @@ class Parser:
         self.formatter = formatter
         self.pagename = formatter.page.page_name
         md = self._markdown()
-        html = md.convert(self.raw)
+        # the page text cannot contain our placeholder characters
+        html = md.convert(self.raw.translate(FORGED_PH))
         html = html.replace('<%s>' % PH_TAG, '').replace('</%s>' % PH_TAG, '')
+        html = html.translate(RESTORE_BRACKETS)
         html = BLOCK_PH_RE.sub(r'\1', html)
 
         def postprocess(s):
             # labels were serialized before the markdown postprocessors ran
             for pp in md.postprocessors:
                 s = pp.run(s)
-            return s
+            return s.translate(RESTORE_BRACKETS)
 
         write = self.request.write
         pos = 0
         write(formatter.div(1, css_class='markdown'))
         for m in PH_RE.finditer(html):
             write(formatter.rawHTML(html[pos:m.start()]))
-            write(self._render(self.store.items[int(m.group(1))], postprocess))
+            index = int(m.group(1))
+            if index < len(self.store.items):
+                write(self._render(self.store.items[index], postprocess))
+            else: # cannot happen: the page text has no placeholder characters
+                write(formatter.text(m.group(0)))
             pos = m.end()
         write(formatter.rawHTML(html[pos:]))
         write(formatter.div(0))
@@ -345,6 +516,18 @@ class Parser:
             return self._code(item['lang'], item['lines'])
         elif kind == 'text':
             return self._label(item, item['text'], postprocess)
+        elif kind == 'ext_link': # safe scheme (see link_placeholder) or #anchor
+            attrs = ' title="%s"' % wikiutil.escape(item['title'], 1) if item.get('title') else ''
+            return (f.rawHTML('<a href="%s"%s>' % (wikiutil.escape(item['url'], 1), attrs)) +
+                    self._label(item, item['url'], postprocess) + f.rawHTML('</a>'))
+        elif kind == 'ext_image': # http, https, ftp (see image_placeholder)
+            attrs = ' title="%s"' % wikiutil.escape(item['title'], 1) if item.get('title') else ''
+            # like the images of Python-Markdown: alt, src, title
+            return f.rawHTML('<img alt="%s" src="%s"%s>' % (wikiutil.escape(item['alt'] or '', 1),
+                                                            wikiutil.escape(item['src'], 1), attrs))
+        elif kind == 'inline_code':
+            # like the code spans of Python-Markdown: <code>, escaped text
+            return f.rawHTML('<code>%s</code>' % wikiutil.escape(item['text'].translate(RESTORE_BRACKETS)))
         return ''
 
     def _code(self, lang, lines):

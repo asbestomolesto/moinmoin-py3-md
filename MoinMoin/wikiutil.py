@@ -2,6 +2,7 @@
 # MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
 # for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 # MoinMoin 1.11.0+md1 (Markdown support): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
+# MoinMoin 1.11.0+md3 (security fixes): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin - Wiki Utility Functions
 
@@ -2642,9 +2643,13 @@ def get_processing_instructions(body, default_format=None):
 # has constructs that the other one does not have (or writes differently).
 # (MoinMoin 1.11.0+md1: Markdown support, written by Claude (Anthropic AI)
 # for Gabriele 'asbesto' Zaverio)
+# MoinMoin 1.11.0+md3: all the patterns run in linear time (bounded
+# repetitions, no nested lazy matches), and only the start of a page is read,
+# so that a page made on purpose cannot keep the server busy.
 _pi_verbs = ('acl', 'pragma', 'language', 'redirect', 'refresh',
              'deprecated', 'openiduser', )
-_markup_code_blocks_re = re.compile(r'^(```|~~~).*?^\1[ \t]*$|\{\{\{.*?\}\}\}', re.M | re.S)
+_markup_detect_max = 64 * 1024 # characters of the page that are looked at
+_markup_inline_code_re = re.compile(r"\{\{\{[^\n]{0,200}?\}\}\}")
 _markdown_code_re = re.compile(r'^(```|~~~)', re.M)
 _wiki_code_re = re.compile(r'\{\{\{')
 _markdown_signs = [
@@ -2653,10 +2658,10 @@ _markdown_signs = [
                                                                 # usually a sentence)
     (3, re.compile(r'^[^\s=|#].*\n=+[ \t]*$', re.M)),           # setext heading
     (2, re.compile(r'^[^\s=|#-].*\n-{3,}[ \t]*$', re.M)),       # setext heading (or text + ----)
-    (3, re.compile(r'!?\[[^\[\]]{1,200}\]\([^()\s]+(?:\s+"[^"\n]*")?\)')), # [text](url)
-    (3, re.compile(r'^ {0,3}\[[^\]\n]+\]:[ \t]+\S', re.M)),     # [ref]: url
+    (3, re.compile(r'!?\[[^\[\]]{1,200}\]\([^()\s]{1,500}(?:\s+"[^"\n]{0,200}")?\)')), # [text](url)
+    (3, re.compile(r'^ {0,3}\[[^\]\n]{1,200}\]:[ \t]+\S', re.M)), # [ref]: url
     (3, re.compile(r'^\|?[ \t]*:?-{3,}:?[ \t]*(\|[ \t]*:?-{3,}:?[ \t]*)+\|?[ \t]*$', re.M)), # table
-    (2, re.compile(r'\*\*[^*\s][^*\n]*\*\*')),                  # **bold**
+    (2, re.compile(r'\*\*[^*\s][^*\n]{0,200}\*\*')),            # **bold**
     (2, re.compile(r'^[-*+][ \t]+\S', re.M)),                   # list at column 0
     (2, re.compile(r'^\d+\.[ \t]+\S', re.M)),                   # numbered list at column 0
     (2, re.compile(r'^>[ \t]?\S', re.M)),                       # > quote
@@ -2664,13 +2669,41 @@ _markdown_signs = [
 _wiki_signs = [
     (3, re.compile(r'^[ \t]*(=+)[ \t].*[ \t]\1[ \t]*$', re.M)), # = heading =
     (3, re.compile(r'^[ \t]*\|\|', re.M)),                      # || table ||
-    (3, re.compile(r'\{\{[^{}\n]+\}\}')),                       # {{embedded}}
-    (2, re.compile(r"''[^'\n]+''")),                            # ''italic'', '''bold'''
+    (3, re.compile(r'\{\{[^{}\n]{1,500}\}\}')),                 # {{embedded}}
+    (2, re.compile(r"''[^'\n]{1,200}''")),                      # ''italic'', '''bold'''
     (1, re.compile(r'^[ \t]+(\*|\d+\.|[aAiI]\.)[ \t]+\S', re.M)), # indented list (also Markdown)
     (2, re.compile(r'^[ \t]+\S[^\n]*::[ \t]', re.M)),           # term:: definition
-    (2, re.compile(r",,[^,\n]+,,|\^[^^\n ]+\^|--\([^\n]*?\)--|~-[^\n]*?-~|~\+[^\n]*?\+~")),
+    (2, re.compile(r",,[^,\n]{1,200},,|\^[^^\n ]{1,200}\^|--\([^\n]{0,200}?\)--|"
+                   r"~-[^\n]{0,200}?-~|~\+[^\n]{0,200}?\+~")),
 ]
 _markup_sign_max = 4 # count each construct at most this many times
+
+
+def _strip_code_blocks(text):
+    """ text without the code blocks (``` / ~~~ fenced blocks, {{{ }}}
+        blocks and inline {{{code}}}), in linear time
+    """
+    out = []
+    fence = None # ``` or ~~~ of the open Markdown block
+    in_wiki = False # inside a {{{ }}} block
+    for line in text.split('\n'):
+        if fence:
+            if line.startswith(fence):
+                fence = None
+            continue
+        if in_wiki:
+            if '}}}' in line:
+                in_wiki = False
+            continue
+        if line.startswith(('```', '~~~')):
+            fence = line[:3]
+            continue
+        line = _markup_inline_code_re.sub('', line)
+        if '{{{' in line:
+            in_wiki = True
+            line = line[:line.index('{{{')]
+        out.append(line)
+    return '\n'.join(out)
 
 
 def _markup_score(signs, text):
@@ -2705,8 +2738,8 @@ def detect_markup(body):
         if not (line.startswith('##') or verb in _pi_verbs):
             break # e.g. a "# Title" Markdown heading
         lines.pop(0)
-    text = '\n'.join(lines)
-    plain = _markup_code_blocks_re.sub('', text) # no markup inside code
+    text = '\n'.join(lines)[:_markup_detect_max]
+    plain = _strip_code_blocks(text) # no markup inside code
 
     markdown = _markup_score(_markdown_signs, plain)
     markdown += 3 * min(len(_markdown_code_re.findall(text)) // 2, _markup_sign_max)

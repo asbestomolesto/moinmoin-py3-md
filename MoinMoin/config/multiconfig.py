@@ -2,6 +2,7 @@
 # MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
 # for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 # MoinMoin 1.11.0+md1 (Markdown support): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
+# MoinMoin 1.11.0+md3 (security fixes): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin - Multiple configuration handler and Configuration defaults class
 
@@ -780,8 +781,8 @@ options_no_group_name = {
      'The variable part of the session cookie name. (None = determine from URL, siteidmagic = use siteid, any other string = use that)'),
     ('cookie_secure', None,
      'Use secure cookie. (None = auto-enable secure cookie for https, True = ever use secure cookie, False = never use secure cookie).'),
-    ('cookie_httponly', False,
-     'Use a httponly cookie that can only be used by the server, not by clientside scripts.'),
+    ('cookie_httponly', True,
+     'Use a httponly cookie that can only be used by the server, not by clientside scripts (default True since MoinMoin 1.11.0+md3: the session cookie cannot be stolen by a script).'),
     ('cookie_domain', None,
      'Domain used in the session cookie. (None = do not specify domain).'),
     ('cookie_path', None,
@@ -1151,6 +1152,12 @@ options_no_group_name = {
     # some dangerous mimetypes (we don't use "content-disposition: inline" for them when a user
     # downloads such attachments, because the browser might execute e.g. Javascript contained
     # in the HTML and steal your moin session cookie or do other nasty stuff)
+    ('max_form_memory_size', 16 * 1024 * 1024,
+     'Maximum size in bytes of the form fields (not the uploaded files) kept in memory for a request; bigger requests are refused (HTTP 413). MoinMoin 1.11.0+md3.'),
+    ('max_form_parts', 1000,
+     'Maximum number of parts of a multipart/form-data request (fields and files); against requests that use too much CPU and memory (CVE-2023-25577). MoinMoin 1.11.0+md3.'),
+    ('max_content_length', None,
+     'Maximum size in bytes of a request body (e.g. attachment uploads), None for no limit (a limit can also be set in the web server). MoinMoin 1.11.0+md3.'),
     ('mimetypes_xss_protect',
      [
        'text/html',

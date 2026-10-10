@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# MoinMoin 1.11.0+md3: limit on the number of multipart parts (backport of the
+# fix for CVE-2023-25577 from Werkzeug 2.2.3) added by Claude (Anthropic AI)
+# for Gabriele 'asbesto' Zaverio.
 """
     werkzeug.formparser
     ~~~~~~~~~~~~~~~~~~~
@@ -179,6 +182,7 @@ class FormDataParser(object):
         max_content_length=None,
         cls=None,
         silent=True,
+        max_form_parts=None,
     ):
         if stream_factory is None:
             stream_factory = default_stream_factory
@@ -187,6 +191,7 @@ class FormDataParser(object):
         self.errors = errors
         self.max_form_memory_size = max_form_memory_size
         self.max_content_length = max_content_length
+        self.max_form_parts = max_form_parts
         if cls is None:
             cls = MultiDict
         self.cls = cls
@@ -244,6 +249,7 @@ class FormDataParser(object):
             self.errors,
             max_form_memory_size=self.max_form_memory_size,
             cls=self.cls,
+            max_form_parts=self.max_form_parts,
         )
         boundary = options.get("boundary")
         if boundary is None:
@@ -333,10 +339,12 @@ class MultiPartParser(object):
         max_form_memory_size=None,
         cls=None,
         buffer_size=64 * 1024,
+        max_form_parts=None,
     ):
         self.charset = charset
         self.errors = errors
         self.max_form_memory_size = max_form_memory_size
+        self.max_form_parts = max_form_parts
         self.stream_factory = (
             default_stream_factory if stream_factory is None else stream_factory
         )
@@ -533,8 +541,13 @@ class MultiPartParser(object):
         ``('form', (name, val))`` parts.
         """
         in_memory = 0
+        parts = 0
 
         for ellt, ell in self.parse_lines(file, boundary, content_length):
+            if ellt in (_begin_file, _begin_form):
+                parts += 1
+                if self.max_form_parts is not None and parts > self.max_form_parts:
+                    raise exceptions.RequestEntityTooLarge()
             if ellt == _begin_file:
                 headers, name, filename = ell
                 is_file = True

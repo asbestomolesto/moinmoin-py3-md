@@ -1,6 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 # MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
 # Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
+# MoinMoin 1.11.0+md3: limits for the form data (memory, parts, size) added by
+# Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin - New slimmed down WSGI Request.
 
@@ -60,6 +62,40 @@ class Request(ResponseBase, RequestBase):
 
     # get rid of some inherited descriptors
     headers = None
+
+    # limits for the form data sent to the wiki (defaults; the wiki
+    # configuration can change them, see make_form_data_parser)
+    max_form_memory_size = 16 * 1024 * 1024 # form fields kept in memory
+    max_form_parts = 1000 # parts of a multipart/form-data request
+    max_content_length = None # whole request body (attachments), None: no limit
+
+    def make_form_data_parser(self):
+        """ the werkzeug form parser, with the limits of the wiki configuration
+            (cfg.max_form_memory_size, cfg.max_form_parts, cfg.max_content_length)
+            against requests that use too much memory or CPU (CVE-2023-25577)
+        """
+        limits = {
+            'max_form_memory_size': self.max_form_memory_size,
+            'max_form_parts': self.max_form_parts,
+            'max_content_length': self.max_content_length,
+        }
+        if self.given_config is None:
+            try:
+                from MoinMoin.config import multiconfig
+                cfg = multiconfig.getConfig(self.url)
+                for name in limits:
+                    limits[name] = getattr(cfg, name, limits[name])
+            except Exception:
+                pass # no config for this URL: the defaults
+        return self.form_data_parser_class(
+            self._get_file_stream,
+            self.charset,
+            self.encoding_errors,
+            limits['max_form_memory_size'],
+            limits['max_content_length'],
+            self.parameter_storage_class,
+            max_form_parts=limits['max_form_parts'],
+        )
 
     def __init__(self, environ, populate_request=True, shallow=False):
         ResponseBase.__init__(self)

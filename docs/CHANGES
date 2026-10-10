@@ -10,6 +10,41 @@ trying to make a "perfect release" (as that release might NEVER get released),
 but to make progress and don't delay releases too much.
 
 
+Version 1.11.0+md3 (2026-10-10)
+
+  Security fixes (found by a review of the code made with Claude):
+  * Denial of service without login: the form data of a request had no
+    limit (memory of the form fields, number of multipart parts, see
+    CVE-2023-25577 of the bundled Werkzeug 1.0.1); the forms are parsed
+    before the access rights are checked. New options max_form_memory_size
+    (default 16 MiB), max_form_parts (default 1000, backport of the
+    Werkzeug 2.2.3 fix) and max_content_length (default None); bigger
+    requests get "413 Request Entity Too Large".
+  * Denial of service by users with write access: the recognition of the
+    page markup had regular expressions with quadratic time (10000 times
+    "--(": 2 s, at every page view); now all the patterns run in linear
+    time and only the first 64 KiB of a page are looked at.
+  * Denial of service by users with write access: Markdown pages with
+    thousands of unclosed "[" or "(", of `code spans`, links, wiki links or
+    headings needed a time growing with the square of their number in
+    Python-Markdown (10 KB of "[[": 21 s, 120 KB of code spans: 9 minutes).
+    Pages with hundreds of them (only pages made on purpose) are now
+    handled in linear time; the other pages are rendered as before.
+  * Bug: a Markdown page with the characters U+E000 / U+E001 (used inside
+    the parser) could not be shown (IndexError).
+  * The session cookie is httponly by default (cookie_httponly = True).
+  * OpenID teams extension: user names are escaped in regular expressions.
+
+  Checked and found correct: no script injection in Markdown pages (41
+  hostile inputs: raw HTML, javascript:/data:/vbscript: links, attribute
+  quotes, macros, footnotes, rst raw/include, ...), the fixes for
+  CVE-2020-25074 and CVE-2020-15275 of MoinMoin 1.9.11 are in place, session
+  ids are validated.
+
+  Credits:
+  * Gabriele 'asbesto' Zaverio, with the assistance of Claude (Anthropic AI).
+
+
 Version 1.11.0+md2 (2026-10-09)
 
   New features:

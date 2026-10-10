@@ -1,14 +1,14 @@
-# RPM spec of MoinMoin 1.11.0+md2 (Fedora, RHEL/AlmaLinux/Rocky with EPEL
+# RPM spec of MoinMoin 1.11.0+md3 (Fedora, RHEL/AlmaLinux/Rocky with EPEL
 # and other distributions with the pyproject RPM macros).
 # Rewritten by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
 # for MoinMoin 1.11.0+md2; the original spec was by Florian Festi,
 # Johannes Poehlmann and Thomas Waldmann (see the changelog below).
 #
-# Build:  rpmbuild -ta moin-markdown-1.11.0+md2.tar.gz
+# Build:  rpmbuild -ta moin-markdown-1.11.0+md3.tar.gz
 #    or:  rpmbuild -ba moin.spec  (with the tarball in ~/rpmbuild/SOURCES)
 
 Name:           moin-markdown
-Version:        1.11.0+md2
+Version:        1.11.0+md3
 Release:        1%{?dist}
 Summary:        MoinMoin wiki with MoinMoin syntax and Markdown pages (Python 3)
 
@@ -35,7 +35,7 @@ MoinMoin is a wiki engine written in Python. It supports many markups
 diffs, attachments, access control lists, user accounts, search, themes
 and plugins.
 
-This is MoinMoin 1.11.0+md2: MoinMoin 1.10.0 (MoinMoin 1.9.11 ported to
+This is MoinMoin 1.11.0+md3: MoinMoin 1.10.0 (MoinMoin 1.9.11 ported to
 Python 3) with pages written in Markdown, next to the pages in MoinMoin
 wiki syntax. The markup of a page is recognized from its text, or set
 with "#format markdown" / "#format moin". Existing 1.9 wikis can be used
@@ -83,6 +83,11 @@ cd %{buildroot}%{_datadir}/moin/server && chmod 0755 moin moin.ajp moin.cgi moin
 %{_mandir}/man8/moin-mkwiki.8*
 
 %changelog
+* Sat Oct 10 2026 Gabriele 'asbesto' Zaverio <asbesto@freaknet.org> - 1.11.0+md3-1
+- MoinMoin 1.11.0+md3: security fixes (limits for the form data, Markdown
+  pages that crash the parser or keep it busy, linear time recognition of
+  the page markup, httponly session cookie)
+
 * Fri Oct 09 2026 Gabriele 'asbesto' Zaverio <asbesto@freaknet.org> - 1.11.0+md2-1
 - MoinMoin 1.11.0+md2: Markdown pages, automatic recognition of the page
   markup, "#format moin", help pages with references to Markdown
