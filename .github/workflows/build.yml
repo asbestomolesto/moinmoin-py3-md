@@ -134,6 +134,16 @@ jobs:
         with:
           name: deb
       - run: |
+          # Debian 11 is out of support: its packages are on archive.debian.org
+          if grep -q 'VERSION_CODENAME=bullseye' /etc/os-release; then
+              printf '%s\n' \
+                  'deb http://archive.debian.org/debian bullseye main' \
+                  'deb http://archive.debian.org/debian bullseye-updates main' \
+                  'deb http://archive.debian.org/debian-security bullseye-security main' \
+                  > /etc/apt/sources.list
+              rm -f /etc/apt/sources.list.d/*
+              echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99archive
+          fi
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y curl ./moinmoin-py3-md_*_all.deb
       - run: sh .github/scripts/smoke-test.sh www-data
