@@ -23,6 +23,40 @@ This project is not MoinMoin 2.0 ([moinwiki/moin](https://github.com/moinwiki/mo
 which is a rewrite with a different data format. moinmoin-py3-md keeps the
 1.9 code, data format, themes and plugin interface.
 
+## Why this project: a note from the author
+
+I maintain a historical wiki that has been online since the early 2000s,
+with a lot of pages and users. I tried to port it to the new MoinMoin 2.x
+and it was kind of a disaster: porting the pages was problematic, and I
+didn't like the new version at all.
+
+The strength of MoinMoin 1.9.x was that the whole system was very, very
+fast, simple and very reliable, and, most important, everything in the
+wiki is a simple text file. This is a plus, because it is simple to
+maintain: pages are easy to edit, move or check on a Unix filesystem with
+basic tools (grep, sed, awk, plain text editors, ...). The user files are
+easy to maintain too, because they are text files as well.
+
+MoinMoin 2.x does the opposite. Pages and files are no longer kept as text
+files named after the page: each revision is stored as a JSON metadata
+record and a data blob, both under random UUID keys, either as files in the
+default "fs" store or inside an SQLite or SQL (SQLAlchemy) database. The
+wiki also needs a Whoosh search index and an SQLite database for edit
+locking. This is a NIGHTMARE. The themes are also very different from the original 1.9.x ones,
+which were so practical and simple to use, and which users were used to: a
+change in the user interface is never welcome when people have been using
+one for years!
+
+Hence the decision to port MoinMoin 1.9.x to Python 3: to have a working,
+installable MoinMoin 1.x, and to keep maintaining old wikis that have been
+online since around 2000. I also decided to add Markdown support, so this
+version of MoinMoin can be used with Markdown too, which is a plus: with
+the old, well-known visual interface, and the old way of storing things as
+simple text files instead of complicated and obscure databases and file
+formats, for no reason at all.
+
+— Gabriele 'asbesto' Zaverio
+
 ## About the maintainer
 
 I, Gabriele 'asbesto' Zaverio, do not have particular skills in Python. I
