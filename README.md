@@ -83,13 +83,10 @@ Download the packages from the
 
     sudo dnf install ./moinmoin-py3-md-1.12.0-1.fc42.noarch.rpm
 
-**Any distribution, with pip** from [PyPI](https://pypi.org/project/moinmoin-py3-md/):
+**Any distribution, with pip** (the wheel file of the release page):
 
     python3 -m venv /opt/moin
-    /opt/moin/bin/pip install moinmoin-py3-md
-
-(or `pip install moinmoin_py3_md-1.12.0-py3-none-any.whl` with the file of
-the release page).
+    /opt/moin/bin/pip install moinmoin_py3_md-1.12.0-py3-none-any.whl
 
 With pip, the wiki templates (`data`, `underlay`, `config/wikiconfig.py`)
 are installed under `/opt/moin/share/moin/`. To make a wiki, copy them into a

@@ -4,7 +4,8 @@
 # On every push: source tarball, .deb, .rpm, wheel and sdist, each package
 # installed and smoke-tested on several distributions.
 # On a version tag (v1.12.0, ...): the packages are attached to a GitHub
-# release of that tag, and the wheel and the sdist are uploaded to PyPI.
+# release of that tag; the wheel and the sdist are also uploaded to PyPI
+# if the repository variable PYPI_PUBLISH is "true" (see the pypi job).
 
 name: build
 
@@ -184,10 +185,13 @@ jobs:
               --notes "MoinMoin ${{ needs.source.outputs.version }} for Python 3, with Markdown pages. See docs/CHANGES and README.md."
 
   # Upload of the wheel and the sdist to PyPI with "trusted publishing"
-  # (no password stored on GitHub). It needs, once, a trusted publisher on
-  # pypi.org for this repository, workflow build.yml, environment "pypi".
+  # (no password stored on GitHub). Off by default (the job is skipped):
+  # it needs, once, a trusted publisher on pypi.org for this repository,
+  # workflow build.yml, environment "pypi", and then the repository
+  # variable PYPI_PUBLISH = true (Settings > Secrets and variables >
+  # Actions > Variables).
   pypi:
-    if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag' && vars.PYPI_PUBLISH == 'true'
     needs: [release]
     runs-on: ubuntu-latest
     environment:
