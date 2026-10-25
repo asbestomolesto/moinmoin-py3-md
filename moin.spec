@@ -44,7 +44,9 @@ with "#format markdown" / "#format moin". Existing 1.9 wikis can be used
 without converting the data.
 
 Made by Gabriele 'asbesto' Zaverio with the assistance of Claude
-(Anthropic AI).
+(Anthropic AI). The maintainer does not have particular skills in Python
+and may not be able to fix issues alone; anyone more skilled is
+welcome to fork and maintain this project.
 
 %prep
 %autosetup -n %{name}-%{version}

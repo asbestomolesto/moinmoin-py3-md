@@ -126,3 +126,9 @@ MoinMoin was written by Juergen Hermann, Thomas Waldmann and the MoinMoin
 developers. Version 1.10.0 (the Python 3 port) and this package were made by
 Gabriele 'asbesto' Zaverio with the assistance of Claude (Anthropic AI): the
 files written or modified by Claude carry a comment saying so at their top.
+
+The maintainer does not have particular skills in Python and made this
+project with Claude, so issues and security problems may be beyond what
+the maintainer can understand or fix alone; the maintainer will do their
+best, using AI to help.
+Anyone more skilled is welcome to fork and maintain this project.

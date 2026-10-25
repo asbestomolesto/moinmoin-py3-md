@@ -102,7 +102,16 @@ setup_args = {
     Python 3, with pages written in Markdown next to the pages in MoinMoin
     wiki syntax. Wiki data, configuration
     and plugins of the 1.9 series stay compatible (plugins have to be
-    ported to Python 3, too).""",
+    ported to Python 3, too).
+
+    Source, packages and documentation:
+    https://github.com/asbestomolesto/moinmoin-py3-md
+
+    About the maintainer: Gabriele 'asbesto' Zaverio does not have
+    particular skills in Python and made this project with Claude
+    (Anthropic AI). Issues and security problems may be beyond what the
+    maintainer can understand or fix alone; the maintainer will do their
+    best, using AI to help. Anyone more skilled is welcome to fork and maintain this project.""",
     'keywords': "wiki web",
     'platforms': "any",
     'classifiers': """Development Status :: 5 - Production/Stable

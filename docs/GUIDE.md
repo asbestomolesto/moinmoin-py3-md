@@ -17,7 +17,8 @@ and the manual pages `man moin` and `man moin-mkwiki`.
 | `moinmoin-py3-md-1.12.0.tar.gz` | source tree (also used by `rpmbuild -ta`) |
 | `SHA256SUMS` | checksums |
 
-Check the downloads with `sha256sum -c SHA256SUMS`.
+Check the downloads with `sha256sum -c SHA256SUMS`. The Python package is
+also on PyPI: `pip install moinmoin-py3-md`.
 
 apt and dnf install the dependencies themselves: Python-Markdown,
 Pygments, passlib, parsedatetime and, on Python 3.13 or newer, legacy-cgi.
@@ -229,3 +230,9 @@ the packages were made by Gabriele 'asbesto' Zaverio
 <asbesto@freaknet.org>, with the assistance of Claude (Anthropic AI). A
 comment at the top of each file written or modified by Claude says so, and
 every commit after the first has the line `Co-Authored-By: Claude`.
+
+The maintainer does not have particular skills in Python and made this
+project with Claude, so issues and security problems may be beyond what
+the maintainer can understand or fix alone; the maintainer will do their
+best, using AI to help. Anyone more skilled is welcome to fork this project and maintain it.
+See "About the maintainer" in the [README](../README.md#about-the-maintainer).

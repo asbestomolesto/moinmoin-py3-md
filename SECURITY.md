@@ -16,12 +16,9 @@ MoinMoin 2.0 belong to [moinwiki/moin](https://github.com/moinwiki/moin).
 ## Reporting a vulnerability
 
 Please do **not** open a public issue for a security problem. Report it
-privately, in one of these ways:
-
-- the **Report a vulnerability** button in the
-  [Security tab](https://github.com/asbestomolesto/moinmoin-py3-md/security)
-  of this repository;
-- email to Gabriele 'asbesto' Zaverio <asbesto@freaknet.org>.
+privately with the **Report a vulnerability** button in the
+[Security tab](https://github.com/asbestomolesto/moinmoin-py3-md/security)
+of this repository.
 
 Please include:
 
@@ -33,6 +30,13 @@ Please include:
 
 You will get an answer within two weeks. When the fix is released, the
 report is credited in `docs/CHANGES`, unless you prefer otherwise.
+
+Please note: the maintainer does not have particular skills in Python and
+made this project with Claude (Anthropic AI). A security problem may be
+beyond what the maintainer can understand or fix alone; the maintainer
+will do their best, using AI to help. A report that includes a proposed fix is very
+welcome, and so is anyone more skilled who wants to fork and maintain the
+project (see "About the maintainer" in the [README](README.md#about-the-maintainer)).
 
 ## Security settings
 

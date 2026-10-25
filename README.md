@@ -23,6 +23,19 @@ This project is not MoinMoin 2.0 ([moinwiki/moin](https://github.com/moinwiki/mo
 which is a rewrite with a different data format. moinmoin-py3-md keeps the
 1.9 code, data format, themes and plugin interface.
 
+## About the maintainer
+
+I, Gabriele 'asbesto' Zaverio, do not have particular skills in Python. I
+made this project with Claude (Anthropic AI): the Python 3 port, the
+Markdown support, the security fixes and the packages were written by
+Claude, with me directing the work and testing the results.
+
+This means that I may not be able to understand or fix issues and
+security problems by myself. I will do my best, using AI to help me.
+
+For these reasons, anyone more skilled than me is welcome to fork this
+project and maintain it.
+
 ## Installation
 
 Download the packages from the
@@ -36,10 +49,13 @@ Download the packages from the
 
     sudo dnf install ./moinmoin-py3-md-1.12.0-1.fc42.noarch.rpm
 
-**Any distribution, with pip:**
+**Any distribution, with pip** from [PyPI](https://pypi.org/project/moinmoin-py3-md/):
 
     python3 -m venv /opt/moin
-    /opt/moin/bin/pip install moinmoin_py3_md-1.12.0-py3-none-any.whl
+    /opt/moin/bin/pip install moinmoin-py3-md
+
+(or `pip install moinmoin_py3_md-1.12.0-py3-none-any.whl` with the file of
+the release page).
 
 With pip, the wiki templates (`data`, `underlay`, `config/wikiconfig.py`)
 are installed under `/opt/moin/share/moin/`. To make a wiki, copy them into a

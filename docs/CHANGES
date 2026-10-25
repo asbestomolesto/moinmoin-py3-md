@@ -28,7 +28,9 @@ Version 1.12.0 (2026-10-25)
     package names; no functional change from 1.11.0+md3.
   * English documentation: README.md and docs/GUIDE.md.
   * GitHub Actions workflow: tests, .deb/.rpm/wheel builds and package
-    installation tests.
+    installation tests; the Python package is published on PyPI
+    (pip install moinmoin-py3-md).
+  * SECURITY.md: security problems are reported privately on GitHub.
 
 
 Version 1.11.0+md3 (2026-10-10)
