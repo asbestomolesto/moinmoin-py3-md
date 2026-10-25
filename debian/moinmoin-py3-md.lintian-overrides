@@ -1,0 +1,12 @@
+# Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
+# as part of the Python 3 port of MoinMoin (version 1.10.0).
+# The package is made for sysvinit systems (Devuan); one init script runs
+# all configured standalone wiki servers. On systemd systems the init
+# script is used through the SysV generator, a sample unit is in examples/.
+moinmoin-py3-md: missing-systemd-service-for-init.d-script moinmoin [etc/init.d/moinmoin]
+# The Java drawing applets and FCKeditor are static files served by the
+# wiki from the MoinMoin package directory.
+moinmoin-py3-md: jar-not-in-usr-share [usr/lib/python3/dist-packages/MoinMoin/web/static/htdocs/applets/*]
+moinmoin-py3-md: embedded-javascript-library please use fckeditor [usr/lib/python3/dist-packages/MoinMoin/web/static/htdocs/applets/FCKeditor/fckeditor.js]
+# not uploaded to Debian
+moinmoin-py3-md: initial-upload-closes-no-bugs [usr/share/doc/moinmoin-py3-md/changelog.Debian.gz:1]

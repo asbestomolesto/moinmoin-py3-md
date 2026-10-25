@@ -1,20 +1,20 @@
-# RPM spec of MoinMoin 1.11.0+md3 (Fedora, RHEL/AlmaLinux/Rocky with EPEL
+# RPM spec of MoinMoin 1.12.0, moinmoin-py3-md (Fedora, RHEL/AlmaLinux/Rocky with EPEL
 # and other distributions with the pyproject RPM macros).
 # Rewritten by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
 # for MoinMoin 1.11.0+md2; the original spec was by Florian Festi,
 # Johannes Poehlmann and Thomas Waldmann (see the changelog below).
 #
-# Build:  rpmbuild -ta moin-markdown-1.11.0+md3.tar.gz
+# Build:  rpmbuild -ta moinmoin-py3-md-1.12.0.tar.gz
 #    or:  rpmbuild -ba moin.spec  (with the tarball in ~/rpmbuild/SOURCES)
 
-Name:           moin-markdown
-Version:        1.11.0+md3
+Name:           moinmoin-py3-md
+Version:        1.12.0
 Release:        1%{?dist}
 Summary:        MoinMoin wiki with MoinMoin syntax and Markdown pages (Python 3)
 
 License:        GPL-2.0-or-later
-URL:            https://moinmo.in/
-Source0:        %{name}-%{version}.tar.gz
+URL:            https://github.com/asbestomolesto/moinmoin-py3-md
+Source0:        %{url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
@@ -27,6 +27,8 @@ BuildRequires:  python3dist(pip)
 # legacy-cgi on Python >= 3.13) are generated from the package metadata
 Provides:       moin = %{version}-%{release}
 Conflicts:      moin < 1.10
+Obsoletes:      moin-markdown < 1.12.0
+Provides:       moin-markdown = %{version}-%{release}
 Recommends:     python3dist(docutils)
 
 %description
@@ -35,8 +37,8 @@ MoinMoin is a wiki engine written in Python. It supports many markups
 diffs, attachments, access control lists, user accounts, search, themes
 and plugins.
 
-This is MoinMoin 1.11.0+md3: MoinMoin 1.10.0 (MoinMoin 1.9.11 ported to
-Python 3) with pages written in Markdown, next to the pages in MoinMoin
+This is MoinMoin 1.12.0 (moinmoin-py3-md): MoinMoin 1.9.11 ported to
+Python 3, with pages written in Markdown next to the pages in MoinMoin
 wiki syntax. The markup of a page is recognized from its text, or set
 with "#format markdown" / "#format moin". Existing 1.9 wikis can be used
 without converting the data.
@@ -63,7 +65,7 @@ install -D -m 0755 debian/moin-mkwiki %{buildroot}%{_sbindir}/moin-mkwiki
 sed -i -e 's/www-data/apache/g' \
        -e '/README.Debian/s|.*| * run the wiki, see the examples in %{_docdir}/%{name}/examples:|' \
        -e '/init.d\/moinmoin/d' \
-       -e 's|/usr/share/doc/python3-moinmoin-markdown|%{_docdir}/%{name}|g' \
+       -e 's|/usr/share/doc/moinmoin-py3-md|%{_docdir}/%{name}|g' \
        %{buildroot}%{_sbindir}/moin-mkwiki
 install -D -m 0644 debian/moin.1 %{buildroot}%{_mandir}/man1/moin.1
 install -D -m 0644 debian/moin-mkwiki.8 %{buildroot}%{_mandir}/man8/moin-mkwiki.8
@@ -72,10 +74,10 @@ cd %{buildroot}%{_datadir}/moin/server && chmod 0755 moin moin.ajp moin.cgi moin
 
 %files
 %license docs/licenses/COPYING
-%doc README.rst docs/CHANGES docs/INSTALL.html docs/UPDATE.html
+%doc README.md docs/GUIDE.md docs/CHANGES docs/INSTALL.html docs/UPDATE.html
 %doc debian/examples
 %{python3_sitelib}/MoinMoin/
-%{python3_sitelib}/moin_markdown-*.dist-info/
+%{python3_sitelib}/moinmoin_py3_md-*.dist-info/
 %{_bindir}/moin
 %{_sbindir}/moin-mkwiki
 %{_datadir}/moin/
@@ -83,6 +85,11 @@ cd %{buildroot}%{_datadir}/moin/server && chmod 0755 moin moin.ajp moin.cgi moin
 %{_mandir}/man8/moin-mkwiki.8*
 
 %changelog
+* Sun Oct 25 2026 Gabriele 'asbesto' Zaverio <asbesto@freaknet.org> - 1.12.0-1
+- MoinMoin 1.12.0: the Python 3 port and the Markdown support released as
+  one project, moinmoin-py3-md; replaces moin-markdown
+- Static files are served under /moin_static1120
+
 * Sat Oct 10 2026 Gabriele 'asbesto' Zaverio <asbesto@freaknet.org> - 1.11.0+md3-1
 - MoinMoin 1.11.0+md3: security fixes (limits for the form data, Markdown
   pages that crash the parser or keep it busy, linear time recognition of

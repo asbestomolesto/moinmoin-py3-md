@@ -8,3 +8,5 @@ build/
 wiki/data/cache/*
 !wiki/data/cache/README
 wiki/underlay/pages/*/cache/
+.pytest_cache/
+dist/

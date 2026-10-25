@@ -1,3 +1,16 @@
+moinmoin-py3-md (1.12.0-1) unstable; urgency=medium
+
+  * New project name moinmoin-py3-md, version 1.12.0: the Python 3 port
+    (MoinMoin 1.10.0) and the Markdown support (1.11.0+md1 to +md3) are
+    released as one project, published at
+    https://github.com/asbestomolesto/moinmoin-py3-md
+  * Source package moinmoin-py3-md, binary package moinmoin-py3-md; it
+    replaces python3-moinmoin and python3-moinmoin-markdown.
+  * Static files are served under /moin_static1120.
+  * No functional change from 1.11.0+md3.
+
+ -- Gabriele 'asbesto' Zaverio <asbesto@freaknet.org>  Sun, 25 Oct 2026 12:00:00 +0100
+
 moin-markdown (1.11.0+md3-1) unstable; urgency=high
 
   * New upstream version 1.11.0+md3, security fixes:

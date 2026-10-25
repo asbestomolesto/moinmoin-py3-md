@@ -2,6 +2,7 @@
 # MoinMoin 1.10.0 (Python 3 port): modified in 2026 by Claude (Anthropic AI)
 # for Gabriele 'asbesto' Zaverio - see docs/CHANGES and the git history for details.
 # MoinMoin 1.11.0+md1 (Markdown support): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
+# MoinMoin 1.12.0 (moinmoin-py3-md): modified by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
 """
     MoinMoin installer
 
@@ -75,7 +76,7 @@ def make_filelist(dir, strip_prefix=''):
 #############################################################################
 
 setup_args = {
-    'name': "moin-markdown",
+    'name': "moinmoin-py3-md",
     'version': release,
     'description': "MoinMoin %s is an easy to use, full-featured and extensible wiki software package (Python 3, Markdown pages)" % (release, ),
     'author': "Juergen Hermann et al.",
@@ -83,7 +84,12 @@ setup_args = {
     # MoinMoin 1.10.0, the Python 3 port, made with the assistance of Claude (Anthropic AI)
     'maintainer': "Gabriele 'asbesto' Zaverio",
     'maintainer_email': "asbesto@freaknet.org",
-    'url': "https://moinmo.in/",
+    'url': "https://github.com/asbestomolesto/moinmoin-py3-md",
+    'project_urls': {
+        'Source': "https://github.com/asbestomolesto/moinmoin-py3-md",
+        'Issues': "https://github.com/asbestomolesto/moinmoin-py3-md/issues",
+        'MoinMoin': "https://moinmo.in/",
+    },
     'license': "GNU GPL",
     'long_description': """
     MoinMoin is an easy to use, full-featured and extensible wiki software
@@ -92,8 +98,9 @@ setup_args = {
     a company knowledge base deployed on an intranet, or an Internet server
     open to individuals sharing the same interests, goals or projects.
 
-    This is MoinMoin 1.11.0+md3: MoinMoin 1.10.0 (MoinMoin 1.9.11 ported to
-    Python 3) with Markdown pages. Wiki data, configuration
+    This is MoinMoin 1.12.0 (moinmoin-py3-md): MoinMoin 1.9.11 ported to
+    Python 3, with pages written in Markdown next to the pages in MoinMoin
+    wiki syntax. Wiki data, configuration
     and plugins of the 1.9 series stay compatible (plugins have to be
     ported to Python 3, too).""",
     'keywords': "wiki web",

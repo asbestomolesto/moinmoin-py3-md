@@ -1,0 +1,174 @@
+# Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026 (moinmoin-py3-md 1.12.0).
+#
+# On every push and pull request: test suite on several Python versions.
+# On every push: source tarball, .deb, .rpm, wheel and sdist, each package
+# installed and smoke-tested on several distributions.
+# On a version tag (v1.12.0, ...): the packages are attached to a GitHub
+# release of that tag.
+
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install pytest markdown pygments passlib parsedatetime 'legacy-cgi; python_version >= "3.13"'
+      - run: python -m pytest -q -p no:cacheprovider MoinMoin
+
+  source:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        run: |
+          VERSION=$(python3 -c 'import sys; sys.path.insert(0, "."); from MoinMoin.version import release; print(release)')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [ "${GITHUB_REF_TYPE}" = tag ] && [ "${GITHUB_REF_NAME}" != "v$VERSION" ]; then
+              echo "tag ${GITHUB_REF_NAME} does not match MoinMoin/version.py ($VERSION)"; exit 1
+          fi
+      - run: |
+          mkdir -p out
+          git archive --prefix=moinmoin-py3-md-${{ steps.version.outputs.version }}/ \
+              -o out/moinmoin-py3-md-${{ steps.version.outputs.version }}.tar.gz HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source
+          path: out/
+
+  python:
+    needs: source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install build twine
+      - run: python -m build --outdir out
+      - run: twine check out/*
+      - name: install the wheel and run the smoke test
+        run: |
+          python -m venv /tmp/venv
+          /tmp/venv/bin/pip install out/*.whl
+          /tmp/venv/bin/python -c 'import MoinMoin.parser.text_markdown, MoinMoin.version as v; print(v.release)'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python
+          path: out/
+
+  deb:
+    needs: source
+    runs-on: ubuntu-latest
+    container: debian:trixie
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: source
+      - run: |
+          apt-get update
+          apt-get install -y --no-install-recommends build-essential debhelper dh-python \
+              pybuild-plugin-pyproject python3-all python3-setuptools lintian
+      - run: |
+          V=${{ needs.source.outputs.version }}
+          mkdir build && cp moinmoin-py3-md-$V.tar.gz build/moinmoin-py3-md_$V.orig.tar.gz
+          cd build && tar xzf moinmoin-py3-md_$V.orig.tar.gz
+          cd moinmoin-py3-md-$V && dpkg-buildpackage -us -uc
+          cd .. && lintian --fail-on error *.changes
+          mkdir ../out && cp *.deb *.dsc *.orig.tar.gz *.debian.tar.xz ../out/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deb
+          path: out/
+
+  rpm:
+    needs: source
+    runs-on: ubuntu-latest
+    container: fedora:42
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: source
+      - run: dnf install -y rpm-build python3-devel pyproject-rpm-macros
+      - run: |
+          V=${{ needs.source.outputs.version }}
+          rpmbuild -ts moinmoin-py3-md-$V.tar.gz
+          dnf builddep -y ~/rpmbuild/SRPMS/moinmoin-py3-md-$V-*.src.rpm
+          rpmbuild --rebuild ~/rpmbuild/SRPMS/moinmoin-py3-md-$V-*.src.rpm
+          mkdir out && cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/noarch/*.rpm out/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rpm
+          path: out/
+
+  install-deb:
+    needs: deb
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ['debian:bullseye', 'debian:bookworm', 'debian:trixie', 'ubuntu:22.04', 'ubuntu:24.04']
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: deb
+      - run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y curl ./moinmoin-py3-md_*_all.deb
+      - run: sh .github/scripts/smoke-test.sh www-data
+
+  install-rpm:
+    needs: rpm
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ['fedora:41', 'fedora:42']
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: rpm
+      - run: dnf install -y curl util-linux $(ls moinmoin-py3-md-*.noarch.rpm)
+      - run: sh .github/scripts/smoke-test.sh apache
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: [test, source, python, install-deb, install-rpm]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - run: cd artifacts && sha256sum * > SHA256SUMS && cat SHA256SUMS
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" artifacts/* --repo "$GITHUB_REPOSITORY" \
+              --title "moinmoin-py3-md ${{ needs.source.outputs.version }}" \
+              --notes "MoinMoin ${{ needs.source.outputs.version }} for Python 3, with Markdown pages. See docs/CHANGES and README.md."

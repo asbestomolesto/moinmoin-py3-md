@@ -10,6 +10,27 @@ trying to make a "perfect release" (as that release might NEVER get released),
 but to make progress and don't delay releases too much.
 
 
+Version 1.12.0 (2026-10-25)
+
+  HINT: the Python 3 port (1.10.0) and the Markdown support (1.11.0+md1
+        to 1.11.0+md3) are now released as one project, moinmoin-py3-md:
+        https://github.com/asbestomolesto/moinmoin-py3-md
+        The packages are called moinmoin-py3-md (.deb, .rpm and Python
+        package); they replace python3-moinmoin, python3-moinmoin-markdown
+        and moin-markdown.
+
+  HINT: the URL prefix of the static files changed to /moin_static1120,
+        update your web server configuration (e.g. Apache Alias) if it
+        serves them directly.
+
+  Changes:
+  * New version number (PyPI accepts it, unlike "1.11.0+md3") and new
+    package names; no functional change from 1.11.0+md3.
+  * English documentation: README.md and docs/GUIDE.md.
+  * GitHub Actions workflow: tests, .deb/.rpm/wheel builds and package
+    installation tests.
+
+
 Version 1.11.0+md3 (2026-10-10)
 
   Security fixes (found by a review of the code made with Claude):
