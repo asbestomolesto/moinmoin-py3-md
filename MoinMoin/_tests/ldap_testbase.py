@@ -226,8 +226,10 @@ class LdapEnvironment(object):
         """ remove the temporary LDAP server environment """
         shutil.rmtree(self.ldap_dir)
 
+# Modified by Claude (Anthropic AI): pytest instead of py.test, which pytest
+# installed with pip does not provide any more (moinmoin-py3-md 1.12.0)
 try:
-    import py.test
+    import pytest
 
     class LDAPTstBase:
         """ Test base class for py.test based tests which need a LDAP server to talk to.
@@ -258,5 +260,5 @@ try:
             self.ldap_env.destroy_env()
 
 except ImportError:
-    pass  # obviously py.test not in use
+    pass  # obviously pytest not in use
 

@@ -900,9 +900,12 @@ MIMETYPES_MORE = {
 # add all mimetype patterns of pygments
 import pygments.lexers
 
+# Modified by Claude (Anthropic AI) (moinmoin-py3-md 1.12.0): the image types
+# above are kept, newer pygments (2.21) maps *.svg to text/xml
 for name, short, patterns, mime in pygments.lexers.get_all_lexers():
     for pattern in patterns:
-        if pattern.startswith('*.') and mime:
+        if pattern.startswith('*.') and mime and \
+           not MIMETYPES_MORE.get(pattern[1:], '').startswith('image/'):
             MIMETYPES_MORE[pattern[1:]] = mime[0]
 
 [mimetypes.add_type(mimetype, ext, True) for ext, mimetype in list(MIMETYPES_MORE.items())]
