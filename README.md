@@ -42,7 +42,11 @@ files named after the page: each revision is stored as a JSON metadata
 record and a data blob, both under random UUID keys, either as files in the
 default "fs" store or inside an SQLite or SQL (SQLAlchemy) database. The
 wiki also needs a Whoosh search index and an SQLite database for edit
-locking. This is a NIGHTMARE. The themes are also very different from the original 1.9.x ones,
+locking. 
+
+For an old UNIX sysadmin like me, used to simple things, this is a NIGHTMARE.
+
+The themes are also very different from the original 1.9.x ones,
 which were so practical and simple to use, and which users were used to: a
 change in the user interface is never welcome when people have been using
 one for years!
