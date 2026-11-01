@@ -151,13 +151,37 @@ and Latvian translations, since 1.12.2).
 
 ### Updating the help pages after an upgrade
 
-The help and system pages come from the language packs and are copied into
-the wiki when they are installed from **LanguageSetup**. A newer package
-does not change the pages already installed: to get the new help, log in as
-a superuser, open **LanguageSetup**, its attachments, and install again the
-pack you use (e.g. `English--all_help_pages.zip` or
-`English--admin_pages.zip`). This only replaces the system and help pages
-(in `underlay/`), never the pages of your wiki.
+The help and system pages come from the language packs, the `.zip`
+attachments of the page **LanguageSetup**. A newer package does not change
+a wiki that already exists, for two reasons:
+
+ * `moin-mkwiki` **copies** `/usr/share/moin/underlay` into the wiki, so the
+   wiki's own `underlay/pages/LanguageSetup/attachments/` keeps the packs of
+   the version that created it (a wiki migrated from 1.9 keeps the old 1.9
+   packs, without the Markdown help);
+ * the pages installed from a pack stay as they are until a pack is
+   installed again.
+
+To get the new help pages:
+
+1. Copy the new packs into the wiki, as the wiki user (with the path of
+   `data_underlay_dir` in `wikiconfig.py`, usually `<wiki>/underlay`):
+
+       U=/srv/moin/mywiki/underlay/pages/LanguageSetup/attachments
+       cp -a $U /var/tmp/LanguageSetup-attachments-old      # backup
+       runuser -u www-data -- cp /usr/share/moin/underlay/pages/LanguageSetup/attachments/*.zip $U/
+
+2. Log in as a superuser, open the attachments of LanguageSetup
+   (`LanguageSetup?action=AttachFile`) and click **install** next to
+   **`English--all_pages.zip`** (or the `--all_pages.zip` of your
+   language). It contains all the help and system pages: the smaller packs
+   leave some out, e.g. `English--all_help_pages.zip` does not contain
+   HelpOnUserHandling and HelpOnMoinCommand, which are in
+   `English--admin_pages.zip`.
+3. Restart the wiki (e.g. `service apache2 reload`).
+
+This only replaces the system and help pages (in `underlay/`), never the
+pages of your wiki (in `data/`).
 
 ## Migrating an existing 1.9 wiki
 

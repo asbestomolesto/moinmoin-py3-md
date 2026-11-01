@@ -18,8 +18,10 @@ Version 1.12.2 (2026-11-01)
     HelpOnConfiguration/UserPreferences (English), AiutoSuGestioneUtenti
     and AiutoSuSuperUtente (Italian), and the Russian, Simplified Chinese
     and Latvian translations: account disable/enable/delete and the
-    buttons of the account browser. Install the language pack again from
-    LanguageSetup to get them.
+    buttons of the account browser. To get them, copy the new packs into
+    the wiki's underlay and install English--all_pages.zip (or the one of
+    your language) from LanguageSetup, see docs/GUIDE.md "Updating the
+    help pages after an upgrade".
   * The preferences checkbox "Disable this account forever" is now
     "Disable this account (an administrator can enable it again)";
     translated in Italian, Russian, Simplified Chinese and Latvian, the
