@@ -18,7 +18,9 @@ def tmtuple(tmsecs=None):
         This is currently an alias for gmtime(), but allows later tweaking.
     """
     # avoid problems due to timezones etc. - especially a underflow
-    if -86400 <= tmsecs <= 86400: # if we are around 0, we maybe had
+    # Modified by Claude (Anthropic AI) (moinmoin-py3-md 1.12.1): Python 3
+    # cannot compare None with numbers, tmtuple() means "now"
+    if tmsecs is not None and -86400 <= tmsecs <= 86400: # if we are around 0, we maybe had
         tmsecs = 0                # 0 initially, so reset it to 0.
     return time.gmtime(tmsecs or time.time())
 
