@@ -2,7 +2,7 @@
 # moinmoin-py3-md guide
 
 This guide covers installing, running and maintaining moinmoin-py3-md
-(MoinMoin 1.12.0). For an overview see the [README](../README.md). The
+(MoinMoin 1.12.1). For an overview see the [README](../README.md). The
 installed Debian package also has `/usr/share/doc/moinmoin-py3-md/README.Debian`
 and the manual pages `man moin` and `man moin-mkwiki`.
 
@@ -10,11 +10,11 @@ and the manual pages `man moin` and `man moin-mkwiki`.
 
 | File | For |
 |---|---|
-| `moinmoin-py3-md_1.12.0-1_all.deb` | Devuan, Debian, Ubuntu and derivatives |
-| `moinmoin-py3-md_1.12.0-1.dsc`, `*.orig.tar.gz`, `*.debian.tar.xz` | Debian source package |
-| `moinmoin-py3-md-1.12.0-1.fc42.noarch.rpm`, `*.src.rpm` | Fedora and other RPM distributions |
-| `moinmoin_py3_md-1.12.0-py3-none-any.whl`, `moinmoin_py3_md-1.12.0.tar.gz` | pip, any distribution |
-| `moinmoin-py3-md-1.12.0.tar.gz` | source tree (also used by `rpmbuild -ta`) |
+| `moinmoin-py3-md_1.12.1-1_all.deb` | Devuan, Debian, Ubuntu and derivatives |
+| `moinmoin-py3-md_1.12.1-1.dsc`, `*.orig.tar.gz`, `*.debian.tar.xz` | Debian source package |
+| `moinmoin-py3-md-1.12.1-1.fc42.noarch.rpm`, `*.src.rpm` | Fedora and other RPM distributions |
+| `moinmoin_py3_md-1.12.1-py3-none-any.whl`, `moinmoin_py3_md-1.12.1.tar.gz` | pip, any distribution |
+| `moinmoin-py3-md-1.12.1.tar.gz` | source tree (also used by `rpmbuild -ta`) |
 | `SHA256SUMS` | checksums |
 
 Check the downloads with `sha256sum -c SHA256SUMS`.
@@ -22,7 +22,7 @@ Check the downloads with `sha256sum -c SHA256SUMS`.
 apt and dnf install the dependencies themselves: Python-Markdown,
 Pygments, passlib, parsedatetime and, on Python 3.13 or newer, legacy-cgi.
 Other RPM distributions can rebuild the source package with
-`rpmbuild --rebuild moinmoin-py3-md-1.12.0-1.fc42.src.rpm`.
+`rpmbuild --rebuild moinmoin-py3-md-1.12.1-1.fc42.src.rpm`.
 
 The packages replace `python3-moinmoin` (1.10.0), `python3-moinmoin-markdown`
 and `moin-markdown` (1.11.0+mdN). They provide the same `MoinMoin` module
@@ -86,6 +86,64 @@ The static files (CSS, JavaScript, images) are served under
 `/moin_static1911` with 1.9.11, `/moin_static1100` with 1.10.0 and
 `/moin_static1110` with 1.11.0+mdN. If the web server serves them directly
 with an `Alias`, update it as in the examples.
+
+## Managing user accounts
+
+### Running `moin` commands
+
+Every `moin` command works on one wiki, so it must know where that wiki's
+`wikiconfig.py` is. Give the folder with `--config-dir`, or run `moin` from
+inside that folder. Run it as the user that owns the wiki files
+(`www-data` with the .deb package), so that the files it writes keep the
+right owner:
+
+    sudo -u www-data moin --config-dir=/srv/moin/mywiki account check
+
+As root, `runuser -u www-data -- moin ...` does the same without `sudo`.
+`--wiki-url` is needed only for a wiki farm (`farmconfig.py`), to choose
+the wiki. A shell alias saves typing, e.g. in root's `~/.bashrc`:
+
+    alias moinmy='runuser -u www-data -- moin --config-dir=/srv/moin/mywiki'
+
+### Commands
+
+| Command | What it does |
+|---|---|
+| `account create --name=NAME --email=EMAIL --password=PW` | create an account |
+| `account resetpw --name=NAME NEWPASSWORD` | set a new password (without a password: invalidate it, `--notify` mails the user) |
+| `account disable --name=NAME` | lock the account out; name, email, password and subscriptions are kept |
+| `account enable --name=NAME` | allow the account to log in again |
+| `account delete --name=NAME` | delete the account for good |
+| `account check` | check the accounts for problems |
+| `account inactive --show` | list accounts that never edited anything |
+
+All the account commands also accept `--uid=USERID` instead of `--name`.
+
+- **Disable** is temporary: the account cannot log in, but nobody else can
+  register its name or email meanwhile, and `enable` gives it back exactly
+  as it was. Disabled accounts receive no notification mails.
+- **Enable** also repairs accounts disabled by moinmoin-py3-md 1.12.0 or
+  older, which renamed them to `NAME-<user id>` (and the email too): they
+  get their original name and email back, if no other account took them.
+- **Delete** removes the account file from `data/user/`. It cannot be
+  undone, so keep a backup of `data/user/` if unsure. The pages and edits
+  of the user stay in the wiki; the page history shows the user id instead
+  of the name.
+
+### The same buttons in the browser
+
+Superusers (the names in `superuser = [...]` of `wikiconfig.py`,
+`moin-mkwiki -s NAME` sets it) have an **account browser** with the
+buttons **Disable user** / **Enable user**, **Delete user** (the browser
+asks for a confirmation first) and **Mail account data**. It is shown by
+the `<<SystemAdmin>>` macro:
+
+1. Install the page **SystemAdmin**: on **LanguageSetup**, install
+   `English--all_system_pages.zip` (or your language's), or simply create
+   a page, e.g. `WikiAdmin`, with the single line `<<SystemAdmin>>`.
+2. Log in as a superuser and open that page. Other users see nothing.
+3. Click **User account browser**: every account has its buttons on the
+   right.
 
 ## Migrating an existing 1.9 wiki
 
@@ -160,7 +218,7 @@ Recommendations:
 
 ## What was tested
 
-- Test suite: 521 passed, 132 skipped (optional modules such as xapian and
+- Test suite: 528 passed, 132 skipped (optional modules such as xapian and
   ldap are missing), 1 expected failure that already fails in the original
   1.9.11.
 - Comparison with the original MoinMoin 1.9.11 on Python 2.7.18:
@@ -197,8 +255,13 @@ Recommendations:
   - 1.11.0+md3 passed it on Devuan 6, 5 and 4, Debian 13, 12 and 11,
     Ubuntu 24.04 and 22.04 (.deb), Fedora 42 and 41 (.rpm), and Python
     3.13, 3.12 and 3.11 (wheel).
-  - 1.12.0 has the same code; its packages are installed and checked by
-    the GitHub Actions workflow.
+  - since 1.12.0 the packages are installed and checked by the GitHub
+    Actions workflow on Debian 11, 12 and 13, Ubuntu 22.04 and 24.04 and
+    Fedora 41 and 42.
+- User accounts (1.12.1): disable, enable and delete from the command line
+  and with the account browser buttons, accounts disabled by 1.12.0
+  enabled again with their name, every "Settings" page and the password
+  change, over HTTP.
 - lintian reports no errors on the .deb.
 
 ## Building from source
@@ -206,15 +269,15 @@ Recommendations:
 Debian, Devuan, Ubuntu:
 
     sudo apt install debhelper dh-python pybuild-plugin-pyproject python3-all python3-setuptools
-    dpkg-source -x moinmoin-py3-md_1.12.0-1.dsc
-    cd moinmoin-py3-md-1.12.0 && dpkg-buildpackage -us -uc
+    dpkg-source -x moinmoin-py3-md_1.12.1-1.dsc
+    cd moinmoin-py3-md-1.12.1 && dpkg-buildpackage -us -uc
 
 or `dpkg-buildpackage -us -uc -b` directly in a git checkout.
 
 Fedora:
 
     sudo dnf install rpm-build python3-devel pyproject-rpm-macros
-    rpmbuild -ta moinmoin-py3-md-1.12.0.tar.gz
+    rpmbuild -ta moinmoin-py3-md-1.12.1.tar.gz
 
 Python wheel and sdist: `python3 -m build`.
 

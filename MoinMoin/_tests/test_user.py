@@ -353,3 +353,68 @@ class TestIsValidName(object):
 
 coverage_modules = ['MoinMoin.user']
 
+
+
+# Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026
+# (moinmoin-py3-md 1.12.1): disable / enable / delete of user accounts.
+class TestDisableEnableDelete(object):
+    """user: disable keeps the name, enable undoes it, delete removes it"""
+
+    name = "__TestDisableUser__"
+    email = "__testdisableuser__@moinhost"
+    password = "ekfdweurwerh1"
+
+    def setup_method(self, method):
+        self.user = user.User(self.request)
+        self.user.name = self.name
+        self.user.email = self.email
+        self.user.enc_password = user.encodePassword(self.request.cfg, self.password)
+        self.user.save()
+
+    def teardown_method(self, method):
+        try:
+            os.remove(self.user._User__filename())
+        except OSError:
+            pass
+        user.clearLookupCaches(self.request)
+
+    def login(self):
+        return user.User(self.request, name=self.name, password=self.password).valid
+
+    def test_disable_enable_keeps_name_and_email(self):
+        assert self.login()
+        assert self.user.disable()
+        assert not self.user.disable()  # already disabled
+        assert not self.login()
+        reloaded = user.User(self.request, self.user.id)
+        assert (reloaded.name, reloaded.email, reloaded.disabled) == (self.name, self.email, 1)
+        assert reloaded.enable()
+        assert not reloaded.enable()  # not disabled any more
+        assert self.login()
+
+    def test_disabled_account_keeps_name_and_email_taken(self):
+        self.user.disable()
+        assert user.getUserId(self.request, self.name) is None
+        assert user.getUserIdIncludingDisabled(self.request, self.name) == self.user.id
+        found = user.get_by_email_address_including_disabled(self.request, self.email.upper())
+        assert found is not None and found.id == self.user.id
+
+    def test_enable_account_disabled_by_old_versions(self):
+        # moin 1.12.0 and older renamed the disabled accounts
+        self.user.name = "%s-%s" % (self.name, self.user.id)
+        self.user.email = "%s-%s" % (self.email, self.user.id)
+        self.user.disabled = 1
+        self.user.save()
+        uid = user.getUserIdIncludingDisabled(self.request, self.name, renamed=True)
+        assert uid == self.user.id
+        old = user.User(self.request, uid)
+        assert old.enable()
+        assert (old.name, old.email) == (self.name, self.email)
+        assert self.login()
+
+    def test_delete(self):
+        uid = self.user.id
+        self.user.delete()
+        assert not user.User(self.request, uid).exists()
+        assert user.getUserId(self.request, self.name) is None
+        assert user.getUserIdIncludingDisabled(self.request, self.name) is None

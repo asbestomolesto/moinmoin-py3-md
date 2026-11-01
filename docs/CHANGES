@@ -10,6 +10,35 @@ trying to make a "perfect release" (as that release might NEVER get released),
 but to make progress and don't delay releases too much.
 
 
+Version 1.12.1 (2026-11-01)
+
+  HINT: "moin account disable" no longer renames the account: name, email,
+        password and subscriptions are kept, and the new "moin account
+        enable" allows the account to log in again. To delete an account
+        for good, use the new "moin account delete".
+
+  Bug fixes:
+  * The "Preferences" page of "Settings" failed with an Internal Server
+    Error (MoinMoin.util.timefuncs.tmtuple() compared None with numbers,
+    which Python 3 does not allow).
+  * Account browser of the SystemAdmin page: "Enable user" did not find
+    the disabled account and created an empty account file instead (bug
+    of the original MoinMoin 1.9 too).
+  * "moin" uses the wikiconfig.py or farmconfig.py of the current
+    directory when --config-dir is not given, as its help always said.
+
+  New features:
+  * moin account enable --name=NAME (or --uid=UID). Accounts disabled by
+    older versions (renamed to "NAME-<user id>") get their name and email
+    back.
+  * moin account delete --name=NAME (or --uid=UID).
+  * "Delete user" button in the account browser, with a confirmation.
+  * Disabled accounts keep their name and email taken: new accounts and
+    the preferences cannot use them.
+
+  The static files keep the URL prefix /moin_static1120.
+
+
 Version 1.12.0 (2026-10-25)
 
   HINT: the Python 3 port (1.10.0) and the Markdown support (1.11.0+md1

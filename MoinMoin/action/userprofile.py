@@ -1,4 +1,7 @@
 # -*- coding: iso-8859-1 -*-
+# Modified by Claude (Anthropic AI) (moinmoin-py3-md 1.12.1): disabled accounts
+# are found (the "Enable user" button created an empty account instead), the
+# disabled flag uses User.disable/enable, new "Delete user" button.
 """
     MoinMoin - set values in user profile
 
@@ -21,14 +24,26 @@ def execute(pagename, request):
         user_name = form.get('name', '')
         key = form.get('key', '')
         val = form.get('val', '')
-        if key in cfg.user_checkbox_fields:
-            val = int(val)
-        uid = user.getUserId(request, user_name)
+        uid = user.getUserIdIncludingDisabled(request, user_name)
         theuser = user.User(request, uid)
-        oldval = getattr(theuser, key)
-        setattr(theuser, key, val)
-        theuser.save()
-        request.theme.add_msg('%s.%s: %s -> %s' % tuple([wikiutil.escape(s) for s in [user_name, key, oldval, val]]), "info")
+        if not uid or not theuser.exists():
+            request.theme.add_msg(_('User account "%s" not found.') % wikiutil.escape(user_name), "error")
+        elif key == 'delete':
+            theuser.delete()
+            request.theme.add_msg(_('User account "%s" deleted.') % wikiutil.escape(user_name), "info")
+        elif key == 'disabled':
+            changed = theuser.disable() if val == '1' else theuser.enable()
+            if changed:
+                state = _('disabled') if theuser.disabled else _('enabled')
+                request.theme.add_msg(_('User account "%(name)s" %(state)s.') % {
+                    'name': wikiutil.escape(theuser.name), 'state': state}, "info")
+        else:
+            if key in [k for k, label in cfg.user_checkbox_fields]:
+                val = int(val)
+            oldval = getattr(theuser, key)
+            setattr(theuser, key, val)
+            theuser.save()
+            request.theme.add_msg('%s.%s: %s -> %s' % tuple([wikiutil.escape(str(s)) for s in [user_name, key, oldval, val]]), "info")
 
     Page(request, pagename).send_page()
 

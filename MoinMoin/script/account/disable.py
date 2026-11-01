@@ -1,6 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 # MoinMoin 1.10.0 (Python 3 port): converted to Python 3 (2to3) in 2026 by
 # Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio.
+# Modified by Claude (Anthropic AI) (moinmoin-py3-md 1.12.1): the account keeps
+# its name, email and subscriptions, "account enable" undoes it.
 """
 MoinMoin - disable a user account
 
@@ -15,6 +17,9 @@ class PluginScript(MoinScript):
 Purpose:
 ========
 This tool allows you to disable user accounts via a command line interface.
+A disabled account cannot log in any more. Its name, email, password and
+subscriptions are kept, so "moin ... account enable" can enable it again.
+To delete an account for good, use "moin ... account delete".
 
 Detailed Instructions:
 ======================
@@ -24,9 +29,6 @@ General syntax: moin [options] account disable [disable-options]
     --config-dir=/path/to/my/cfg/ --wiki-url=http://wiki.example.org/
 
 [disable-options] see below:
-    0. Verify that you really want to disable the account.
-       While there is a disable script, no such enable script exists.
-
     1. To disable the user 'JohnSmith':
        moin ... account disable --name JohnSmith
 
@@ -63,20 +65,14 @@ General syntax: moin [options] account disable [disable-options]
         if self.options.uid:
             u = user.User(request, self.options.uid)
         elif self.options.uname:
-            u = user.User(request, None, self.options.uname)
+            u = user.User(request, user.getUserIdIncludingDisabled(request, self.options.uname))
 
         if not u.exists():
-            print('This user "%s" does not exists!' % u.name)
+            print('This user "%s" does not exists!' % (self.options.uname or self.options.uid))
             return
 
         print(" %-20s %-25s %-35s" % (u.id, u.name, u.email), end=' ')
-        if not u.disabled: # only disable once
-            u.disabled = 1
-            u.name = "%s-%s" % (u.name, u.id)
-            if u.email:
-                u.email = "%s-%s" % (u.email, u.id)
-            u.subscribed_pages = "" # avoid using email
-            u.save()
+        if u.disable():
             print("- disabled.")
         else:
             print("- is already disabled.")

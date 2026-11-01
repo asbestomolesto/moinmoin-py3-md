@@ -12,6 +12,8 @@
 """
 
 
+import json
+
 from MoinMoin import user, wikiutil
 from MoinMoin.util.dataset import TupleDataset, Column
 from MoinMoin.Page import Page
@@ -89,6 +91,17 @@ def do_user_browser(request):
         ret.append(html.INPUT(type='submit', name='userprofile', value=text))
         enable_disable_link = str(str(ret))
 
+        # Modified by Claude (Anthropic AI) (moinmoin-py3-md 1.12.1): delete
+        # button, the browser asks for a confirmation first
+        question = _('Delete the account "%s" for good? This cannot be undone.') % account.name
+        ret = html.FORM(action=url, onsubmit="return confirm(%s);" % json.dumps(question))
+        ret.append(html.INPUT(type='hidden', name='action', value='userprofile'))
+        ret.append(html.INPUT(type="hidden", name="ticket", value="%s" % ticket))
+        ret.append(html.INPUT(type='hidden', name='name', value=account.name))
+        ret.append(html.INPUT(type='hidden', name='key', value="delete"))
+        ret.append(html.INPUT(type='submit', name='userprofile', value=_('Delete user')))
+        delete_link = str(ret)
+
         # creates the POST data for recoverpass
         url = request.page.url(request)
         ret = html.FORM(action=url)
@@ -118,7 +131,7 @@ def do_user_browser(request):
             request.formatter.rawHTML(grouppage_links),
             email_link,
             jabber_link,
-            recoverpass_link + enable_disable_link
+            recoverpass_link + enable_disable_link + delete_link
         ))
 
     if data:

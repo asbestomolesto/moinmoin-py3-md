@@ -235,6 +235,39 @@ def getUserIdByOpenId(request, openid):
     return _getUserIdByKey(request, 'openids', openid)
 
 
+# Modified by Claude (Anthropic AI) (moinmoin-py3-md 1.12.1): disabled accounts
+# keep their name and email, but the lookup caches only hold enabled accounts,
+# so the uniqueness checks and the enable/delete tools also read the profiles.
+def getUserIdIncludingDisabled(request, searchName, renamed=False):
+    """ Get the user ID for a user NAME, also for disabled accounts.
+
+    SLOW if the name is not the one of an enabled account: reads all the
+    user profiles.
+
+    @param searchName: the user name to look up
+    @param renamed: also find accounts disabled by moin 1.12.0 or older,
+                    which were renamed to "<name>-<user id>"
+    @rtype: string
+    @return: the corresponding user ID or None
+    """
+    uid = getUserId(request, searchName)
+    if uid is None and searchName:
+        for candidate in getUserList(request):
+            name = User(request, candidate).name
+            if name == searchName or (renamed and name == "%s-%s" % (searchName, candidate)):
+                return candidate
+    return uid
+
+
+def get_by_email_address_including_disabled(request, email_address):
+    """ Like get_by_email_address, but also finds disabled accounts (SLOW). """
+    u = get_by_email_address(request, email_address)
+    if u is None and email_address:
+        email_address = email_address.lower()
+        u = get_by_filter(request, lambda u: u.disabled and u.email.lower() == email_address)
+    return u
+
+
 def superusers(request):
     """
     yields superuser User objects
@@ -573,6 +606,52 @@ class User:
     def remove(self):
         """ Remove user profile from disk """
         os.remove(self.__filename())
+
+    # Modified by Claude (Anthropic AI) (moinmoin-py3-md 1.12.1): disable,
+    # enable and delete, used by "moin account ..." and by the account browser
+    def disable(self):
+        """ Disable the account: it cannot log in any more, name, email,
+            password and subscriptions are kept, so it can be enabled again.
+
+        @rtype: bool
+        @return: False if the account was already disabled
+        """
+        if self.disabled:
+            return False
+        self.disabled = 1
+        self.save()
+        return True
+
+    def enable(self):
+        """ Enable a disabled account. An account disabled by moin 1.12.0 or
+            older was renamed to "<name>-<user id>" (and its email too): the
+            original name and email are given back, if no other account
+            uses them now.
+
+        @rtype: bool
+        @return: False if the account was not disabled
+        """
+        if not self.disabled:
+            return False
+        suffix = "-%s" % self.id
+        if self.name.endswith(suffix):
+            old_name = self.name[:-len(suffix)]
+            if old_name and getUserIdIncludingDisabled(self._request, old_name) in (None, self.id):
+                self.name = old_name
+        if self.email.endswith(suffix):
+            old_email = self.email[:-len(suffix)]
+            other = get_by_email_address_including_disabled(self._request, old_email)
+            if other is None or other.id == self.id:
+                self.email = old_email
+        self.disabled = 0
+        self.save()
+        return True
+
+    def delete(self):
+        """ Delete the account for good: its profile file is removed. The
+            pages and the edits made by the user stay in the wiki. """
+        self.remove()
+        clearLookupCaches(self._request)
 
     def load_from_id(self, password=None):
         """ Load user account data from disk.

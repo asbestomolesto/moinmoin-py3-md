@@ -1,14 +1,14 @@
-# RPM spec of MoinMoin 1.12.0, moinmoin-py3-md (Fedora, RHEL/AlmaLinux/Rocky with EPEL
+# RPM spec of MoinMoin 1.12.1, moinmoin-py3-md (Fedora, RHEL/AlmaLinux/Rocky with EPEL
 # and other distributions with the pyproject RPM macros).
 # Rewritten by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
 # for MoinMoin 1.11.0+md2; the original spec was by Florian Festi,
 # Johannes Poehlmann and Thomas Waldmann (see the changelog below).
 #
-# Build:  rpmbuild -ta moinmoin-py3-md-1.12.0.tar.gz
+# Build:  rpmbuild -ta moinmoin-py3-md-1.12.1.tar.gz
 #    or:  rpmbuild -ba moin.spec  (with the tarball in ~/rpmbuild/SOURCES)
 
 Name:           moinmoin-py3-md
-Version:        1.12.0
+Version:        1.12.1
 Release:        1%{?dist}
 Summary:        MoinMoin wiki with MoinMoin syntax and Markdown pages (Python 3)
 
@@ -37,7 +37,7 @@ MoinMoin is a wiki engine written in Python. It supports many markups
 diffs, attachments, access control lists, user accounts, search, themes
 and plugins.
 
-This is MoinMoin 1.12.0 (moinmoin-py3-md): MoinMoin 1.9.11 ported to
+This is MoinMoin 1.12.1 (moinmoin-py3-md): MoinMoin 1.9.11 ported to
 Python 3, with pages written in Markdown next to the pages in MoinMoin
 wiki syntax. The markup of a page is recognized from its text, or set
 with "#format markdown" / "#format moin". Existing 1.9 wikis can be used
@@ -87,6 +87,10 @@ cd %{buildroot}%{_datadir}/moin/server && chmod 0755 moin moin.ajp moin.cgi moin
 %{_mandir}/man8/moin-mkwiki.8*
 
 %changelog
+* Sun Nov 01 2026 Gabriele 'asbesto' Zaverio <asbesto@freaknet.org> - 1.12.1-1
+- MoinMoin 1.12.1: Preferences page fixed, temporary "account disable",
+  new "account enable" and "account delete", account browser buttons fixed
+
 * Sun Oct 25 2026 Gabriele 'asbesto' Zaverio <asbesto@freaknet.org> - 1.12.0-1
 - MoinMoin 1.12.0: the Python 3 port and the Markdown support released as
   one project, moinmoin-py3-md; replaces moin-markdown

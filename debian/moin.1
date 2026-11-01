@@ -1,6 +1,6 @@
 .\" Written by Claude (Anthropic AI) for Gabriele 'asbesto' Zaverio, 2026,
 .\" as part of the Python 3 port of MoinMoin (version 1.10.0).
-.TH MOIN 1 "October 2026" "MoinMoin 1.12.0" "MoinMoin"
+.TH MOIN 1 "November 2026" "MoinMoin 1.12.1" "MoinMoin"
 .SH NAME
 moin \- MoinMoin wiki command line tool
 .SH SYNOPSIS
@@ -13,7 +13,8 @@ can run the wiki with its standalone web server.
 .SH GENERAL OPTIONS
 .TP
 .BI \-\-config\-dir= DIR
-directory containing the wiki configuration (wikiconfig.py or farmconfig.py)
+directory containing the wiki configuration (wikiconfig.py or farmconfig.py);
+default: the current directory, if it contains one of them
 .TP
 .BI \-\-wiki\-url= URL
 URL of the wiki (needed to select a wiki of a wiki farm), e.g. http://localhost/
@@ -22,9 +23,10 @@ URL of the wiki (needed to select a wiki of a wiki farm), e.g. http://localhost/
 be quiet (no informational messages)
 .SH COMMANDS
 .TP
-.B account create|check|disable|homepage|inactive|resetpw
+.B account create|check|delete|disable|enable|homepage|inactive|resetpw
 manage user accounts, e.g.
-\fBaccount create \-\-name=NAME \-\-email=EMAIL \-\-password=PASSWORD\fR
+\fBaccount create \-\-name=NAME \-\-email=EMAIL \-\-password=PASSWORD\fR;
+\fBdisable\fR locks an account out until \fBenable\fR, \fBdelete\fR removes it for good
 .TP
 .B cli show
 render a page to standard output

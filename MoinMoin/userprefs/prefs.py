@@ -76,7 +76,8 @@ space between words. Group page name is not allowed.""", wiki=True) % wikiutil.e
 
             # Is this an existing user trying to change information or a new user?
             # Name required to be unique. Check if name belong to another user.
-            existing_id = user.getUserId(request, new_name)
+            # Modified by Claude (Anthropic AI) (moinmoin-py3-md 1.12.1): disabled accounts keep their name and email
+            existing_id = user.getUserIdIncludingDisabled(request, new_name)
             if existing_id is not None and existing_id != request.user.id:
                 return 'error', _("This user name already belongs to somebody else.")
 
@@ -98,7 +99,7 @@ space between words. Group page name is not allowed.""", wiki=True) % wikiutil.e
 
             # Email should be unique - see also MoinMoin/script/accounts/moin_usercheck.py
             if new_email and request.cfg.user_email_unique:
-                other = user.get_by_email_address(request, new_email)
+                other = user.get_by_email_address_including_disabled(request, new_email)
                 if other is not None and other.id != request.user.id:
                     return 'error', _("This email already belongs to somebody else.")
 

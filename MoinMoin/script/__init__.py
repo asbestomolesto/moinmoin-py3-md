@@ -194,6 +194,10 @@ class MoinScript(Script):
                 sys.path.insert(0, os.path.abspath(config_dir))
             else:
                 fatal("bad path given to --config-dir option")
+        # Modified by Claude (Anthropic AI) (moinmoin-py3-md 1.12.1): the
+        # current directory was never added, although --help says so
+        elif (os.path.isfile('wikiconfig.py') or os.path.isfile('farmconfig.py')):
+            sys.path.insert(0, os.getcwd())
 
         args = self.args
         if len(args) < 2:

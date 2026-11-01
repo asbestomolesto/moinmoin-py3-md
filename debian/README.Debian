@@ -1,7 +1,7 @@
-MoinMoin 1.12.0 (moinmoin-py3-md) - notes for Debian, Devuan and derivatives
+MoinMoin 1.12.1 (moinmoin-py3-md) - notes for Debian, Devuan and derivatives
 ============================================================================
 
-This package contains MoinMoin 1.12.0 (moinmoin-py3-md): MoinMoin 1.9.11
+This package contains MoinMoin 1.12.1 (moinmoin-py3-md): MoinMoin 1.9.11
 ported to Python 3, with support for pages written in Markdown next to
 the pages in MoinMoin wiki syntax. It does not
 need systemd: on Devuan the wikis run with sysvinit/OpenRC (init script
@@ -28,6 +28,18 @@ Creating a wiki
 Log in as AdminUser and install the help and system pages from the page
 LanguageSetup (e.g. "English--all_pages.zip"). The pages appear after
 the wiki is restarted (this is the same with the original MoinMoin).
+
+User accounts
+-------------
+
+  runuser -u www-data -- moin --config-dir=/srv/moin/mywiki account disable --name=NAME
+  runuser -u www-data -- moin --config-dir=/srv/moin/mywiki account enable --name=NAME
+  runuser -u www-data -- moin --config-dir=/srv/moin/mywiki account delete --name=NAME
+
+disable is temporary (name, email and password are kept), enable undoes
+it, delete removes the account for good. Superusers have the same buttons
+in the account browser of the <<SystemAdmin>> macro (page SystemAdmin).
+More in /usr/share/doc/moinmoin-py3-md/GUIDE.md.gz, "Managing user accounts".
 
 Running the wiki
 ----------------
