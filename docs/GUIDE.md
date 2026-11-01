@@ -2,7 +2,7 @@
 # moinmoin-py3-md guide
 
 This guide covers installing, running and maintaining moinmoin-py3-md
-(MoinMoin 1.12.1). For an overview see the [README](../README.md). The
+(MoinMoin 1.12.2). For an overview see the [README](../README.md). The
 installed Debian package also has `/usr/share/doc/moinmoin-py3-md/README.Debian`
 and the manual pages `man moin` and `man moin-mkwiki`.
 
@@ -10,11 +10,11 @@ and the manual pages `man moin` and `man moin-mkwiki`.
 
 | File | For |
 |---|---|
-| `moinmoin-py3-md_1.12.1-1_all.deb` | Devuan, Debian, Ubuntu and derivatives |
-| `moinmoin-py3-md_1.12.1-1.dsc`, `*.orig.tar.gz`, `*.debian.tar.xz` | Debian source package |
-| `moinmoin-py3-md-1.12.1-1.fc42.noarch.rpm`, `*.src.rpm` | Fedora and other RPM distributions |
-| `moinmoin_py3_md-1.12.1-py3-none-any.whl`, `moinmoin_py3_md-1.12.1.tar.gz` | pip, any distribution |
-| `moinmoin-py3-md-1.12.1.tar.gz` | source tree (also used by `rpmbuild -ta`) |
+| `moinmoin-py3-md_1.12.2-1_all.deb` | Devuan, Debian, Ubuntu and derivatives |
+| `moinmoin-py3-md_1.12.2-1.dsc`, `*.orig.tar.gz`, `*.debian.tar.xz` | Debian source package |
+| `moinmoin-py3-md-1.12.2-1.fc42.noarch.rpm`, `*.src.rpm` | Fedora and other RPM distributions |
+| `moinmoin_py3_md-1.12.2-py3-none-any.whl`, `moinmoin_py3_md-1.12.2.tar.gz` | pip, any distribution |
+| `moinmoin-py3-md-1.12.2.tar.gz` | source tree (also used by `rpmbuild -ta`) |
 | `SHA256SUMS` | checksums |
 
 Check the downloads with `sha256sum -c SHA256SUMS`.
@@ -22,7 +22,7 @@ Check the downloads with `sha256sum -c SHA256SUMS`.
 apt and dnf install the dependencies themselves: Python-Markdown,
 Pygments, passlib, parsedatetime and, on Python 3.13 or newer, legacy-cgi.
 Other RPM distributions can rebuild the source package with
-`rpmbuild --rebuild moinmoin-py3-md-1.12.1-1.fc42.src.rpm`.
+`rpmbuild --rebuild moinmoin-py3-md-1.12.2-1.fc42.src.rpm`.
 
 The packages replace `python3-moinmoin` (1.10.0), `python3-moinmoin-markdown`
 and `moin-markdown` (1.11.0+mdN). They provide the same `MoinMoin` module
@@ -145,6 +145,20 @@ the `<<SystemAdmin>>` macro:
 3. Click **User account browser**: every account has its buttons on the
    right.
 
+The help pages **HelpOnUserHandling**, **HelpOnMoinCommand** and
+**HelpOnSuperUser** describe the same (and their Italian, Russian, Chinese
+and Latvian translations, since 1.12.2).
+
+### Updating the help pages after an upgrade
+
+The help and system pages come from the language packs and are copied into
+the wiki when they are installed from **LanguageSetup**. A newer package
+does not change the pages already installed: to get the new help, log in as
+a superuser, open **LanguageSetup**, its attachments, and install again the
+pack you use (e.g. `English--all_help_pages.zip` or
+`English--admin_pages.zip`). This only replaces the system and help pages
+(in `underlay/`), never the pages of your wiki.
+
 ## Migrating an existing 1.9 wiki
 
 The data format did not change. Pages, users, edit logs and attachments
@@ -262,6 +276,10 @@ Recommendations:
   and with the account browser buttons, accounts disabled by 1.12.0
   enabled again with their name, every "Settings" page and the password
   change, over HTTP.
+- Help pages about user accounts (1.12.2): rendered in English, Italian,
+  Russian, Simplified Chinese and Latvian without macro errors, translated
+  labels checked in the pages, the preferences and the account browser,
+  language packs installed with the package installer.
 - lintian reports no errors on the .deb.
 
 ## Building from source
@@ -269,15 +287,15 @@ Recommendations:
 Debian, Devuan, Ubuntu:
 
     sudo apt install debhelper dh-python pybuild-plugin-pyproject python3-all python3-setuptools
-    dpkg-source -x moinmoin-py3-md_1.12.1-1.dsc
-    cd moinmoin-py3-md-1.12.1 && dpkg-buildpackage -us -uc
+    dpkg-source -x moinmoin-py3-md_1.12.2-1.dsc
+    cd moinmoin-py3-md-1.12.2 && dpkg-buildpackage -us -uc
 
 or `dpkg-buildpackage -us -uc -b` directly in a git checkout.
 
 Fedora:
 
     sudo dnf install rpm-build python3-devel pyproject-rpm-macros
-    rpmbuild -ta moinmoin-py3-md-1.12.1.tar.gz
+    rpmbuild -ta moinmoin-py3-md-1.12.2.tar.gz
 
 Python wheel and sdist: `python3 -m build`.
 

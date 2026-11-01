@@ -3336,3 +3336,31 @@ msgstr ""
 
 msgid "Login and try again."
 msgstr ""
+
+#. moinmoin-py3-md 1.12.2
+msgid "Disable this account (an administrator can enable it again)"
+msgstr ""
+
+#. moinmoin-py3-md 1.12.2
+msgid "Delete user"
+msgstr ""
+
+#. moinmoin-py3-md 1.12.2
+msgid "Delete the account \"%s\" for good? This cannot be undone."
+msgstr ""
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" not found."
+msgstr ""
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" deleted."
+msgstr ""
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" disabled."
+msgstr ""
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" enabled."
+msgstr ""

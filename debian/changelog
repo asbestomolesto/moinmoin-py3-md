@@ -1,3 +1,13 @@
+moinmoin-py3-md (1.12.2-1) unstable; urgency=medium
+
+  * New upstream version 1.12.2:
+    - help pages about user accounts updated (English, Italian, Russian,
+      Simplified Chinese, Latvian);
+    - preferences label "Disable this account (an administrator can enable
+      it again)", translated in the same languages.
+
+ -- Gabriele 'asbesto' Zaverio <asbesto@freaknet.org>  Sun, 01 Nov 2026 15:00:00 +0100
+
 moinmoin-py3-md (1.12.1-1) unstable; urgency=medium
 
   * New upstream version 1.12.1:

@@ -3,7 +3,7 @@
 
 **MoinMoin 1.9 for Python 3, with Markdown pages.**
 
-moinmoin-py3-md (MoinMoin 1.12.1) is the classic
+moinmoin-py3-md (MoinMoin 1.12.2) is the classic
 [MoinMoin](https://moinmo.in/) 1.9 wiki engine, ported to Python 3 and
 packaged for current GNU/Linux distributions. It can also hold pages written
 in **Markdown**, next to the pages written in MoinMoin wiki syntax.
@@ -81,16 +81,16 @@ Download the packages from the
 
 **Devuan, Debian, Ubuntu and derivatives** (one package for all of them):
 
-    sudo apt install ./moinmoin-py3-md_1.12.1-1_all.deb
+    sudo apt install ./moinmoin-py3-md_1.12.2-1_all.deb
 
 **Fedora and other RPM distributions:**
 
-    sudo dnf install ./moinmoin-py3-md-1.12.1-1.fc42.noarch.rpm
+    sudo dnf install ./moinmoin-py3-md-1.12.2-1.fc42.noarch.rpm
 
 **Any distribution, with pip** (the wheel file of the release page):
 
     python3 -m venv /opt/moin
-    /opt/moin/bin/pip install moinmoin_py3_md-1.12.1-py3-none-any.whl
+    /opt/moin/bin/pip install moinmoin_py3_md-1.12.2-py3-none-any.whl
 
 With pip, the wiki templates (`data`, `underlay`, `config/wikiconfig.py`)
 are installed under `/opt/moin/share/moin/`. To make a wiki, copy them into a
@@ -201,7 +201,8 @@ change is a separate commit, starting from the original 1.9.11 release.
 | 1.11.0+md2 | Automatic recognition of the page markup, `#format moin`, help pages in all languages |
 | 1.11.0+md3 | Security fixes, RPM and pip packages |
 | 1.12.0 | One project (moinmoin-py3-md): new package names, version accepted by PyPI, English documentation, CI builds |
-| **1.12.1** | Preferences page fixed, temporary `account disable` with new `account enable` and `account delete`, working account browser buttons |
+| 1.12.1 | Preferences page fixed, temporary `account disable` with new `account enable` and `account delete`, working account browser buttons |
+| **1.12.2** | Help pages about user accounts updated (English, Italian, Russian, Chinese, Latvian), Preferences label "Disable this account (an administrator can enable it again)" |
 
 ## Known limitations
 
@@ -221,7 +222,7 @@ change is a separate commit, starting from the original 1.9.11 release.
     python3 -m pytest MoinMoin           # test suite (needs python3-markdown)
     python3 -m build                     # wheel and sdist
     dpkg-buildpackage -us -uc -b         # .deb (see docs/GUIDE.md)
-    rpmbuild -ta moinmoin-py3-md-1.12.1.tar.gz   # .rpm
+    rpmbuild -ta moinmoin-py3-md-1.12.2.tar.gz   # .rpm
 
 The GitHub Actions workflow in `.github/workflows/build.yml` runs the tests
 on every push. On a version tag it builds all the packages, installs them on

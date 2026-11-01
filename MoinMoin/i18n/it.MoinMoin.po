@@ -3754,6 +3754,34 @@ msgstr "Non è consentito usare l'azione %(action_name)s su questa pagina."
 msgid "Login and try again."
 msgstr "Eseguire l'accesso e riprovare."
 
+#. moinmoin-py3-md 1.12.2
+msgid "Disable this account (an administrator can enable it again)"
+msgstr "Disattiva questo account (un amministratore può riattivarlo)"
+
+#. moinmoin-py3-md 1.12.2
+msgid "Delete user"
+msgstr "Elimina utente"
+
+#. moinmoin-py3-md 1.12.2
+msgid "Delete the account \"%s\" for good? This cannot be undone."
+msgstr "Eliminare definitivamente l'account \"%s\"? L'operazione non si può annullare."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" not found."
+msgstr "Account utente \"%s\" non trovato."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" deleted."
+msgstr "Account utente \"%s\" eliminato."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" disabled."
+msgstr "Account utente \"%s\" disattivato."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" enabled."
+msgstr "Account utente \"%s\" riattivato."
+
 #~ msgid "New user account created on %(sitename)s"
 #~ msgstr "Nuovo account creato su %(sitename)s"
 

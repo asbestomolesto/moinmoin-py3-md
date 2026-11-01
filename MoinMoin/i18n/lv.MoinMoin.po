@@ -3618,6 +3618,34 @@ msgstr "Jums nav tiesību veikt darbību %(action_name)s šajā lapā."
 msgid "Login and try again."
 msgstr "Pieslēdzieties un mēģiniet vēlreiz."
 
+#. moinmoin-py3-md 1.12.2
+msgid "Disable this account (an administrator can enable it again)"
+msgstr "Atslēgt šo kontu (administrators to var atkal aktivizēt)"
+
+#. moinmoin-py3-md 1.12.2
+msgid "Delete user"
+msgstr "Dzēst lietotāju"
+
+#. moinmoin-py3-md 1.12.2
+msgid "Delete the account \"%s\" for good? This cannot be undone."
+msgstr "Dzēst kontu \"%s\" uz visiem laikiem? To nevar atsaukt."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" not found."
+msgstr "Lietotāja konts \"%s\" nav atrasts."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" deleted."
+msgstr "Lietotāja konts \"%s\" ir izdzēsts."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" disabled."
+msgstr "Lietotāja konts \"%s\" ir atslēgts."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" enabled."
+msgstr "Lietotāja konts \"%s\" ir aktivizēts."
+
 #~ msgid "View the related videos on YouTube."
 #~ msgstr "Skatīties saistītos YouTube video klipus."
 

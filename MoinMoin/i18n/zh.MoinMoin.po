@@ -3567,6 +3567,34 @@ msgstr "您无权对此网页进行%(action_name)s操作。"
 msgid "Login and try again."
 msgstr "请登录后再试。"
 
+#. moinmoin-py3-md 1.12.2
+msgid "Disable this account (an administrator can enable it again)"
+msgstr "禁用此帐户（管理员可以重新启用）"
+
+#. moinmoin-py3-md 1.12.2
+msgid "Delete user"
+msgstr "删除帐户"
+
+#. moinmoin-py3-md 1.12.2
+msgid "Delete the account \"%s\" for good? This cannot be undone."
+msgstr "永久删除帐户“%s”？此操作无法撤消。"
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" not found."
+msgstr "找不到帐户“%s”。"
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" deleted."
+msgstr "帐户“%s”已删除。"
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" disabled."
+msgstr "帐户“%s”已禁用。"
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" enabled."
+msgstr "帐户“%s”已启用。"
+
 #~ msgid "New user account created on %(sitename)s"
 #~ msgstr "新用户帐号创建于 %(sitename)s"
 

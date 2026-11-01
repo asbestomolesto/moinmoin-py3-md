@@ -2,7 +2,7 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: MoinMoin
 Upstream-Contact: https://moinmo.in/
 Source: https://static.moinmo.in/files/moin-1.9.11.tar.gz
-Comment: MoinMoin 1.12.1 (moinmoin-py3-md,
+Comment: MoinMoin 1.12.2 (moinmoin-py3-md,
  https://github.com/asbestomolesto/moinmoin-py3-md) is MoinMoin 1.9.11
  ported to Python 3, with Markdown pages, by
  Gabriele 'asbesto' Zaverio with the assistance of Claude (Anthropic AI);

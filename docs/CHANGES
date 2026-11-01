@@ -10,6 +10,24 @@ trying to make a "perfect release" (as that release might NEVER get released),
 but to make progress and don't delay releases too much.
 
 
+Version 1.12.2 (2026-11-01)
+
+  Changes:
+  * Help pages about user accounts updated in the language packs:
+    HelpOnUserHandling, HelpOnMoinCommand, HelpOnSuperUser and
+    HelpOnConfiguration/UserPreferences (English), AiutoSuGestioneUtenti
+    and AiutoSuSuperUtente (Italian), and the Russian, Simplified Chinese
+    and Latvian translations: account disable/enable/delete and the
+    buttons of the account browser. Install the language pack again from
+    LanguageSetup to get them.
+  * The preferences checkbox "Disable this account forever" is now
+    "Disable this account (an administrator can enable it again)";
+    translated in Italian, Russian, Simplified Chinese and Latvian, the
+    other languages show the English text until they are translated.
+  * Translations of the new account browser texts ("Delete user", the
+    confirmation and the result messages) in the same languages.
+
+
 Version 1.12.1 (2026-11-01)
 
   HINT: "moin account disable" no longer renames the account: name, email,

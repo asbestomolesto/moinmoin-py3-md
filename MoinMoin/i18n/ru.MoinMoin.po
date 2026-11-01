@@ -3701,6 +3701,34 @@ msgstr "Вам нельзя выполнить действие «%(action_name)
 msgid "Login and try again."
 msgstr "Войдите и попробуйте еще раз."
 
+#. moinmoin-py3-md 1.12.2
+msgid "Disable this account (an administrator can enable it again)"
+msgstr "Заблокировать эту учётную запись (администратор может снова её разблокировать)"
+
+#. moinmoin-py3-md 1.12.2
+msgid "Delete user"
+msgstr "Удалить учётную запись"
+
+#. moinmoin-py3-md 1.12.2
+msgid "Delete the account \"%s\" for good? This cannot be undone."
+msgstr "Удалить учётную запись \"%s\" навсегда? Это действие нельзя отменить."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" not found."
+msgstr "Учётная запись \"%s\" не найдена."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" deleted."
+msgstr "Учётная запись \"%s\" удалена."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" disabled."
+msgstr "Учётная запись \"%s\" заблокирована."
+
+#. moinmoin-py3-md 1.12.2
+msgid "User account \"%s\" enabled."
+msgstr "Учётная запись \"%s\" разблокирована."
+
 #~ msgid "New user account created on %(sitename)s"
 #~ msgstr "Создана новая учетная запись пользователя на %(sitename)s"
 

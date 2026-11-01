@@ -1273,7 +1273,8 @@ options = {
         ('wikiname_add_spaces', lambda _: _('Add spaces to displayed wiki names')),
         ('remember_me', lambda _: _('Remember login information')),
 
-        ('disabled', lambda _: _('Disable this account forever')),
+        # Modified by Claude (Anthropic AI) (moinmoin-py3-md 1.12.2): disabling is reversible
+        ('disabled', lambda _: _('Disable this account (an administrator can enable it again)')),
         # if an account is disabled, it may be used for looking up
         # id -> username for page info and recent changes, but it
         # is not usable for the user any more:

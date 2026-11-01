@@ -34,9 +34,11 @@ def execute(pagename, request):
         elif key == 'disabled':
             changed = theuser.disable() if val == '1' else theuser.enable()
             if changed:
-                state = _('disabled') if theuser.disabled else _('enabled')
-                request.theme.add_msg(_('User account "%(name)s" %(state)s.') % {
-                    'name': wikiutil.escape(theuser.name), 'state': state}, "info")
+                if theuser.disabled:
+                    msg = _('User account "%s" disabled.')
+                else:
+                    msg = _('User account "%s" enabled.')
+                request.theme.add_msg(msg % wikiutil.escape(theuser.name), "info")
         else:
             if key in [k for k, label in cfg.user_checkbox_fields]:
                 val = int(val)
